@@ -25,41 +25,30 @@
                 </v-card-media>
               </v-flex>
               <v-flex xs4 sm5 md5>
-                <v-card-title primary-title >
-                  <v-card-actions wrap>
-                    <div>
-                      <v-btn flat :to="'/friends/' + user.id" class="">
-                        <h3 class="primary--text mb0 mt0 pt0"> {{ user.userName }}</h3>
-                      </v-btn>
-                    </div>
-                  </v-card-actions>
-                </v-card-title>
-                <!-- <v-card-actions>
-                  <v-btn flat :to="'/meetups/' + meetup.id">
-                    <v-icon left light>arrow_forward</v-icon>
-                    View Meetup</v-btn>
-                </v-card-actions> -->
-              </v-flex>
-              <v-flex xs4 sm4 md4 v-if="!isFriend(user)">
-                <v-btn class="info" center @click="sendFriendRequest(user.id)">Send friend request</v-btn>
+                <v-layout row>
+                  <v-flex>
+                    <v-card-title primary-title >
+                      <v-card-actions wrap>
+                        <div>
+                          <v-btn flat :to="'/friends/' + user.id" class="">
+                            <h3 class="primary--text mb0 mt0 pt0"> {{ user.userName }}</h3>
+                          </v-btn>
+                        </div>
+                      </v-card-actions>
+                    </v-card-title>
+                  </v-flex>
+                </v-layout>
+                <v-layout>
+                  <v-flex v-if="!isFriend(user)">
+                    <v-btn class="info info--text" outline @click="sendFriendRequest(user.id)"><v-icon>add</v-icon>Add friend</v-btn>
+                  </v-flex>
+                </v-layout>
               </v-flex>
             </v-layout>
           </v-container>
         </v-card>
       </v-flex>
     </v-layout>
-    <!-- <v-fab-transition >
-      <v-btn router to="/meetup/new"
-        color="orange"
-        fixed
-        bottom
-        right
-        fab
-        class=" white--text"
-        >
-        <v-icon>add</v-icon>
-      </v-btn>
-    </v-fab-transition> -->
   </v-container>
 
 </template>
@@ -105,5 +94,12 @@
   .container{
     margin-top: 0;
     padding: 8px;
+  }
+  .card__title--primary {
+     padding-top: 0px;
+  }
+  .btn__content {
+    justify-content: flex-start;
+
   }
 </style>

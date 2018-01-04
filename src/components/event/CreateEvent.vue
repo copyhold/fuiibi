@@ -63,7 +63,7 @@
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-                <v-icon class="mr-3">map</v-icon>
+                <v-icon class="mr-3">place</v-icon>
                 <vue-google-autocomplete
                 id="autoComplete"
                 classname="form-control"
@@ -122,7 +122,7 @@
                   label="Duration"
                   single-line
                   auto
-                  prepend-icon="map"
+                  prepend-icon="history"
                   hide-details
                   required
                 ></v-select>

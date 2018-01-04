@@ -15,7 +15,7 @@
               </v-flex>
               <!-- <v-container>
                 <v-layout> -->
-              <v-flex xs9 sm10 md10 class="ml-3">
+              <v-flex xs7 sm8 md8 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -33,39 +33,17 @@
                     <p class="date">{{ item.event.date | date}}</p>
                   </div>
                 </v-layout>
-                <v-layout>
+                <!-- <v-layout>
                   <v-card-actions wrap>
                       <v-btn outline small color="red" class="ml-0 mt-2">
                         <v-icon>delete</v-icon> Oups! Was not there
                       </v-btn>
                   </v-card-actions>
-                </v-layout>
+                </v-layout> -->
               </v-flex>
-
-
-
-              <!--</v-container> -->
-              <!-- <v-flex xs2 sm2 md2>
-                <v-speed-dial  v-model="fab" :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :hover="hover" :transition="transition" class="mt-5">
-
-                 <v-btn slot="activator" color="blue darken-2" dark small fab hover v-model="fab">
-                   <v-icon>edit</v-icon>
-                   <v-icon>close</v-icon>
-                 </v-btn>
-
-                 <v-btn fab dark small color="green">
-                   <v-icon>add</v-icon>
-                 </v-btn>
-
-                 <v-btn fab dark small color="red">
-                   <v-icon>delete</v-icon>
-                 </v-btn>
-
-               </v-speed-dial>
-               <v-btn dark small color="red">
-                 <v-icon>delete</v-icon> Oups! Was not there
-               </v-btn>
-              </v-flex>-->
+              <v-flex xs2 sm2 md2>
+                <v-btn fab small class="error mt-4" @click="alertB4remove"><v-icon dark>close</v-icon></v-btn>
+              </v-flex>
             </v-layout>
           </v-container>
         </v-card>
@@ -125,6 +103,11 @@
           default: return {}
         }
       }
+    },
+    methods: {
+      alertB4remove () {
+        alert('sure???')
+      }
     }
   }
 </script>
@@ -157,6 +140,10 @@ p {
 }
 .card__actions > *, .card__actions .btn {
   margin: 0 -8px;
+}
+.btn--floating.btn--small {
+    position: absolute;
+    bottom: 5px;
 }
 
 </style>

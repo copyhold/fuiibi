@@ -13,7 +13,7 @@
               <v-flex xs3 sm2 md2>
                 <v-card-media :src="user.imageUrl" height="100px" style="background-color: white, border-radius: 50px"></v-card-media>
               </v-flex>
-              <v-flex xs5 sm6 md6 class="ml-3">
+              <v-flex xs7 sm6 md6 class="ml-3">
                 <v-card-title primary-title >
                   <v-card-actions wrap>
                     <div>
@@ -29,15 +29,32 @@
                     View Meetup</v-btn>
                 </v-card-actions> -->
               </v-flex>
-              <v-flex xs4 sm4 md4>
-                <v-btn class="error error--text" center @click="removeFriend(user.id)" alert outline>Remove</v-btn>
-                <v-btn class="info info--text" center @click="messageFriend(user.id)" alert outline>Message</v-btn>
+              <v-flex xs2 sm4 md4>
+                <v-btn class="error white--text hidden-sm-and-up" fab small dark center @click="removeFriend(user.id)" alert >
+                  <v-icon>close</v-icon>
+                </v-btn>
+                <v-btn class="info white--text hidden-sm-and-up" fab small dark center @click="messageFriend(user.id)">
+                  <v-icon>message</v-icon>
+                </v-btn>
+                <v-btn class="info info--text hidden-xs-only" center @click="messageFriend(user.id)" alert outline>
+                  <v-icon class="mr-2">message</v-icon>
+                  Message
+                </v-btn>
+                <v-btn class="error error--text hidden-xs-only"  center outline @click="removeFriend(user.id)" alert>
+                  <v-icon class="mr-2">close</v-icon>
+                  Remove
+                </v-btn>
               </v-flex>
             </v-layout>
           </v-container>
         </v-card>
       </v-flex>
     </v-layout>
+    <v-fab-transition >
+      <v-btn router to="/event/new" color="green" fixed bottom right fab class=" white--text">
+        <v-icon>search</v-icon>
+      </v-btn>
+    </v-fab-transition>
   </v-container>
 
 </template>

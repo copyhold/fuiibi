@@ -9,7 +9,7 @@ export default {
   mutations: {
     addEvent (state, payload) {
       state.events.push(payload)
-      console.log('payload in addevent', payload);
+      // console.log('payload in addevent', payload);
     },
     addEventFromCreate (state, payload) {
       state.user.events.push(payload)
@@ -85,7 +85,7 @@ export default {
             userCounter: userCounter,
             counter: counter
           }
-          console.log('in listenToNotifications');
+          // console.log('in listenToNotifications');
           commit('addEvent', newNotif)
           commit('addNotification', newNotif)
           commit('setLoading', false)

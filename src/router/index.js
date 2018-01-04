@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
+// import Home from '@/components/Home'
 import CreateEvent from '@/components/event/CreateEvent'
 import Meetups from '@/components/event/Meetups'
 import meetup from '@/components/event/meetup'
@@ -20,8 +20,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      name: 'Notifications',
+      component: Notifications
     },
     {
       path: '/myEvents',
@@ -44,7 +44,7 @@ export default new Router({
       component: friends
     },
     {
-      path: '/meetup/new',
+      path: '/event/new',
       name: 'CreateEvent',
       component: CreateEvent,
       // Here below, we check that the auth-gard allow to enter this page, that the user is authenticated
