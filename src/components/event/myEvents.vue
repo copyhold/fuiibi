@@ -1,0 +1,162 @@
+<template >
+  <v-container class="container">
+    <v-layout row>
+        <v-flex xs12 class="text-xs-center">
+          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+        </v-flex>
+    </v-layout>
+    <v-layout row wrap v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
+      <v-flex xs12 sm12 md12>
+        <v-card height="120px">
+          <v-container fluid>
+            <v-layout col xs12>
+              <v-flex xs3 sm2 md2>
+                <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
+              </v-flex>
+              <!-- <v-container>
+                <v-layout> -->
+              <v-flex xs9 sm10 md10 class="ml-3">
+                <v-layout>
+                  <v-card-title primary-title >
+                    <v-card-actions wrap>
+                      <div>
+                        <v-btn flat :to="'/events/' + item.key" class="">
+                          <h3 class="primary--text mb0 mt0 pt0"> {{ item.event.title }}</h3>
+                        </v-btn>
+                      </div>
+                    </v-card-actions>
+                  </v-card-title>
+                </v-layout>
+                <v-layout>
+                  <div offset-xs3>
+                    <p class="location">{{ item.event.location.locality }}</p>
+                    <p class="date">{{ item.event.date | date}}</p>
+                  </div>
+                </v-layout>
+                <v-layout>
+                  <v-card-actions wrap>
+                      <v-btn outline small color="red" class="ml-0 mt-2">
+                        <v-icon>delete</v-icon> Oups! Was not there
+                      </v-btn>
+                  </v-card-actions>
+                </v-layout>
+              </v-flex>
+
+
+
+              <!--</v-container> -->
+              <!-- <v-flex xs2 sm2 md2>
+                <v-speed-dial  v-model="fab" :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :hover="hover" :transition="transition" class="mt-5">
+
+                 <v-btn slot="activator" color="blue darken-2" dark small fab hover v-model="fab">
+                   <v-icon>edit</v-icon>
+                   <v-icon>close</v-icon>
+                 </v-btn>
+
+                 <v-btn fab dark small color="green">
+                   <v-icon>add</v-icon>
+                 </v-btn>
+
+                 <v-btn fab dark small color="red">
+                   <v-icon>delete</v-icon>
+                 </v-btn>
+
+               </v-speed-dial>
+               <v-btn dark small color="red">
+                 <v-icon>delete</v-icon> Oups! Was not there
+               </v-btn>
+              </v-flex>-->
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-fab-transition >
+      <v-btn router to="/meetup/new" color="orange" fixed bottom right fab class=" white--text">
+        <v-icon>add</v-icon>
+      </v-btn>
+    </v-fab-transition>
+  </v-container>
+
+</template>
+
+<script>
+  export default {
+    data: () => ({
+      direction: 'left',
+      fab: false,
+      fling: false,
+      hover: false,
+      tabs: null,
+      top: false,
+      right: true,
+      bottom: true,
+      left: false,
+      transition: 'slide-y-reverse-transition'
+    }),
+    watch: {
+      top (val) {
+        this.bottom = !val
+      },
+      right (val) {
+        this.left = !val
+      },
+      bottom (val) {
+        this.top = !val
+      },
+      left (val) {
+        this.right = !val
+      }
+    },
+
+    computed: {
+      events () {
+        // console.log('myEvents', this.$store.getters.user.events)
+        return this.$store.getters.user.events
+      },
+      loading () {
+        return this.$store.getters.loading
+      },
+      activeFab () {
+        switch (this.tabs) {
+          case 'one': return { 'class': 'purple', icon: 'account_circle' }
+          case 'two': return { 'class': 'red', icon: 'edit' }
+          case 'three': return { 'class': 'green', icon: 'keyboard_arrow_up' }
+          default: return {}
+        }
+      }
+    }
+  }
+</script>
+
+<style scoped>
+p {
+  margin-bottom: 4px;
+}
+.date {
+  color: grey;
+}
+.container{
+  margin-top: 0;
+  padding: 8px;
+}
+.card_actions{
+  padding: 0px;
+}
+.btn_content{
+  padding: 0px;
+}
+.btn__content {
+  padding: 0px !important;
+}
+.card__actions {
+  padding: 0px;
+}
+.card__title--primary {
+  padding: 0px 0px;
+}
+.card__actions > *, .card__actions .btn {
+  margin: 0 -8px;
+}
+
+</style>
