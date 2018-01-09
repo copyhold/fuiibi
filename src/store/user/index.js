@@ -106,7 +106,9 @@ export default {
             return firebase.database().ref('users').child(id).update({imageUrl: imageUrl})
           }).then(() => {
             // here we commit that to my local store
-            commit('createUser', {
+            console.log('setUser dans signUserUp');
+
+            commit('setUser', {
               ...newUser,
               imageUrl: imageUrl,
               id: id
@@ -145,7 +147,9 @@ export default {
             events: [],
             fbKeys: {}
           }
-          console.log(newUser);
+          console.log('newUser dans signin', newUser);
+          console.log('setUser dans signUserIn');
+
           commit('setUser', newUser)
         }
       )
@@ -157,14 +161,20 @@ export default {
         }
       )
     },
+
     autoSignIn ({commit}, payload) {
+      console.log('setUser dans autoSignIn');
+
       commit('setUser', {
         id: payload.uid,
          events: [],
          friends: [],
-         fbKeys: {}
+         fbKeys: {},
+         userName: payload.userName,
+         imageUrl: payload.imageUrl
        })
     },
+
     logout ({commit}) {
       firebase.auth().signOut()
       commit('setUser', null)
@@ -179,75 +189,71 @@ export default {
       let friends = []
       let swappedPairsFriends = {}
       let notifications = []
-      // Fetch the user's ****EVENTS**** from Firebase and store it in the local store
-      // this.fetchUsersEvents ()
-      // firebase.database().ref('/users/' + getters.user.id + '/userEvents/').once('value')
-      // .then(data => {
-      //   const dataPairs = data.val()
-      //   for (let key in dataPairs) {
-      //     let eventId = dataPairs[key]
-      //     // console.log('dataPairs[key] dans les events du user', dataPairs[key]);
-      //     firebase.database().ref('/events/' + eventId).once('value').then(data =>{
-      //       const eventData = data.val()
-      //       // console.log('eventData', eventData);
-      //       const newEvent = {
-      //         event: eventData,
-      //         eventId: eventId
-      //       }
-      //       events.push(newEvent)
-      //     })
-      //     .catch(error => {
-      //       console.log(error);
-      //     }),
-      //     swappedPairsEvents[dataPairs[key]] = key
-      //   }
-      //   commit('setLoading', false)
-      // })
-      // .catch(error => {
-      //   console.log(error)
-      //   commit('setLoading', false)
-      // })
-      // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
-      firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
+      let userName
+      let imageUrl
+      // Get the userName and userImage, then the user's friends
+      firebase.database().ref('/users/' + getters.user.id).once('value')
       .then(data => {
-        const dataPairs = data.val()
-        for (let key in dataPairs) {
-          const userId = dataPairs[key]
-          // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
-          // I should check if it's updated when there is a change in the value of one of the friends data.
-          firebase.database().ref('/users/' + userId).once('value').then(data =>{
-            const friendData = data.val()
-            const newFriend = {
-              id: friendData.id,
-              imageUrl: friendData.imageUrl,
-              userName: friendData.userName
-            }
-            friends.push(newFriend)
-          })
-          .catch(error => {
-            console.log(error);
-          }),
-          swappedPairsFriends[dataPairs[key]] = key
+        const userData = data.val()
+        if (!getters.user.imageUrl) {
+          console.log('image prise est this.imageUrl = userData.imageUrl');
+          this.imageUrl = userData.imageUrl
         }
-        commit('setLoading', false)
-        // commit('setUser', updatedUser)
-      }).
-      catch(error => {
-        console.log(error)
-        commit('setLoading', false)
+        else {
+          console.log('image prise est this.imageUrl = getters.user.imageUrl');
+          this.imageUrl = getters.user.imageUrl
+        }
+
+        this.userName = userData.userName
+        console.log('this.imageUrl, this.userName', this.imageUrl , this.userName);
+      })
+      .then( _=>{
+        // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
+        firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
+        .then(data => {
+          const dataPairs = data.val()
+          for (let key in dataPairs) {
+            const userId = dataPairs[key]
+            // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
+            // I should check if it's updated when there is a change in the value of one of the friends data.
+            firebase.database().ref('/users/' + userId).once('value').then(data =>{
+              const friendData = data.val()
+              const newFriend = {
+                id: friendData.id,
+                imageUrl: friendData.imageUrl,
+                userName: friendData.userName
+              }
+              friends.push(newFriend)
+            })
+            .catch(error => {
+              console.log(error);
+            }),
+            swappedPairsFriends[dataPairs[key]] = key
+          }
+          commit('setLoading', false)
+          // commit('setUser', updatedUser)
+        }).
+        catch(error => {
+          console.log(error)
+          commit('setLoading', false)
+        })
+        // Once all the info fetched from events, friends and notifications, we can update the local store
+        const updatedUser = {
+          id: getters.user.id,
+          imageUrl: this.imageUrl,
+          userName: this.userName,
+          events: events,
+          friends: friends,
+          fbKeysEvents: swappedPairsEvents,
+          fbKeysFriends: swappedPairsFriends,
+          notifications: notifications
+        }
+        console.log('setUser dans fetchuserData');
+        commit('setUser', updatedUser)
       })
 
-      // Once all the info fetched from events, friends and notifications, we can update the local store
-      const updatedUser = {
-        id: getters.user.id,
-        events: events,
-        friends: friends,
-        fbKeysEvents: swappedPairsEvents,
-        fbKeysFriends: swappedPairsFriends,
-        notifications: notifications
-      }
-      console.log('updatedUser from fetch data', updatedUser);
-      commit('setUser', updatedUser)
+
+
     },
 
     fetchUsersEvents ({commit, getters}) {

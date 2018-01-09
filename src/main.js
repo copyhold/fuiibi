@@ -27,7 +27,8 @@ Vue.use(Vuetify, { theme: {
   warning: '#FFC107',
   grey: '#A8A8A8',
   primaryLight: '#009688',
-  orange: '#E65100'
+  orange: '#E65100',
+  white: '#FFFFFF'
 }})
 
 Vue.filter('date', DateFilter)
@@ -66,6 +67,7 @@ new Vue({
         this.$store.dispatch('fetchUserData')
         this.$store.dispatch('fetchUsersEvents')
         this.$store.dispatch('listenToNotifications')
+        console.log('user info from firebase', user)
         console.log('user info from main', this.$store.getters.user)
       }
     })

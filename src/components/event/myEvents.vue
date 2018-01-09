@@ -20,9 +20,13 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div>
-                        <v-btn flat :to="'/events/' + item.key" class="">
+                        <router-link :to="'/events/' + item.eventId">
+                          <h3 class="pl-2 eventName"> {{ item.event.title }}</h3>
+                        </router-link>
+
+                        <!-- <v-btn flat :to="'/events/' + item.key" class="">
                           <h3 class="primary--text mb0 mt0 pt0"> {{ item.event.title }}</h3>
-                        </v-btn>
+                        </v-btn> -->
                       </div>
                     </v-card-actions>
                   </v-card-title>
@@ -113,6 +117,9 @@
 </script>
 
 <style scoped>
+.application a {
+    text-decoration: none;
+}
 p {
   margin-bottom: 4px;
 }

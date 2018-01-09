@@ -71,7 +71,7 @@
     watch: {
       user (value) {
         if (value !== null && value !== undefined) {
-          this.$router.push('/')
+          this.$router.push('/notifications')
         }
       }
     },

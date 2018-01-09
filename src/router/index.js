@@ -18,11 +18,11 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    {
-      path: '/',
-      name: 'Notifications',
-      component: Notifications
-    },
+    // {
+    //   path: '/',
+    //   name: 'Notifications',
+    //   component: Notifications
+    // },
     {
       path: '/myEvents',
       name: 'My Events',

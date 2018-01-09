@@ -10,8 +10,10 @@
   <v-layout row>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
+        <v-card-title primary-title>
+          <h2>Signup</h2>
+        </v-card-title>
         <v-card-text>
-          <v-container>
             <form @submit.prevent="onSignup">
 
               <v-layout row>
@@ -37,13 +39,7 @@
 
               <v-layout row>
                 <v-flex xs12>
-                  <v-text-field
-                    name="confirmPassword"
-                    label="Confirm password" id="confirmPassword"
-                    v-model="confirmPassword"
-                    type="password"
-                    :rules="[comparePasswords]"
-                    >
+                  <v-text-field name="confirmPassword" label="Confirm password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]">
                   </v-text-field>
                 </v-flex>
               </v-layout>
@@ -51,12 +47,7 @@
               <v-layout row class="mb-2">
                 <v-flex xs12 sm6>
                   <v-btn raised class="primaryLight white--text" @click="onPickFile">Upload your profile's picture </v-btn>
-                  <input
-                  type="file"
-                  style="display: none"
-                  ref="fileInput"
-                  accept="image/*"
-                  @change="onFilePicked">
+                  <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
                 </v-flex>
               </v-layout>
 
@@ -78,14 +69,12 @@
               </v-layout>
 
             </form>
-          </v-container>
         </v-card-text>
       </v-card>
     </v-flex>
   </v-layout>
 </v-container>
 </template>
-
 
 <script>
   export default {
@@ -116,7 +105,8 @@
     watch: {
       user (value) {
         if (value !== null && value !== undefined) {
-          this.$router.push('/')
+          console.log('dans watch du signup avant le push')
+          this.$router.push('/notifications')
         }
       }
     },
@@ -157,6 +147,7 @@
 <style scoped>
     .container{
       margin-top: 0;
+      padding: 16px;
     }
     .profilePic{
       border-radius: 100px;

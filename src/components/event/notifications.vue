@@ -17,9 +17,14 @@
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
-                        <v-btn flat right :to="'/events/' + notification.key">
+                      <router-link :to="'/events/' + notification.key">
+                        <h3 class="pl-2"> {{ notification.event.title }}</h3>
+                      </router-link>
+
+
+                        <!-- <v-btn flat right :to="'/events/' + notification.key">
                           <h3 class="primary--text pl-2"> {{ notification.event.title }}</h3>
-                        </v-btn>
+                        </v-btn> -->
                         <p class="timer">35 min</p>
                     </v-card-actions>
                   </v-card-title>
@@ -85,6 +90,9 @@
 </script>
 
 <style scoped>
+.application a {
+    text-decoration: none;
+  }
   .timer{
     position: absolute;
     right: 200px;

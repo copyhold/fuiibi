@@ -1,54 +1,32 @@
-<template >
+<template lang="html">
   <v-container class="container">
-    <v-layout row>
+    <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular
-          indeterminate
-          color="red"
-          :witdh="7"
-          :size="40"
-          v-if="loading"
-          class="mt-5"
-          ></v-progress-circular>
+          <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-layout row wrap v-for="user in friends" :key="user.id" class="mb-1" v-if="!loading && user.id != loggedInUserId">
-      <v-flex xs12 sm12 md10 offset-md2>
-        <v-card height="120px">
-          <v-container fluid>
-            <v-layout col xs8>
-              <v-flex xs3 sm4 md4>
-                <v-card-media
-                :src="user.imageUrl"
-                height="100px"
-                style="background-color: white">
-                </v-card-media>
-              </v-flex>
-              <v-flex xs4 sm5 md5>
-                <v-layout row>
-                  <v-flex>
-                    <v-card-title primary-title >
-                      <v-card-actions wrap>
-                        <div>
-                          <v-btn flat :to="'/friends/' + user.id" class="">
-                            <h3 class="primary--text mb0 mt0 pt0"> {{ user.userName }}</h3>
-                          </v-btn>
-                        </div>
-                      </v-card-actions>
-                    </v-card-title>
-                  </v-flex>
-                </v-layout>
-                <v-layout>
-                  <v-flex v-if="!isFriend(user)">
-                    <v-btn class="info info--text" outline @click="sendFriendRequest(user.id)"><v-icon>add</v-icon>Add friend</v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-container>
+    <v-layout row wrap v-else>
+      <v-flex xs12>
+
+        <v-card>
+          <v-card-media :src="user.imageUrl" height="300px">
+          </v-card-media>
+          <v-card-title class="eventTitle">
+              <h2>{{ user.userName }}</h2>
+          </v-card-title>
+          <v-divider></v-divider>
+          <v-card-text>
+            <h3> some more info about the user</h3>
+          </v-card-text>
         </v-card>
+
       </v-flex>
     </v-layout>
+    <v-fab-transition >
+      <v-btn router to="/event/new" color="green" fixed bottom right fab class=" white--text">
+        <v-icon>edit</v-icon>
+      </v-btn>
+    </v-fab-transition>
   </v-container>
 
 </template>
@@ -67,9 +45,9 @@
       loading () {
         return this.$store.getters.loading
       },
-      loggedInUserId () {
+      user () {
         if (this.$store.getters.user) {
-          return this.$store.getters.user.id
+          return this.$store.getters.user
         }
       }
     },
