@@ -106,7 +106,7 @@
       user (value) {
         if (value !== null && value !== undefined) {
           console.log('dans watch du signup avant le push')
-          this.$router.push('/notifications')
+          this.$router.push('/welcome')
         }
       }
     },

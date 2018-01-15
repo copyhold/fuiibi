@@ -18,20 +18,18 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <router-link :to="'/events/' + notification.key">
-                        <h3 class="pl-2"> {{ notification.event.title }}</h3>
+                        <h3 class="pl-2 darkgray--text"> {{ notification.event.title }}</h3>
                       </router-link>
-
-
                         <!-- <v-btn flat right :to="'/events/' + notification.key">
                           <h3 class="primary--text pl-2"> {{ notification.event.title }}</h3>
                         </v-btn> -->
-                        <p class="timer">35 min</p>
+                        <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
                   </v-card-title>
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
-                    <p class="location">{{ notification.event.location }}</p>
+                    <p class="location">{{ notification.event.location.locality }}</p>
                     <p class="date">{{ notification.event.date | date}}</p>
                   </div>
                 </v-layout>
@@ -68,8 +66,6 @@
   export default {
     computed: {
       notifications () {
-        // console.log(this.$store.getters.user.notifications)
-        // return this.$store.getters.loadedMeetups
         return this.$store.getters.user.notifications
       },
       loading () {
@@ -77,6 +73,7 @@
       }
     },
     methods: {
+      /* eslint-disable */
       wasThere (eventId) {
         return this.$store.getters.user.events.findIndex(event => {
           return event.eventId === eventId
@@ -84,6 +81,18 @@
       },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', notification)
+      },
+      timeStamp (notification) {
+        let diff = Math.round(Math.abs(Date.now() + notification.event.dateToRank) / 60 / 1000)
+        if (diff < 60) {
+          return diff + 'min'
+        }
+        else if (diff >= 60 && diff <= 1440) {
+          return Math.round(diff / 60) + 'h'
+        }
+        else {
+          return Math.round(diff / 60 / 24) + 'd'
+        }
       }
     }
   }

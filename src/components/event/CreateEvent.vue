@@ -11,12 +11,6 @@
       <v-flex xs12>
         <form @submit.prevent="onCreateEvent">
 
-          <!-- <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
-              <h3>Event details</h3>
-            </v-flex>
-          </v-layout> -->
-
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
               <v-text-field name="title" label="Event Name" id="title" v-model="title" required>
@@ -48,11 +42,6 @@
           </v-layout>
 
           <v-divider></v-divider>
-          <!-- <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
-              <h3>When and where</h3>
-            </v-flex>
-          </v-layout> -->
 
           <v-layout row wrap>
             <v-flex xs12 sm12 offset-sm3>
@@ -73,12 +62,6 @@
                 </vue-google-autocomplete>
             </v-flex>
           </v-layout>
-
-          <!-- <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
-               <h3>Choose a date and time</h3>
-            </v-flex>
-          </v-layout> -->
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
@@ -231,7 +214,7 @@
           description: this.description,
           date: this.submittableDateTime,
           users: [],
-          duration: this.durationInput
+          duration: this.durationInput,
         }
         this.$store.dispatch('createEvent', eventData)
         // this.$store.dispatch('addNotifications', eventData)

@@ -5,53 +5,47 @@
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-layout row wrap v-for="user in friends" :key="user.id" class="mb-1" v-if="!loading && user.id != loggedInUserId">
-      <v-flex xs12 sm12 md12>
-        <v-card height="120px">
-          <v-container fluid>
-            <v-layout col xs12>
-              <v-flex xs3 sm2 md2>
-                <v-card-media :src="user.imageUrl" height="100px" style="background-color: white, border-radius: 50px"></v-card-media>
-              </v-flex>
-              <v-flex xs7 sm6 md6 class="ml-3">
-                <v-card-title primary-title >
-                  <v-card-actions wrap>
-                    <div>
-                      <v-btn flat :to="'/friends/' + user.id" class="">
-                        <h3 class="primary--text mb0 mt0 pt0"> {{ user.userName }}</h3>
-                      </v-btn>
-                    </div>
-                  </v-card-actions>
-                </v-card-title>
-                <!-- <v-card-actions>
-                  <v-btn flat :to="'/meetups/' + meetup.id">
-                    <v-icon left light>arrow_forward</v-icon>
-                    View Meetup</v-btn>
-                </v-card-actions> -->
-              </v-flex>
-              <v-flex xs2 sm4 md4>
-                <v-btn class="error white--text hidden-sm-and-up" fab small dark center @click="removeFriend(user.id)" alert >
-                  <v-icon>close</v-icon>
-                </v-btn>
-                <v-btn class="info white--text hidden-sm-and-up" fab small dark center @click="messageFriend(user.id)">
-                  <v-icon>message</v-icon>
-                </v-btn>
-                <v-btn class="info info--text hidden-xs-only" center @click="messageFriend(user.id)" alert outline>
-                  <v-icon class="mr-2">message</v-icon>
-                  Message
-                </v-btn>
-                <v-btn class="error error--text hidden-xs-only"  center outline @click="removeFriend(user.id)" alert>
-                  <v-icon class="mr-2">close</v-icon>
-                  Remove
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-flex>
-    </v-layout>
+    <v-list subheader>
+          <v-subheader>Pending friends request</v-subheader>
+          <template v-for="user in pendingFriends" >
+            <v-divider></v-divider>
+            <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+              <v-list-tile-avatar>
+                <img :src="user.imageUrl"/>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <span>Accept</span>
+                <v-icon class="green">add</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+          </template>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list subheader>
+          <v-subheader>My Friends</v-subheader>
+          <template v-for="user in friends" >
+            <v-divider></v-divider>
+            <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+              <v-list-tile-avatar>
+                <img :src="user.imageUrl"/>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn outline small class="red--text"><v-icon class="mr-1">close</v-icon>Remove</v-btn>
+
+                <!-- <span class="hidden-xs-only">Remove</span>
+                <v-icon class="error white--text mt-2">close</v-icon> -->
+              </v-list-tile-action>
+            </v-list-tile>
+          </template>
+      </v-list>
     <v-fab-transition >
-      <v-btn router to="/event/new" color="green" fixed bottom right fab class=" white--text">
+      <v-btn router to="/search" color="green" fixed bottom right fab class=" white--text">
         <v-icon>search</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -72,6 +66,14 @@
           if (this.$store.getters.user.friends.length > 0) {
             return this.$store.getters.user.friends
           }
+        }
+      },
+      pendingFriends () {
+        if (this.$store.getters.user) {
+          // if (this.$store.getters.user.pendingFriends.length > 0) {
+          //   return this.$store.getters.user.pendingFriends
+          // }
+          console.log('pendingFriends () {if (this.$store.getters.user) {')
         }
       },
       loading () {

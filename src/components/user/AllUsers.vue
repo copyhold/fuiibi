@@ -5,43 +5,31 @@
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-layout row wrap v-for="user in friends" :key="user.id" class="mb-1" v-if="!loading && user.id != loggedInUserId">
-      <v-flex xs12 sm12 md10 offset-md2>
-        <v-card height="120px">
-          <v-container fluid>
-            <v-layout col xs8>
-              <v-flex xs3 sm4 md4>
-                <v-card-media
-                :src="user.imageUrl"
-                height="100px"
-                style="background-color: white">
-                </v-card-media>
-              </v-flex>
-              <v-flex xs4 sm5 md5>
-                <v-layout row>
-                  <v-flex>
-                    <v-card-title primary-title >
-                      <v-card-actions wrap>
-                        <div>
-                          <v-btn flat :to="'/friends/' + user.id" class="">
-                            <h3 class="primary--text mb0 mt0 pt0"> {{ user.userName }}</h3>
-                          </v-btn>
-                        </div>
-                      </v-card-actions>
-                    </v-card-title>
-                  </v-flex>
-                </v-layout>
-                <v-layout>
-                  <v-flex v-if="!isFriend(user)">
-                    <v-btn class="info info--text" outline @click="sendFriendRequest(user.id)"><v-icon>add</v-icon>Add friend</v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-container>
-        </v-card>
-      </v-flex>
-    </v-layout>
+
+    <v-list subheader>
+        <v-subheader>All users</v-subheader>
+        <template v-for="user in users" >
+          <v-divider></v-divider>
+          <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+            <v-list-tile-avatar>
+              <img :src="user.imageUrl"/>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action v-if="!isFriend(user)">
+              <!-- <span class="hidden-xs-only">Add friend</span> -->
+              <v-btn @click="sendFriendRequest(user.id)" outline small class="green--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
+              <!-- <v-icon class="green white--text mt-2" @click="sendFriendRequest(user.id)">add</v-icon> -->
+            </v-list-tile-action>
+            <v-list-tile-action v-else>
+              <!-- <span class="hidden-xs-only">Add friend</span> -->
+              <v-btn @click="sendFriendRequest(user.id)" outline small class="red--text"><v-icon class="mr-1">close</v-icon>Remove</v-btn>
+              <!-- <v-icon class="green white--text mt-2" @click="sendFriendRequest(user.id)">add</v-icon> -->
+            </v-list-tile-action>
+          </v-list-tile>
+        </template>
+    </v-list>
   </v-container>
 
 </template>
@@ -54,7 +42,7 @@
       }
     },
     computed: {
-      friends () {
+      users () {
         return this.$store.getters.users
       },
       loading () {

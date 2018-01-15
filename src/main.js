@@ -16,9 +16,18 @@ import EditMeetupDateDialog from './components/event/Edit/EditMeetupDateDialog.v
 import RegisterDialog from './components/event/Registration/RegisterDialog.vue'
 import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
+import AllUsers from './components/user/AllUsers.vue'
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+  .then(function () {
+    console.log('serviceWorker registered')
+  })
+}
 
 Vue.use(Vuetify, { theme: {
-  primary: '#006064',
+  // primary: '#006064',
+  primary: '#1A237E',
   secondary: '#424242',
   accent: '#82B1FF',
   error: '#FF5252',
@@ -26,7 +35,9 @@ Vue.use(Vuetify, { theme: {
   success: '#4CAF50',
   warning: '#FFC107',
   grey: '#A8A8A8',
-  primaryLight: '#009688',
+  darkgray: '#424242',
+  // primaryLight: '#009688',
+  primaryLight: '#3F51B5',
   orange: '#E65100',
   white: '#FFFFFF'
 }})
@@ -40,6 +51,7 @@ Vue.component('app-alert', AlertCmp)
 Vue.component('app-meetup-register-dialog', RegisterDialog)
 Vue.component('app-event-addpicture-dialog', AddPictureDialog)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
+Vue.component('all-users', AllUsers)
 
 Vue.config.productionTip = false
 

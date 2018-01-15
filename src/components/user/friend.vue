@@ -17,9 +17,7 @@
           <v-card-title>
             <h2 class="primary--text">{{ user.userName }}</h2>
           </v-card-title>
-          <v-card-media
-          :src="user.imageUrl"
-          height="400px">
+          <v-card-media :src="user.imageUrl" height="400px">
           </v-card-media>
           <v-card-actions>
             <v-spacer></v-spacer>

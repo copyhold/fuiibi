@@ -18,9 +18,10 @@ export default {
       })
     },
     addEventToMyEvents (state, payload) {
+      console.log('addEventToMyEvents dans mutation', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        return eventA.event.date > eventB.event.date
+        return eventA.event.date < eventB.event.date
       })
     },
     setLoadedUsers (state, payload) {
@@ -44,27 +45,27 @@ export default {
     setUser (state, payload) {
       state.user = payload
       console.log('payload of the state.user in the setUser', payload);
-    },
-    registerUserForMeetup(state, payload) {
-      // I can easily get the id as it has been passed in the actions to the mutations - commit('registerUserForMeetup', {id: payload, fbKey: data.key})
-      const id = payload.id
-      // Double check if this user is already registered to this meetup, in case that he is already registered, nothing should happen
-      if(state.user.registeredMeetups.findIndex(meetup => meetup.id === id) >= 0) {
-        return
-      }
-      state.user.registeredMeetups.push(id)
-      // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-      state.user.fbKeys[id] = payload.fbKey
-    },
-    unregisterUserFromMeetup(state, payload) {
-      const registeredMeetups = state.user.registeredMeetups
-      // Below we check if we can find the meetup for which the user wants to unregister. We check in the list of events of the user if we can find it
-      // With the splice, we get back a numer of element, here only the meetup.id that the user want to unregister from
-      registeredMeetups.splice(registeredMeetups.findIndex(meetup => meetup.id === payload), 1)
-      // To erase this meetup from the list in the store, we need to use the reflect.deleteProperty from JS,
-      // passing where? state.user.fbKeys and what? the payload as it's the meetup.id
-      Reflect.deleteProperty(state.user.fbKeys, payload)
     }
+    // registerUserForMeetup(state, payload) {
+    //   // I can easily get the id as it has been passed in the actions to the mutations - commit('registerUserForMeetup', {id: payload, fbKey: data.key})
+    //   const id = payload.id
+    //   // Double check if this user is already registered to this meetup, in case that he is already registered, nothing should happen
+    //   if(state.user.registeredMeetups.findIndex(meetup => meetup.id === id) >= 0) {
+    //     return
+    //   }
+    //   state.user.registeredMeetups.push(id)
+    //   // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
+    //   state.user.fbKeys[id] = payload.fbKey
+    // },
+    // unregisterUserFromMeetup(state, payload) {
+    //   const registeredMeetups = state.user.registeredMeetups
+    //   // Below we check if we can find the meetup for which the user wants to unregister. We check in the list of events of the user if we can find it
+    //   // With the splice, we get back a numer of element, here only the meetup.id that the user want to unregister from
+    //   registeredMeetups.splice(registeredMeetups.findIndex(meetup => meetup.id === payload), 1)
+    //   // To erase this meetup from the list in the store, we need to use the reflect.deleteProperty from JS,
+    //   // passing where? state.user.fbKeys and what? the payload as it's the meetup.id
+    //   Reflect.deleteProperty(state.user.fbKeys, payload)
+    // }
   },
   actions: {
 
@@ -191,6 +192,7 @@ export default {
       let notifications = []
       let userName
       let imageUrl
+      let pendingFriends = []
       // Get the userName and userImage, then the user's friends
       firebase.database().ref('/users/' + getters.user.id).once('value')
       .then(data => {
@@ -203,7 +205,6 @@ export default {
           console.log('image prise est this.imageUrl = getters.user.imageUrl');
           this.imageUrl = getters.user.imageUrl
         }
-
         this.userName = userData.userName
         console.log('this.imageUrl, this.userName', this.imageUrl , this.userName);
       })
@@ -238,6 +239,54 @@ export default {
           commit('setLoading', false)
         })
         // Once all the info fetched from events, friends and notifications, we can update the local store
+        // const updatedUser = {
+        //   id: getters.user.id,
+        //   imageUrl: this.imageUrl,
+        //   userName: this.userName,
+        //   events: events,
+        //   friends: friends,
+        //   fbKeysEvents: swappedPairsEvents,
+        //   fbKeysFriends: swappedPairsFriends,
+        //   notifications: notifications,
+        //   pendingFriends: pendingFriends
+        // }
+        // console.log('setUser dans fetchuserData');
+        // commit('setUser', updatedUser)
+      })
+
+
+
+      .then( _=>{
+        // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
+        firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').once('value')
+        .then(data => {
+          const dataPairs = data.val()
+          for (let key in dataPairs) {
+            const userId = dataPairs[key]
+            // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
+            // I should check if it's updated when there is a change in the value of one of the friends data.
+            firebase.database().ref('/users/' + userId).once('value').then(data =>{
+              const friendData = data.val()
+              const newFriend = {
+                id: friendData.id,
+                imageUrl: friendData.imageUrl,
+                userName: friendData.userName
+              }
+              pendingFriends.push(newFriend)
+            })
+            .catch(error => {
+              console.log(error);
+            }),
+            swappedPairsFriends[dataPairs[key]] = key
+          }
+          commit('setLoading', false)
+          // commit('setUser', updatedUser)
+        }).
+        catch(error => {
+          console.log(error)
+          commit('setLoading', false)
+        })
+        // Once all the info fetched from events, friends and notifications, we can update the local store
         const updatedUser = {
           id: getters.user.id,
           imageUrl: this.imageUrl,
@@ -246,19 +295,17 @@ export default {
           friends: friends,
           fbKeysEvents: swappedPairsEvents,
           fbKeysFriends: swappedPairsFriends,
-          notifications: notifications
+          notifications: notifications,
+          pendingFriends: pendingFriends
         }
         console.log('setUser dans fetchuserData');
         commit('setUser', updatedUser)
       })
-
-
-
     },
 
     fetchUsersEvents ({commit, getters}) {
       commit('setLoading', true)
-      firebase.database().ref('/users/' + getters.user.id + '/userEvents/').on('child_added', data => {
+      firebase.database().ref('/users/' + getters.user.id + '/userEvents/').orderByChild("dateToRank").on('child_added', data => {
         // console.log('data dans fetchUsersEvents', data.val())
         const eventId = data.val()
           firebase.database().ref('/events/' + eventId).once('value').then(data =>{
@@ -268,6 +315,7 @@ export default {
               eventId: eventId
             }
             if (newEvent.event.imageUrl) {
+              console.log('addEventToMyEvents dans fetchUsersEvents', newEvent);
               commit('addEventToMyEvents', newEvent)
             }
             commit('setLoading', false)

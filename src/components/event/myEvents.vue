@@ -54,7 +54,7 @@
       </v-flex>
     </v-layout>
     <v-fab-transition >
-      <v-btn router to="/meetup/new" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn router to="/event/new" color="orange" fixed bottom right fab class=" white--text">
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>

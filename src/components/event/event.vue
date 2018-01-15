@@ -15,8 +15,8 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <h3>{{ event.event.location }}</h3>
-            <h3>{{ event.event.date | date }}</h3>
+            <h3><v-icon class="mr-2">place</v-icon>{{ event.event.location.route }} {{ event.event.location.street_number }}, {{ event.event.location.locality }} - {{ event.event.location.country }}</h3>
+            <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
             <div >
               {{ event.event.description }}
             </div>
@@ -31,8 +31,6 @@
             <v-layout row wrap>
               <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id">
                 <v-card flat tile>
-                  <!-- <v-card-media :src="`https://unsplash.it/150/300?image=${Math.floor(Math.random() * 100) + 1}`" height="150px">
-                  </v-card-media> -->
                   <v-card-media :src="pic.imageUrl" height="150px">
                   </v-card-media>
                 </v-card>
@@ -161,7 +159,7 @@ export default {
     text-align: center;
     color: white;
     position: absolute;
-    bottom: 100px;
+    bottom: 142px;
     font-size: 20px;
     font-weight: 200;
   }

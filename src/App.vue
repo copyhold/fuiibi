@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-toolbar class="primary" dark scroll-off-screen fixed >
+    <v-toolbar class="primary" dark fixed app>
       <v-toolbar-side-icon @click="sideNav = !sideNav">
       </v-toolbar-side-icon>
       <v-toolbar-title right>
@@ -68,7 +68,7 @@
         ]
         if (this.userIsAuthenticated) {
           sideMenu = [
-            // {icon: 'person', title: 'Profile', link: '/profile'},
+            {icon: 'person', title: 'My profile', link: '/profile'},
             {icon: 'settings', title: 'Settings', link: '/settings'}
           ]
         }
@@ -83,8 +83,7 @@
           menuItems = [
             {icon: 'home', title: 'Home', link: '/notifications'},
             {icon: 'supervisor_account', title: 'My friends', link: '/friends'},
-            {icon: 'list', title: 'My events', link: '/myEvents'},
-            {icon: 'person', title: 'My profile', link: '/profile'}
+            {icon: 'list', title: 'My events', link: '/myEvents'}
           ]
         }
         return menuItems

@@ -147,7 +147,8 @@ export default {
         description: payload.description,
         date: payload.date.toISOString(),
         creatorId: getters.user.id,
-        creationDate: new Date()
+        creationDate: Date(),
+        dateToRank: - Date.now()
       }
       console.log('event obj in the createEvent', eventData);
       let imageUrl
@@ -164,7 +165,13 @@ export default {
           console.log(error);
         })
         // Then I push the userId in the users array of the event
-        firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
+        firebase.database().ref('events/' + key + '/users/').push(getters.user.id).then(() => {
+          firebase.database().ref('events/' + key + '/users/').once('value')
+          .then(data => {
+            this.users = data.val()
+            console.log('data.val() dans create new event', this.users);
+          })
+        })
         .catch((error) => {
           console.log(error);
         })
@@ -188,7 +195,9 @@ export default {
           date: payload.date.toISOString(),
           creatorId: getters.user.id,
           creationDate: new Date(),
-          imageUrl: imageUrl
+          imageUrl: imageUrl,
+          users: this.users,
+          dateToRank: - Date.now()
         }
         console.log('this.key', this.key);
         console.log('key', key);
@@ -197,7 +206,7 @@ export default {
           event: newEvent,
           eventId: key
         }
-
+        console.log('addEventToMyEvents dans create event', newEventObj);
         commit('addEventToMyEvents', newEventObj)
 
         // I get the friend's list of the user in order to send them notifications

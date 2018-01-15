@@ -13,11 +13,23 @@ import AuthGard from './auth-guard'
 import friends from '@/components/user/friends'
 import friend from '@/components/user/friend'
 import Notifications from '@/components/event/notifications'
+import Welcome from '@/components/Welcome'
+import Search from '@/components/user/search'
 
 Vue.use(Router)
 
 export default new Router({
   routes: [
+    {
+      path: '/welcome',
+      name: 'Welcome',
+      component: Welcome
+    },
+    {
+      path: '/search',
+      name: 'Search',
+      component: Search
+    },
     // {
     //   path: '/',
     //   name: 'Notifications',
