@@ -17,6 +17,9 @@ import RegisterDialog from './components/event/Registration/RegisterDialog.vue'
 import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
+import FriendsOnly from './components/user/friendsOnly.vue'
+import Router from 'vue-router'
+import { routerHistory, writeHistory } from 'vue-router-back-button'
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
@@ -24,6 +27,11 @@ if ('serviceWorker' in navigator) {
     console.log('serviceWorker registered')
   })
 }
+
+Vue.use(Router)
+Vue.use(routerHistory)
+
+router.afterEach(writeHistory)
 
 Vue.use(Vuetify, { theme: {
   // primary: '#006064',
@@ -52,6 +60,7 @@ Vue.component('app-meetup-register-dialog', RegisterDialog)
 Vue.component('app-event-addpicture-dialog', AddPictureDialog)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
+Vue.component('friends-only', FriendsOnly)
 
 Vue.config.productionTip = false
 

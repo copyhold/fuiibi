@@ -1,33 +1,31 @@
 <template>
   <v-container>
+    <router-link
+        v-if="$routerHistory.hasHistory()"
+        :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        >
+        <v-icon class="white--text">arrow_back</v-icon>
+    </router-link>
     <v-layout id="inputSearch" >
-      <!-- <v-flex wrap xs11>
-        <input type="text" name="" value="" autofocus="autofocus">
-      </v-flex>
-      <v-flex wrap xs1>
-        <v-icon right>search</v-icon>
-      </v-flex> -->
-
-      <v-text-field solo label="Search" prepend-icon="search" append-icon="close"></v-text-field>
-
-
+      <v-text-field solo label="Search" append-icon="search" class="ml-5" v-model="search"></v-text-field>
     </v-layout>
     <v-tabs fixed centered>
       <v-tabs-bar color="primary--text">
         <v-tabs-slider color="primary"></v-tabs-slider>
-        <v-tabs-item :href="'#friends'">
+        <v-tabs-item :href="'#allUsers'">
           App users
         </v-tabs-item>
-        <v-tabs-item :href="'#allUsers'">
+        <v-tabs-item :href="'#friends'">
           My friends
         </v-tabs-item>
       </v-tabs-bar>
       <v-tabs-items>
         <v-tabs-content :id="'friends'">
-          <all-users></all-users>
+          <friends-only :search="search"></friends-only>
         </v-tabs-content>
         <v-tabs-content :id="'allUsers'">
-          <all-users></all-users>
+          <all-users :search="search"></all-users>
         </v-tabs-content>
       </v-tabs-items>
     </v-tabs>
@@ -35,17 +33,29 @@
 </template>
 
 <script>
-  // export default {
-  //   data () {
-  //     return {
-  //       tabs: ['My friends', 'All users'],
-  //       contents: [`${<all-users></all-users>}`, `${<all-users></all-users>}`]
-  //     }
-  //   }
-  // }
+  export default {
+    data () {
+      return {
+        search: ''
+      }
+    },
+    computed: {
+      // filteredUsers () {
+      //   return this.users.filter((user) => {
+      //     return user.userName.match(this.search)
+      //   })
+      // }
+    }
+  }
 </script>
 
 <style scoped>
+.arrowBack {
+  position: fixed;
+  top: 68px;
+  left: 24px;
+  z-index: 3;
+  }
   #inputSearch {
     position: fixed;
     top: 50px;

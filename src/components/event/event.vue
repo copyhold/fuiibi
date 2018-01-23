@@ -1,5 +1,12 @@
 <template lang="html">
   <v-container class="container">
+    <router-link
+        v-if="$routerHistory.hasHistory()"
+        :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        >
+        <v-icon class="white--text">arrow_back</v-icon>
+    </router-link>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
@@ -8,17 +15,27 @@
     <v-layout row wrap v-else>
       <v-flex xs12>
         <v-card>
-          <v-card-media :src="event.event.imageUrl" height="300px">
+          <v-card-media :src="event.event.imageUrl" height="200px">
           </v-card-media>
           <v-card-title class="eventTitle">
               <h2>{{ event.event.title }}</h2>
           </v-card-title>
-          <v-divider></v-divider>
           <v-card-text>
-            <h3><v-icon class="mr-2">place</v-icon>{{ event.event.location.route }} {{ event.event.location.street_number }}, {{ event.event.location.locality }} - {{ event.event.location.country }}</h3>
-            <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
+            <h3 class="mb-2"><v-icon class="mr-2">place</v-icon>
+              {{ event.event.location.route }}
+              {{ event.event.location.street_number }},
+              {{ event.event.location.locality }} - {{ event.event.location.country }}</h3>
+              <v-divider></v-divider>
+
+            <p class="mt-2"><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
             <div >
               {{ event.event.description }}
+            </div>
+            <div v-if="eventLenght > 1">
+              <b>{{ eventLenght }}</b> users were there
+            </div>
+            <div v-else>
+              <b>{{ eventLenght }}</b> user was there
             </div>
           </v-card-text>
         </v-card>
@@ -42,7 +59,7 @@
     </v-layout>
     <v-layout row class="mb-2" justify-center fluid>
       <v-flex xs12>
-          <v-btn bottom fixed large class="primary fullScreen" @click="onPickFile"  @click.native.stop="dialog = true">Add a picture</v-btn>
+          <v-btn bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
           <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
           <v-dialog v-model="dialog" max-width="310">
             <v-card>
@@ -89,9 +106,15 @@ export default {
     event () {
       return this.$store.getters.getEventData(this.id)
     },
-    galery () {
-      return this.$store.getters.getGalery()
+    eventLenght () {
+      console.log(this.event)
+      console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
+      console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
+      return this.event.event.users.__ob__.dep.subs.length
     },
+    // galery () {
+    //   return this.$store.getters.getGalery()
+    // },
     // userIsAuthenticated () {
     //   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     // },
@@ -159,7 +182,7 @@ export default {
     text-align: center;
     color: white;
     position: absolute;
-    bottom: 142px;
+    bottom: 180px;
     font-size: 20px;
     font-weight: 200;
   }
@@ -169,6 +192,12 @@ export default {
     }
     .fullScreen {
       width: 100vw;
+    }
+    .arrowBack {
+      position: fixed;
+      top: 64px;
+      left: 24px;
+      z-index: 3;
     }
   }
 

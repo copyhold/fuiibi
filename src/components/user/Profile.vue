@@ -1,5 +1,12 @@
 <template lang="html">
   <v-container class="container">
+    <router-link
+        v-if="$routerHistory.hasHistory()"
+        :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        >
+        <v-icon class="white--text">arrow_back</v-icon>
+    </router-link>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
@@ -79,5 +86,11 @@
   .btn__content {
     justify-content: flex-start;
 
+  }
+  .arrowBack {
+    position: fixed;
+    top: 64px;
+    left: 24px;
+    z-index: 3;
   }
 </style>

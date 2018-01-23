@@ -44,7 +44,7 @@
         <v-stepper-content step="3">
           <v-card color="grey lighten-3" class="mb-5" height="300px">Time to look for friends! Let's search for them!</v-card>
           <v-btn color="info" @click.native="e1 = 2" flat><v-icon></v-icon>Back</v-btn>
-          <v-btn color="primary" @click.native="e1 = 1" :to="'/search'">Finish</v-btn>
+          <v-btn @click.native="addProfilePicture" color="primary" :to="'/search'" >Finish</v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -60,18 +60,23 @@
       return {
         welcome: true,
         e1: 0,
-        imageUrl: ''
+        imageUrl: '',
+        image: ''
       }
     },
     computed: {
-      meetups () {
-        return this.$store.getters.loadedMeetups
-      },
+      // meetups () {
+      //   return this.$store.getters.loadedMeetups
+      // },
       loading () {
         return this.$store.getters.loading
       }
     },
     methods: {
+      addProfilePicture () {
+        console.log('addProfilePicture clicked')
+        this.$store.dispatch('addProfilePicture', {image: this.image})
+      },
       onPickFile () {
         this.$refs.fileInput.click()
       },

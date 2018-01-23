@@ -7,6 +7,14 @@ export default {
     users: []
   },
   mutations: {
+    addProfilePicture (state, payload) {
+      const user = payload.user
+      console.log('[addProfilePicture] user', user);
+      console.log('[addProfilePicture] imageUrl', payload.imageUrl);
+      if (payload.imageUrl) {
+        user.imageUrl = payload.imageUrl
+      }
+    },
     createEvent (state, payload) {
       console.log('je cherche le user dans createEvent', state.user)
       state.user.events.push(payload)
@@ -18,10 +26,10 @@ export default {
       })
     },
     addEventToMyEvents (state, payload) {
-      console.log('addEventToMyEvents dans mutation', payload);
+      // console.log('addEventToMyEvents dans mutation', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        return eventA.event.date < eventB.event.date
+        return eventA.event.dateToRank > eventB.event.dateToRank
       })
     },
     setLoadedUsers (state, payload) {
@@ -46,26 +54,6 @@ export default {
       state.user = payload
       console.log('payload of the state.user in the setUser', payload);
     }
-    // registerUserForMeetup(state, payload) {
-    //   // I can easily get the id as it has been passed in the actions to the mutations - commit('registerUserForMeetup', {id: payload, fbKey: data.key})
-    //   const id = payload.id
-    //   // Double check if this user is already registered to this meetup, in case that he is already registered, nothing should happen
-    //   if(state.user.registeredMeetups.findIndex(meetup => meetup.id === id) >= 0) {
-    //     return
-    //   }
-    //   state.user.registeredMeetups.push(id)
-    //   // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-    //   state.user.fbKeys[id] = payload.fbKey
-    // },
-    // unregisterUserFromMeetup(state, payload) {
-    //   const registeredMeetups = state.user.registeredMeetups
-    //   // Below we check if we can find the meetup for which the user wants to unregister. We check in the list of events of the user if we can find it
-    //   // With the splice, we get back a numer of element, here only the meetup.id that the user want to unregister from
-    //   registeredMeetups.splice(registeredMeetups.findIndex(meetup => meetup.id === payload), 1)
-    //   // To erase this meetup from the list in the store, we need to use the reflect.deleteProperty from JS,
-    //   // passing where? state.user.fbKeys and what? the payload as it's the meetup.id
-    //   Reflect.deleteProperty(state.user.fbKeys, payload)
-    // }
   },
   actions: {
 
@@ -87,37 +75,40 @@ export default {
             notifications: [],
             events: [],
             friends: [],
-            fbKeys: {}
+            fbKeys: {},
+            //*********************************************************
+            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/users%2FprofileImgLight.png?alt=media&token=309dd6f9-9def-450d-bf45-65f9b3de860a'
           }
+          console.log('[signUserUp] setUser - newUser', newUser);
           commit('setUser', newUser)
-
-          let imageUrl
-          let key
+          //*************************************************
+          // let imageUrl
+          // let key
           let id = user.uid
           // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
           firebase.database().ref('users/' + id).set(newUser)
-          // We store the profile image of the user in FB storage.
-          const filename = payload.image.name
-          const ext = filename.slice(filename.lastIndexOf('.'))
-          return firebase.storage().ref('users/' + id + '.' + ext).put(payload.image)
-          .then(fileData => {
-            imageUrl = fileData.metadata.downloadURLs[0]
-            // to reach the specific item under the user id in the users array:
-            // I can change any value with the update as below
-            return firebase.database().ref('users').child(id).update({imageUrl: imageUrl})
-          }).then(() => {
-            // here we commit that to my local store
-            console.log('setUser dans signUserUp');
-
-            commit('setUser', {
-              ...newUser,
-              imageUrl: imageUrl,
-              id: id
-            })
-          })
-          .catch((error) => {
-            console.log(error);
-          })
+          // // We store the profile image of the user in FB storage.
+          // const filename = payload.image.name
+          // const ext = filename.slice(filename.lastIndexOf('.'))
+          // return firebase.storage().ref('users/' + id + '.' + ext).put(payload.image)
+          // .then(fileData => {
+          //   imageUrl = fileData.metadata.downloadURLs[0]
+          //   // to reach the specific item under the user id in the users array:
+          //   // I can change any value with the update as below
+          //   return firebase.database().ref('users').child(id).update({imageUrl: imageUrl})
+          // }).then(() => {
+          //   // here we commit that to my local store
+          //   console.log('setUser dans signUserUp');
+          //   commit('setLoading', false)
+          //   commit('setUser', {
+          //     ...newUser,
+          //     imageUrl: imageUrl,
+          //     id: id
+          //   })
+          // })
+          // // .catch((error) => {
+          // //   console.log(error);
+          // // })
         }
       )
       .catch(
@@ -129,6 +120,41 @@ export default {
         }
       )
     },
+
+    //*****************************************************
+    addProfilePicture ({commit, getters}, payload) {
+      let user = getters.user
+      console.log("user in addProfilePicture", user);
+      let imageUrl
+      // We store the profile image of the user in FB storage.
+      const filename = payload.image.name
+      const ext = filename.slice(filename.lastIndexOf('.'))
+      return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
+      .then(fileData => {
+        imageUrl = fileData.metadata.downloadURLs[0]
+        // to reach the specific item under the user id in the users array:
+        // I can change any value with the update as below
+        return firebase.database().ref('users').child(user.id).update({imageUrl: imageUrl})
+      }).then(() => {
+        // here we commit that to my local store
+        console.log('setUser dans addProfilePicture');
+        commit('setLoading', false)
+        commit('addProfilePicture', {
+          imageUrl: imageUrl,
+          user: user
+        })
+      })
+      .catch(
+        error => {
+          //Here we got an error, so we are not loading anymore and we change the status of setLoading
+          commit('setLoading', false)
+          commit('setError', error)
+          console.log(error);
+        }
+      )
+    },
+    //******************************************************
+
 
     signUserIn ({commit}, payload) {
       //As we are doing a request to the web, we change the status of loading to true.
@@ -253,9 +279,6 @@ export default {
         // console.log('setUser dans fetchuserData');
         // commit('setUser', updatedUser)
       })
-
-
-
       .then( _=>{
         // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
         firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').once('value')
@@ -315,7 +338,7 @@ export default {
               eventId: eventId
             }
             if (newEvent.event.imageUrl) {
-              console.log('addEventToMyEvents dans fetchUsersEvents', newEvent);
+              // console.log('addEventToMyEvents dans fetchUsersEvents', newEvent);
               commit('addEventToMyEvents', newEvent)
             }
             commit('setLoading', false)
@@ -457,71 +480,3 @@ export default {
     }
   }
 }
-
-// Fetch the user's *****NOTIFICATIONS**** from Firebase and store it in the local store
-// firebase.database().ref('/users/' + getters.user.id + '/notifications/').once('value')
-// .then(data => {
-//   console.log('dans les notifications');
-//   const notifObj = data.val()
-//
-//   for (let key in notifObj) {
-//     firebase.database().ref('/events/' + key).once('value')
-//     .then(data => {
-//       // console.log('events trouvés', data.val());
-//       const event = data.val()
-//       return event
-//     })
-//     .then(event => {
-//       firebase.database().ref('/users/' + getters.user.id + '/notifications/' + key).on('value', data => {
-//         const userList = data.val()
-//         let counter = -1
-//         for (let user in userList) {
-//           counter++
-//         }
-//         // We update the counter on the number of object (userId) found in this notification
-//         firebase.database().ref('/users/' + getters.user.id + '/notifications/' + key + '/counter').set(counter)
-//         const notification = {
-//           event: event,
-//           counter: counter,
-//           key: key
-//         }
-//         notifications.push(notification)
-//         console.log('counter', counter);
-//         counter = -1
-//       })
-//     })
-//     .catch(error => {
-//       console.log(error)
-//       commit('setLoading', false)
-//     })
-//     const eventId = notifObj[key]
-//     // console.log('eventId quand je cherche les notifications', eventId);
-//   }
-//   commit('setLoading', false)
-//   // commit('setUser', updatedUser)
-// })
-// .catch(error => {
-//   console.log(error)
-//   commit('setLoading', false)
-// })
-
-
-
-
-
-
-
-
-// ***************NOT SURE IT WORKS BELOW!!!!!! **************************
-// BUT NOT SURE IT'S AN ISSUE AS THE WHEN USER LOGGIN, IT FETCH THE DATA AS FRIENDS AND EVENTS...
-// THAT'S WHY I BLINDED IT AND REMOVE THE MUTATION UPDATE FROM THE ACTIONS
-
-// addUserToFriend(state, payload) {
-//   const id = payload
-//   if(state.user.friends.findIndex(user => user.id === id) >= 0) {
-//     return
-//   }
-//   state.user.friends.push(id)
-//   // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-//   state.user.fbKeys[id] = payload.fbKey
-// },

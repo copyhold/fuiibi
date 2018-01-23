@@ -20,9 +20,6 @@
                       <router-link :to="'/events/' + notification.key">
                         <h3 class="pl-2 darkgray--text"> {{ notification.event.title }}</h3>
                       </router-link>
-                        <!-- <v-btn flat right :to="'/events/' + notification.key">
-                          <h3 class="primary--text pl-2"> {{ notification.event.title }}</h3>
-                        </v-btn> -->
                         <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
                   </v-card-title>
@@ -35,7 +32,7 @@
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
-                    <p>{{ notification.counter }} friends were there!</p>
+                    <p>{{ myFriends(notification) }} friends were there!</p>
                   </div>
                 </v-layout>
               </v-flex>
@@ -59,7 +56,6 @@
       </v-btn>
     </v-fab-transition>
   </v-container>
-
 </template>
 
 <script>
@@ -81,6 +77,23 @@
       },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', notification)
+      },
+      myFriends (notification) {
+        // var counter = 0
+        // var friends = this.$store.getters.user.friends
+        // var eventUsers = notification.event.users
+        // var friend
+        // console.log('friends', friends);
+        // console.log('eventUsers', eventUsers);
+        // for (friend in friends) {
+        //   console.log(this.$store.getters.user.events);
+        //   this.eventUsers.findIndex(user => {
+        //     if(user === friend.id) {
+        //       console.log('found friend');
+        //     }
+        //   })
+        // }
+        return notification.event.users.__ob__.vmCount + 1
       },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() + notification.event.dateToRank) / 60 / 1000)

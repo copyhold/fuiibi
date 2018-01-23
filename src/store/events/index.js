@@ -71,14 +71,16 @@ export default {
       commit('setLoading', true)
       let counter = 0;
       firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_added', data => {
+        // In order to find the data.ref_.key, I console.log the data and look into the response
         const key = data.ref_.key
         let userCounter = data.val().counter + 1
         counter++
-        // In order to find the data.ref_.key, I console.log the data and look into the response
         firebase.database().ref('/events/' + key).once('value')
         .then(data => {
+
           // console.log('events trouvés', data.val());
           const event = data.val()
+          console.log(event.users);
           const newNotif = {
             event: event,
             key: key,
@@ -206,8 +208,15 @@ export default {
           event: newEvent,
           eventId: key
         }
+
+        const newNotif = {
+          event: newEvent,
+          key: key
+        }
+
         console.log('addEventToMyEvents dans create event', newEventObj);
         commit('addEventToMyEvents', newEventObj)
+        commit('addEvent', newNotif)
 
         // I get the friend's list of the user in order to send them notifications
         firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
@@ -270,11 +279,6 @@ export default {
         })
       }
     },
-    // user.notifications (state) {
-    //   return state.user.notifications.sort((notificationA, notificationB) => {
-    //     return notificationA.date < notificationB.date
-    //   })
-    // },
     loadedNotifications (state) {
       return state.loadedNotifications.sort((notificationA, notificationB) => {
         return notificationA.date < notificationB.date

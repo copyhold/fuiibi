@@ -1,0 +1,96 @@
+<template >
+  <div class="mt-2">
+    <v-layout row>
+        <v-flex xs12 class="text-xs-center">
+          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+        </v-flex>
+    </v-layout>
+    <v-list subheader>
+        <v-subheader>My Friends</v-subheader>
+        <!-- <template v-for="user in friends" > -->
+        <template v-for="user in filteredFriends" >
+          <v-divider></v-divider>
+          <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+            <v-list-tile-avatar>
+              <img :src="user.imageUrl"/>
+            </v-list-tile-avatar>
+            <v-list-tile-content>
+              <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn outline small class="red--text" @click="removeFriend"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+        </template>
+    </v-list>
+  </div>
+</template>
+
+<script>
+  export default {
+    props: ['search'],
+    data () {
+      return {
+        key: ''
+      }
+    },
+    computed: {
+      friends () {
+        if (this.$store.getters.user) {
+          if (this.$store.getters.user.friends.length > 0) {
+            return this.$store.getters.user.friends
+          }
+        }
+      },
+      filteredFriends () {
+        return this.friends.filter((user) => {
+          return user.userName.match(this.search)
+        })
+      },
+      loading () {
+        return this.$store.getters.loading
+      },
+      loggedInUserId () {
+        return this.$store.getters.user.id
+      }
+    },
+    methods: {
+      removeFriend (userId) {
+        console.log('userID from removeFriendRequest ', userId)
+        // this.$store.dispatch('sendFriendRequest', userId)
+      },
+      messageFriend (userId) {
+        console.log('userID from sendMessaget ', userId)
+        // this.$store.dispatch('sendFriendRequest', userId)
+      }
+    }
+  }
+</script>
+
+<style scoped>
+  .container{
+    margin-top: 0;
+    padding: 8px;
+  }
+  .card_actions{
+    padding: 0px;
+  }
+  .btn_content{
+    padding: 0px;
+  }
+  .btn__content {
+    padding: 0px !important;
+  }
+  .card__actions {
+    padding: 0px;
+  }
+  .card__title--primary {
+    padding: 0px 0px;
+  }
+  .card__actions > *, .card__actions .btn {
+    margin: 0 -8px;
+  }
+  p {
+    margin-bottom: 4px;
+  }
+</style>

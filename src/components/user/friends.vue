@@ -5,7 +5,7 @@
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-list subheader>
+    <v-list subheader v-if="pendingFriends">
           <v-subheader>Pending friends request</v-subheader>
           <template v-for="user in pendingFriends" >
             <v-divider></v-divider>
@@ -24,26 +24,7 @@
           </template>
       </v-list>
       <v-divider></v-divider>
-      <v-list subheader>
-          <v-subheader>My Friends</v-subheader>
-          <template v-for="user in friends" >
-            <v-divider></v-divider>
-            <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-              <v-list-tile-avatar>
-                <img :src="user.imageUrl"/>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-html="user.userName"></v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <v-btn outline small class="red--text"><v-icon class="mr-1">close</v-icon>Remove</v-btn>
-
-                <!-- <span class="hidden-xs-only">Remove</span>
-                <v-icon class="error white--text mt-2">close</v-icon> -->
-              </v-list-tile-action>
-            </v-list-tile>
-          </template>
-      </v-list>
+      <friends-only></friends-only>
     <v-fab-transition >
       <v-btn router to="/search" color="green" fixed bottom right fab class=" white--text">
         <v-icon>search</v-icon>

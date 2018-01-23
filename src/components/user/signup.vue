@@ -44,7 +44,7 @@
                 </v-flex>
               </v-layout>
 
-              <v-layout row class="mb-2">
+              <!-- <v-layout row class="mb-2">
                 <v-flex xs12 sm6>
                   <v-btn raised class="primaryLight white--text" @click="onPickFile">Upload your profile's picture </v-btn>
                   <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
@@ -55,7 +55,7 @@
                 <v-flex xs12 sm6 >
                   <img :src="imageUrl" class="profilePic" >
                 </v-flex>
-              </v-layout>
+              </v-layout> -->
 
               <v-layout row>
                 <v-flex xs12>
@@ -113,7 +113,8 @@
     methods: {
       onSignup () {
         // Vuex
-        this.$store.dispatch('signUserUp', {userName: this.userName, email: this.email, password: this.password, image: this.image})
+        // this.$store.dispatch('signUserUp', {userName: this.userName, email: this.email, password: this.password, image: this.image})
+        this.$store.dispatch('signUserUp', {userName: this.userName, email: this.email, password: this.password})
       },
       onDismissed () {
         this.$store.dispatch('clearError')

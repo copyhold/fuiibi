@@ -1,5 +1,12 @@
 <template >
   <v-container class="container">
+    <router-link
+        v-if="$routerHistory.hasHistory()"
+        :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        >
+        <v-icon class="white--text">arrow_back</v-icon>
+    </router-link>
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3>
         <h2>Create a new event </h2>
@@ -254,6 +261,12 @@
   @media screen and (max-width: 600px) {
     .container {
       padding: 8px;
+    }
+    .arrowBack {
+      position: fixed;
+      top: 64px;
+      left: 24px;
+      z-index: 3;
     }
   }
   #autoComplete{

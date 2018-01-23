@@ -5,37 +5,33 @@
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-
     <v-list subheader>
         <v-subheader>All users</v-subheader>
-        <template v-for="user in users" >
+        <!-- <template v-for="user in users" > -->
+        <template v-for="user in filteredUsers" >
           <v-divider></v-divider>
           <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-            <v-list-tile-avatar>
+            <v-list-tile-avatar class="avatarImg">
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action v-if="!isFriend(user)">
-              <!-- <span class="hidden-xs-only">Add friend</span> -->
               <v-btn @click="sendFriendRequest(user.id)" outline small class="green--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
-              <!-- <v-icon class="green white--text mt-2" @click="sendFriendRequest(user.id)">add</v-icon> -->
             </v-list-tile-action>
             <v-list-tile-action v-else>
-              <!-- <span class="hidden-xs-only">Add friend</span> -->
-              <v-btn @click="sendFriendRequest(user.id)" outline small class="red--text"><v-icon class="mr-1">close</v-icon>Remove</v-btn>
-              <!-- <v-icon class="green white--text mt-2" @click="sendFriendRequest(user.id)">add</v-icon> -->
+              <v-btn @click="sendFriendRequest(user.id)" outline small class="red--text"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </template>
     </v-list>
   </v-container>
-
 </template>
 
 <script>
   export default {
+    props: ['search'],
     data () {
       return {
         key: ''
@@ -44,6 +40,12 @@
     computed: {
       users () {
         return this.$store.getters.users
+      },
+      filteredUsers () {
+        console.log('[filteredUsers]')
+        return this.users.filter((user) => {
+          return user.userName.match(this.search)
+        })
       },
       loading () {
         return this.$store.getters.loading
@@ -72,6 +74,32 @@
 </script>
 
 <style scoped>
+  /*.avatarImg{
+    background: url("../../images/profile.png") center/80% no-repeat;
+    overflow: hidden;
+  }*/
+  #inputSearch {
+    position: fixed;
+    top: 50px;
+    right: 0px;
+    width: 100%;
+    height: 64px;
+    padding: 8px;
+    z-index: 2;
+    background: #3F51B5;
+    font-size: 20px;
+  }
+  input {
+    width: 100%;
+    margin-top: 3px;
+    border-bottom: 1px solid grey;
+  }
+  .tabs {
+    overflow: hidden;
+    position: absolute;
+    width: 100%;
+    top: 120px;
+    }
   .container{
     margin-top: 0;
     padding: 8px;

@@ -112,6 +112,9 @@
     .marginTop {
       margin-top: 112px;
     }
+    div.toolbar__content {
+      height: 48px !important;
+    }
     .btn .icon--left {
       margin-right: 0px;
     }
@@ -122,15 +125,13 @@
        -ms-flex-pack: end;
        justify-content: flex-end;
        position: absolute;
-       top: -3px;
+       top: -12px;
        right: 0px;
     }
   }
 
 
-  /*div.toolbar__content {
-    height: 40px !important;
-  }*/
+
   /*.toolbar .toolbar__content > *:not(.btn):not(.menu):last-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):last-child {
       margin-right: 0px;
       width: 77%;
