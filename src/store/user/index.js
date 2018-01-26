@@ -77,7 +77,7 @@ export default {
             friends: [],
             fbKeys: {},
             //*********************************************************
-            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/users%2FprofileImgLight.png?alt=media&token=309dd6f9-9def-450d-bf45-65f9b3de860a'
+            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/profileImgLight.png?alt=media&token=f5ce0264-b98b-4806-a81a-15ad52ba803e'
           }
           console.log('[signUserUp] setUser - newUser', newUser);
           commit('setUser', newUser)
@@ -123,35 +123,37 @@ export default {
 
     //*****************************************************
     addProfilePicture ({commit, getters}, payload) {
-      let user = getters.user
-      console.log("user in addProfilePicture", user);
-      let imageUrl
-      // We store the profile image of the user in FB storage.
-      const filename = payload.image.name
-      const ext = filename.slice(filename.lastIndexOf('.'))
-      return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
-      .then(fileData => {
-        imageUrl = fileData.metadata.downloadURLs[0]
-        // to reach the specific item under the user id in the users array:
-        // I can change any value with the update as below
-        return firebase.database().ref('users').child(user.id).update({imageUrl: imageUrl})
-      }).then(() => {
-        // here we commit that to my local store
-        console.log('setUser dans addProfilePicture');
-        commit('setLoading', false)
-        commit('addProfilePicture', {
-          imageUrl: imageUrl,
-          user: user
-        })
-      })
-      .catch(
-        error => {
-          //Here we got an error, so we are not loading anymore and we change the status of setLoading
+      if (payload) {
+        let user = getters.user
+        console.log("user in addProfilePicture", user);
+        let imageUrl
+        // We store the profile image of the user in FB storage.
+        const filename = payload.image.name
+        const ext = filename.slice(filename.lastIndexOf('.'))
+        return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
+        .then(fileData => {
+          imageUrl = fileData.metadata.downloadURLs[0]
+          // to reach the specific item under the user id in the users array:
+          // I can change any value with the update as below
+          return firebase.database().ref('users').child(user.id).update({imageUrl: imageUrl})
+        }).then(() => {
+          // here we commit that to my local store
+          console.log('setUser dans addProfilePicture');
           commit('setLoading', false)
-          commit('setError', error)
-          console.log(error);
-        }
-      )
+          commit('addProfilePicture', {
+            imageUrl: imageUrl,
+            user: user
+          })
+        })
+        .catch(
+          error => {
+            //Here we got an error, so we are not loading anymore and we change the status of setLoading
+            commit('setLoading', false)
+            commit('setError', error)
+            console.log(error);
+          }
+        )
+      }
     },
     //******************************************************
 

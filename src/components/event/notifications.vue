@@ -32,7 +32,8 @@
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
-                    <p>{{ myFriends(notification) }} friends were there!</p>
+                    <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
+                    <p>{{ notification.clickerName }} was there!</p>
                   </div>
                 </v-layout>
               </v-flex>
@@ -93,7 +94,7 @@
         //     }
         //   })
         // }
-        return notification.event.users.__ob__.vmCount + 1
+        return notification.event.users.counter
       },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() + notification.event.dateToRank) / 60 / 1000)

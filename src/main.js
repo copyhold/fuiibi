@@ -88,6 +88,7 @@ new Vue({
         this.$store.dispatch('fetchUserData')
         this.$store.dispatch('fetchUsersEvents')
         this.$store.dispatch('listenToNotifications')
+        this.$store.dispatch('listenToNotificationsChanges')
         console.log('user info from firebase', user)
         console.log('user info from main', this.$store.getters.user)
       }

@@ -31,11 +31,11 @@
             <div >
               {{ event.event.description }}
             </div>
-            <div v-if="eventLenght > 1">
-              <b>{{ eventLenght }}</b> users were there
+            <div v-if="event.event.users.counter > 1">
+              <b>{{ event.event.users.counter }}</b> users were there
             </div>
             <div v-else>
-              <b>{{ eventLenght }}</b> user was there
+              <b>{{ event.event.users.counter }}</b> user was there
             </div>
           </v-card-text>
         </v-card>
@@ -106,12 +106,12 @@ export default {
     event () {
       return this.$store.getters.getEventData(this.id)
     },
-    eventLenght () {
-      console.log(this.event)
-      console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
-      console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
-      return this.event.event.users.__ob__.dep.subs.length
-    },
+    // eventLenght () {
+    //   console.log(this.event)
+    //   console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
+    //   console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
+    //   return this.event.event.users.__ob__.dep.subs.length
+    // },
     // galery () {
     //   return this.$store.getters.getGalery()
     // },

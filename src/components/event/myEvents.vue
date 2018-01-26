@@ -46,7 +46,7 @@
                 </v-layout> -->
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab small class="error mt-4" @click="alertB4remove"><v-icon dark>close</v-icon></v-btn>
+                <v-btn fab small class="error mt-4" @click="alertB4remove"><v-icon dark>delete_forever</v-icon></v-btn>
               </v-flex>
             </v-layout>
           </v-container>

@@ -1,12 +1,19 @@
 <template>
   <v-container>
-    <router-link
+    <!-- <router-link
         v-if="$routerHistory.hasHistory()"
         :to="{ path: $routerHistory.previous().path }"
         class="arrowBack"
         >
         <v-icon class="white--text">arrow_back</v-icon>
+    </router-link> -->
+    <router-link
+        :to="'/friends'"
+        class="arrowBack"
+        >
+        <v-icon class="white--text">arrow_back</v-icon>
     </router-link>
+
     <v-layout id="inputSearch" >
       <v-text-field solo label="Search" append-icon="search" class="ml-5" v-model="search"></v-text-field>
     </v-layout>
