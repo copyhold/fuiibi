@@ -35,6 +35,11 @@ export default new Router({
     //   name: 'Notifications',
     //   component: Notifications
     // },
+    // {
+    //   path: '/index',
+    //   name: 'Notifications',
+    //   component: Notifications
+    // },
     {
       path: '/myEvents',
       name: 'My Events',

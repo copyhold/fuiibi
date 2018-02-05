@@ -18,7 +18,7 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <router-link :to="'/events/' + notification.key">
-                        <h3 class="pl-2 darkgray--text"> {{ notification.event.title }}</h3>
+                        <h4 class="pl-2 primaryDark--text"> {{ notification.event.title }}</h4>
                       </router-link>
                         <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
@@ -26,14 +26,16 @@
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
-                    <p class="location">{{ notification.event.location.locality }}</p>
+                    <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
                     <p class="date">{{ notification.event.date | date}}</p>
                   </div>
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
                     <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
-                    <p>{{ notification.clickerName }} was there!</p>
+                    <p><b>{{ notification.clickerName }}</b> was there!</p>
+                    <!-- <p v-if="friendsCount(notification)"><b>{{ notification.clickerName }}</b> was there!</p>
+                    <p else><b>{{ notification.clickerName }}</b> and {{ notification.friendsCount }} friends were there!</p> -->
                   </div>
                 </v-layout>
               </v-flex>
@@ -76,6 +78,9 @@
           return event.eventId === eventId
         }) >= 0
       },
+      friendsCount (notification) {
+        notification.friendsCount > 0
+      },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', notification)
       },
@@ -97,7 +102,7 @@
         return notification.event.users.counter
       },
       timeStamp (notification) {
-        let diff = Math.round(Math.abs(Date.now() + notification.event.dateToRank) / 60 / 1000)
+        let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
         if (diff < 60) {
           return diff + 'min'
         }

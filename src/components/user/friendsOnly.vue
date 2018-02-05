@@ -1,10 +1,10 @@
 <template >
   <div class="mt-2">
-    <v-layout row>
+    <!-- <v-layout row>
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
-    </v-layout>
+    </v-layout> -->
     <v-list subheader>
         <v-subheader>My Friends</v-subheader>
         <!-- <template v-for="user in friends" > -->
@@ -18,7 +18,7 @@
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn outline small class="red--text" @click="removeFriend"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+              <v-btn outline small class="greyColors" @click="removeFriend"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </template>
@@ -72,6 +72,11 @@
 </script>
 
 <style scoped>
+  .greyColors{
+    background-color: #f6f7f9;
+    border-color: #ced0d4;
+    color: #4b4f56;
+  }
   .container{
     margin-top: 0;
     padding: 8px;

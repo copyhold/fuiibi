@@ -17,11 +17,19 @@
             <v-list-tile-content>
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
-            <v-list-tile-action v-if="!isFriend(user)">
-              <v-btn @click="sendFriendRequest(user.id)" outline small class="green--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
+            <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                <v-btn outline small class="greyColors" flat>Pending</v-btn>
             </v-list-tile-action>
+            <!-- <v-list-tile-action v-else-if="hasPendingInvitation(user)">
+              <v-btn outline small class="greyColors" flat>Pending</v-btn>
+            </v-list-tile-action> -->
             <v-list-tile-action v-else>
-              <v-btn @click="sendFriendRequest(user.id)" outline small class="red--text"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+              <v-list-tile-action v-if="!isFriend(user)">
+                <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action v-else>
+                <v-btn @click="sendFriendRequest(user.id)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+              </v-list-tile-action>
             </v-list-tile-action>
           </v-list-tile>
         </template>
@@ -42,7 +50,6 @@
         return this.$store.getters.users
       },
       filteredUsers () {
-        console.log('[filteredUsers]')
         return this.users.filter((user) => {
           return user.userName.match(this.search)
         })
@@ -58,7 +65,7 @@
     },
     methods: {
       sendFriendRequest (userId) {
-        console.log('userID from sendFriendRequest ', userId)
+        // console.log('userID from sendFriendRequest ', userId)
         this.$store.dispatch('sendFriendRequest', userId)
       },
       isFriend (user) {
@@ -68,12 +75,33 @@
             return friend.id === user.id
           }) >= 0
         }
+      },
+      hasPendingInvitation (user) {
+        if (this.$store.getters.user) {
+          // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
+          return this.$store.getters.user.pendingInvitations.findIndex(friend => {
+            return friend.id === user.id
+          }) >= 0
+        }
+      },
+      isPendingFriend (user) {
+        if (this.$store.getters.user) {
+          // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
+          return this.$store.getters.user.pendingFriends.findIndex(friend => {
+            return friend.id === user.id
+          }) >= 0
+        }
       }
     }
   }
 </script>
 
 <style scoped>
+.greyColors{
+    background-color: #f6f7f9;
+    border-color: #ced0d4;
+    color: #4b4f56;
+  }
   /*.avatarImg{
     background: url("../../images/profile.png") center/80% no-repeat;
     overflow: hidden;

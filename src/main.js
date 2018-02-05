@@ -21,12 +21,32 @@ import FriendsOnly from './components/user/friendsOnly.vue'
 import Router from 'vue-router'
 import { routerHistory, writeHistory } from 'vue-router-back-button'
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-  .then(function () {
-    console.log('serviceWorker registered')
-  })
-}
+// if (!window.Promise) {
+//   window.Promise = Promise
+// }
+//
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js')
+//   .then(function () {
+//     console.log('serviceWorker registered')
+//   })
+//   .catch(function (err) {
+//     console.log(err)
+//   })
+// }
+
+// Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
+// want as well to propose it after the user click the add picture button
+
+// eslint-disable-next-line
+var deferredPrompt
+
+window.addEventListener('beforeinstallprompt', function (event) {
+  console.log('beforeinstallprompt fired')
+  event.preventDefault()
+  deferredPrompt = event
+  return false
+})
 
 Vue.use(Router)
 Vue.use(routerHistory)
@@ -34,9 +54,10 @@ Vue.use(routerHistory)
 router.afterEach(writeHistory)
 
 Vue.use(Vuetify, { theme: {
-  // primary: '#006064',
-  primary: '#1A237E',
-  secondary: '#424242',
+  primary: '#00695c',
+  primaryDark: '#003d33',
+  primaryLight: '#439889',
+  secondary: '#004d40',
   accent: '#82B1FF',
   error: '#FF5252',
   info: '#2196F3',
@@ -44,8 +65,6 @@ Vue.use(Vuetify, { theme: {
   warning: '#FFC107',
   grey: '#A8A8A8',
   darkgray: '#424242',
-  // primaryLight: '#009688',
-  primaryLight: '#3F51B5',
   orange: '#E65100',
   white: '#FFFFFF'
 }})
@@ -89,8 +108,8 @@ new Vue({
         this.$store.dispatch('fetchUsersEvents')
         this.$store.dispatch('listenToNotifications')
         this.$store.dispatch('listenToNotificationsChanges')
-        console.log('user info from firebase', user)
-        console.log('user info from main', this.$store.getters.user)
+        this.$store.dispatch('listenToInvitationRemoval')
+        // this.$store.dispatch('onEventChanged')
       }
     })
     // Here we load all the users of the app for TEST only, so that I can test friends requests

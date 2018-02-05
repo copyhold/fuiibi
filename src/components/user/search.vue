@@ -1,19 +1,11 @@
 <template>
   <v-container>
-    <!-- <router-link
-        v-if="$routerHistory.hasHistory()"
-        :to="{ path: $routerHistory.previous().path }"
-        class="arrowBack"
-        >
-        <v-icon class="white--text">arrow_back</v-icon>
-    </router-link> -->
     <router-link
         :to="'/friends'"
         class="arrowBack"
         >
         <v-icon class="white--text">arrow_back</v-icon>
     </router-link>
-
     <v-layout id="inputSearch" >
       <v-text-field solo label="Search" append-icon="search" class="ml-5" v-model="search"></v-text-field>
     </v-layout>
@@ -59,25 +51,29 @@
 <style scoped>
 .arrowBack {
   position: fixed;
-  top: 68px;
+  top: 56px;
   left: 24px;
   z-index: 3;
   }
   #inputSearch {
     position: fixed;
-    top: 50px;
+    top: 40px;
     right: 0px;
     width: 100%;
-    height: 64px;
+    height: 56px;
     padding: 8px;
     z-index: 2;
-    background: #3F51B5;
+    background: #00695c;
     font-size: 20px;
   }
   input {
+    height: 38px;
     width: 100%;
     margin-top: 3px;
     border-bottom: 1px solid grey;
+  }
+  .input-group.input-group--solo {
+    min-height: 38px;
   }
   .container {
     padding: 0px;

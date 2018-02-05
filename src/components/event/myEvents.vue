@@ -21,7 +21,7 @@
                     <v-card-actions wrap>
                       <div>
                         <router-link :to="'/events/' + item.eventId">
-                          <h3 class="pl-2 eventName"> {{ item.event.title }}</h3>
+                          <h4 class="pl-2 primaryDark--text"> {{ item.event.title }}</h4>
                         </router-link>
 
                         <!-- <v-btn flat :to="'/events/' + item.key" class="">

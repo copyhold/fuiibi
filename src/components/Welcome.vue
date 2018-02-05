@@ -12,9 +12,9 @@
       <v-stepper-items>
         <v-stepper-content step="1">
           <v-card color="grey lighten-3" class="mb-5" height="300px">
-            <v-card-title class="primary--text title">Welcome to Markist!</v-card-title>
-            <v-card-text>Let's mark your history!
-              Every event is a new opportunity. Your and your friend's pictures in one single place!
+            <v-card-title class="primary--text title">Welcome to Fuiibi!</v-card-title>
+            <v-card-text>Store your and your friend's pictures around the events you will create.
+              One single place for all the pictures sorted in a time line.
               Let's try it and enjoy! </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
@@ -65,16 +65,13 @@
       }
     },
     computed: {
-      // meetups () {
-      //   return this.$store.getters.loadedMeetups
-      // },
       loading () {
         return this.$store.getters.loading
       }
     },
     methods: {
       addProfilePicture () {
-        console.log('addProfilePicture clicked')
+        console.log('[addProfilePicture] clicked - this.image', this.image)
         this.$store.dispatch('addProfilePicture', {image: this.image})
       },
       onPickFile () {

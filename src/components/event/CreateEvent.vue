@@ -264,7 +264,7 @@
     }
     .arrowBack {
       position: fixed;
-      top: 64px;
+      top: 56px;
       left: 24px;
       z-index: 3;
     }

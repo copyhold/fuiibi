@@ -1,12 +1,18 @@
 <template>
   <v-app>
-    <v-toolbar class="primary" dark fixed app>
-      <v-toolbar-side-icon @click="sideNav = !sideNav">
+    <v-toolbar class="primaryDark" dark fixed app>
+      <v-toolbar-side-icon @click="sideNav = !sideNav" class="hidden-xs-only">
       </v-toolbar-side-icon>
-      <v-toolbar-title right>
-        <router-link to="/notifications" tag="span" style="cursor: pointer">Markhist</router-link>
+      <v-toolbar-title right class="ml-4">
+        <router-link to="/notifications" tag="span" style="cursor: pointer">Fuiibi</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+
+      <v-btn icon right @click="sideNav = !sideNav" class="hidden-sm-and-up">
+        <v-icon class="pl-4">more_vert</v-icon>
+      </v-btn>
+
+      <v-spacer class="hidden-xs-only"></v-spacer>
 
       <v-toolbar-items class="hidden-xs-only">
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
@@ -15,7 +21,7 @@
         </v-btn>
       </v-toolbar-items>
 
-      <v-bottom-nav absolute shift class="bottomAtTop primaryLight hidden-sm-and-up">
+      <v-bottom-nav absolute shift class="bottomAtTop primary hidden-sm-and-up">
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
           <span>{{ item.title }}</span>
           <v-icon left>{{ item.icon }}</v-icon>
@@ -110,10 +116,10 @@
   }
   @media screen and (max-width: 600px) {
     .marginTop {
-      margin-top: 112px;
+      margin-top: 96px;
     }
     div.toolbar__content {
-      height: 48px !important;
+      height: 40px !important;
     }
     .btn .icon--left {
       margin-right: 0px;
@@ -125,7 +131,7 @@
        -ms-flex-pack: end;
        justify-content: flex-end;
        position: absolute;
-       top: -12px;
+       top: -20px;
        right: 0px;
     }
   }

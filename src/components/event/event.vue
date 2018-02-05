@@ -15,7 +15,7 @@
     <v-layout row wrap v-else>
       <v-flex xs12>
         <v-card>
-          <v-card-media :src="event.event.imageUrl" height="200px">
+          <v-card-media :src="event.event.imageUrl" height="120px">
           </v-card-media>
           <v-card-title class="eventTitle">
               <h2>{{ event.event.title }}</h2>
@@ -31,11 +31,11 @@
             <div >
               {{ event.event.description }}
             </div>
-            <div v-if="event.event.users.counter > 1">
-              <b>{{ event.event.users.counter }}</b> users were there
+            <div v-if="event.counter > 0">
+              <b>{{ event.counter }}</b> users were there
             </div>
             <div v-else>
-              <b>{{ event.event.users.counter }}</b> user was there
+              <b>{{ event.counter }}</b> user was there
             </div>
           </v-card-text>
         </v-card>
@@ -48,7 +48,7 @@
             <v-layout row wrap>
               <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id">
                 <v-card flat tile>
-                  <v-card-media :src="pic.imageUrl" height="150px">
+                  <v-card-media :src="pic.imageUrl" height="150px" @click="carousel = true">
                   </v-card-media>
                 </v-card>
               </v-flex>
@@ -78,6 +78,13 @@
           </v-dialog>
       </v-flex>
     </v-layout>
+    <v-layout>
+      <v-dialog v-model="carousel" max-width="500">
+        <v-carousel hide-delimiters hide-controls :cycle="cycle" >
+          <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
+        </v-carousel>
+      </v-dialog>
+    </v-layout>
   </v-container>
 </template>
 <!-- Below I create a template because I want to show it only if the user is the creator of the meetup. -->
@@ -99,7 +106,9 @@ export default {
     return {
       imageUrl: '',
       image: '',
-      dialog: false
+      dialog: false,
+      carousel: false,
+      cycle: false
     }
   },
   computed: {
@@ -179,10 +188,10 @@ export default {
   .eventTitle{
     width: 100%;
     background: rgba(0, 0, 0, 0.5);
-    text-align: center;
+    text-align: left;
     color: white;
     position: absolute;
-    bottom: 180px;
+    top: 0px;
     font-size: 20px;
     font-weight: 200;
   }
@@ -195,9 +204,19 @@ export default {
     }
     .arrowBack {
       position: fixed;
-      top: 64px;
+      top: 56px;
       left: 24px;
       z-index: 3;
+    }
+    .carousel {
+      min-height: 100%;
+      width: 100vw;
+    }
+    .carousel__item {
+      background-size: contain;
+    }
+    .dialog {
+      margin: 8px !important;
     }
   }
 

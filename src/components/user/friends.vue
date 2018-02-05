@@ -1,32 +1,55 @@
 <template >
   <v-container class="container">
-    <v-layout row>
+    <!-- <v-layout row>
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
-    </v-layout>
+    </v-layout> -->
     <v-list subheader v-if="pendingFriends">
           <v-subheader>Pending friends request</v-subheader>
           <template v-for="user in pendingFriends" >
             <v-divider></v-divider>
             <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-              <v-list-tile-avatar>
-                <img :src="user.imageUrl"/>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-html="user.userName"></v-list-tile-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
-                <span>Accept</span>
-                <v-icon class="green">add</v-icon>
-              </v-list-tile-action>
+              <v-flex xs3>
+                <v-list-tile-avatar>
+                  <img :src="user.imageUrl"/>
+                </v-list-tile-avatar>
+              </v-flex>
+              <v-flex xs9>
+                <v-list-tile-content>
+                  <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+                </v-list-tile-content>
+              </v-flex>
+              <!-- <v-flex xs3>
+                <v-list-tile-action>
+                  <v-btn outline small class="green--text mt-2" @click="addFriend(user.id)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
+                  <v-btn outline small class="red--text mt-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Refuse</v-btn>
+                </v-list-tile-action>
+              </v-flex> -->
+              <!-- <v-flex xs3 class="ml-1">
+                <v-list-tile-action>
+                </v-list-tile-action>
+              </v-flex> -->
+            </v-list-tile>
+            <v-list-tile>
+              <v-flex xs6>
+                <v-list-tile-action>
+                  <v-btn outline small block class="green--text" @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
+                  <!-- <v-btn outline small block class="green--text" @click="addFriend(user.id)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn> -->
+                </v-list-tile-action>
+              </v-flex>
+              <v-flex xs6>
+                <v-list-tile-action>
+                  <v-btn outline small block class="greyColors ml-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Refuse</v-btn>
+                </v-list-tile-action>
+              </v-flex>
             </v-list-tile>
           </template>
       </v-list>
       <v-divider></v-divider>
       <friends-only></friends-only>
     <v-fab-transition >
-      <v-btn router to="/search" color="green" fixed bottom right fab class=" white--text">
+      <v-btn router to="/search" color="orange" fixed bottom right fab class=" white--text">
         <v-icon>search</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -51,10 +74,10 @@
       },
       pendingFriends () {
         if (this.$store.getters.user) {
-          // if (this.$store.getters.user.pendingFriends.length > 0) {
-          //   return this.$store.getters.user.pendingFriends
-          // }
-          console.log('pendingFriends () {if (this.$store.getters.user) {')
+          if (this.$store.getters.user.pendingFriends.length > 0) {
+            // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
+            return this.$store.getters.user.pendingFriends
+          }
         }
       },
       loading () {
@@ -73,11 +96,22 @@
     methods: {
       removeFriend (userId) {
         console.log('userID from removeFriendRequest ', userId)
-        // this.$store.dispatch('sendFriendRequest', userId)
+        // this.$store.dispatch('acceptFriendRequest', userId)
       },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
         // this.$store.dispatch('sendFriendRequest', userId)
+      },
+      // addFriend (userId) {
+      //   this.$store.dispatch('acceptFriendRequest', userId)
+      //   console.log('userID from addFriend ', userId)
+      // },
+      addFriend (friend) {
+        this.$store.dispatch('acceptFriendRequest', friend)
+        console.log('userID from addFriend ', friend)
+      },
+      refuseFriend (userId) {
+        console.log('userID from refuseFriend ', userId)
       }
     }
   }
@@ -87,6 +121,11 @@
   .container{
     margin-top: 0;
     padding: 8px;
+  }
+  .greyColors{
+    background-color: #f6f7f9;
+    border-color: #ced0d4;
+    color: #4b4f56;
   }
   .card_actions{
     padding: 0px;

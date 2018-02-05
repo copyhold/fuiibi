@@ -1,6 +1,6 @@
 <template lang="html">
   <v-container class="container">
-    <v-layout row wrap v-if="loading">
+    <!-- <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular
           indeterminate
@@ -11,7 +11,8 @@
           ></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-layout row wrap v-else>
+    <v-layout row wrap v-else>-->
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card>
           <v-card-title>
