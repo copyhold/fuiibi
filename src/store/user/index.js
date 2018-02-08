@@ -7,6 +7,12 @@ export default {
     users: []
   },
   mutations: {
+    removeEventFromUser(state, payload) {
+      const events = state.user.events
+      events.splice(events.findIndex(event => event.key === payload), 1)
+      Reflect.deleteProperty(state.user.events, payload)
+      console.log('[removeEventFromUser] mutation payload', payload);
+    },
     addProfilePicture (state, payload) {
       const user = payload.user
       if (payload.imageUrl) {
@@ -47,6 +53,9 @@ export default {
     },
     setLoadedUsers (state, payload) {
       state.users = payload
+    },
+    addUser (state, payload) {
+      state.users.push(payload)
     },
     createUser (state, payload) {
       state.users.push(payload)
@@ -373,27 +382,44 @@ export default {
 
     loadUsers ({commit}) {
       commit('setLoading', true)
-      firebase.database().ref('users').once('value')
-      .then((data) => {
-        const users = []
-        const obj = data.val()
-        for (let key in obj) {
-          users.push({
-            id: key,
-            userName: obj[key].userName,
-            imageUrl: obj[key].imageUrl,
-            friends: []
-          })
+      firebase.database().ref('users').on('child_added', data => {
+        // const users = []
+        const userData = data.val()
+        const fbKey = data.key
+        console.log('[loadUsers] userData', userData)
+        console.log('[loadUsers] fbKey', fbKey)
+        const newUser = {
+          id: userData.id,
+          imageUrl: userData.imageUrl,
+          userName: userData.userName,
+          fbKey: fbKey
         }
-        commit('setLoadedUsers', users)
+        // users.push(newFriend)
+        commit('addUser', newUser)
         commit('setLoading', false)
-      })
-      .catch(
-        (error) => {
-          console.log(error)
-          commit('setLoading', false)
-        }
-      )
+        })
+      // firebase.database().ref('users').once('value')
+      // .then((data) => {
+      //   const users = []
+      //   const obj = data.val()
+      //   for (let key in obj) {
+      //     console.log('[]');
+      //     users.push({
+      //       id: key,
+      //       userName: obj[key].userName,
+      //       imageUrl: obj[key].imageUrl,
+      //       friends: []
+      //     })
+      //   }
+      //   commit('setLoadedUsers', users)
+      //   commit('setLoading', false)
+      // })
+      // .catch(
+      //   (error) => {
+      //     console.log(error)
+      //     commit('setLoading', false)
+      //   }
+      // )
     },
 
     // **************ACTIONS****************
@@ -459,8 +485,22 @@ export default {
     },
 
     removeFriend ({commit, getters}, payload) {
+      const friendId = payload.id
+      const user = getters.user
       console.log('[removeFriend] payload', payload);
-
+      // We remove the friend from the user's pending list
+      firebase.database().ref('/users/' + user.id + '/friends').child(payload.fbKey).remove()
+      // We update the store
+      commit('removeFriendFromUser', friendId)
+    },
+    refuseFriend ({commit, getters}, payload) {
+      const friendId = payload.id
+      const user = getters.user
+      console.log('[refuseFriend] payload', payload);
+      // We remove the friend from the user's pending list
+      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(payload.fbKey).remove()
+      // We update the store
+      commit('removePendingFriendFromUser', friendId)
     },
 
     // ****************** REMOVE ITEMS FROM LOCAL STORE *********************

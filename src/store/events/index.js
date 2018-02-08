@@ -31,6 +31,17 @@ export default {
     }
   },
   actions: {
+    removeEventFromUser ({commit, getters}, payload) {
+      // console.log('[acceptFriendRequest] payload', payload);
+      const eventId = payload.key
+      const user = getters.user
+      commit('setLoading', true)
+      // We remove the event from the user's list
+      firebase.database().ref('/users/' + user.id + '/userEvents').child(payload.fbKey).remove()
+      // We update the store
+      commit('removeEventFromUser', eventId)
+      commit('setLoading', false)
+    },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
       let id = payload.key
@@ -130,7 +141,6 @@ export default {
         firebase.database().ref('/events/' + key).once('value')
         .then(data => {
           const event = data.val()
-          // MAYBE HERE BELOW INSTEAD OF HAVING TWO DIFFERENT OBJ, I SHOULD HAVE ONLY ONE AND SEND IT TO BOTH PLACES
           const newNotif = {
             event: event,
             key: key,
@@ -138,13 +148,7 @@ export default {
             dateToRank : event.dateToRank,
             friendsCount : this.friendsCount
           }
-          const newEvent = {
-            key: key,
-            event: event,
-            counter : this.counter
-          }
-          // console.log('[listenToNotifications] addEvent B4 commit addEvent ', newEvent);
-          // I commit the addEvent below to be able to have it available to see the event itself.
+          // I don't commit the addEvent below as it is done in the fetchEvents with the added_child.
           // commit('addEvent', newEvent)
           commit('addNotification', newNotif)
           commit('setLoading', false)
@@ -298,29 +302,17 @@ export default {
           users: this.users,
           dateToRank: - Date.now()
         }
-        const newEventObj = {
+        const newEvent = {
           event: newEventData,
           key: key,
           dateToRank: - Date.now(),
           clickerName : getters.user.userName,
           counter: 1
         }
-        // const newEvent = {
-        //   event: newEvent,
-        //   key: key,
-        //   dateToRank: - Date.now(),
-        //   clickerName : getters.user.userName,
-        //   counter: 1
-        // }
-        const newEvent = {
-          key: key,
-          event: newEventData,
-          counter : 1
-        }
 
-        // console.log('[createEvent] addEvent => newEvent MAYBE SHOULD NOT DO IT HERE', newEvent);
-        commit('addEventToMyEvents', newEventObj)
+        // I don't commit the addEvent below as it is done in the fetchEvents with the added_child.
         // commit('addEvent', newEvent)
+        commit('addEventToMyEvents', newEvent)
 
         // I get the friend's list of the user in order to send them notifications
         firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
@@ -354,16 +346,6 @@ export default {
       return state.loadedNotifications.sort((notificationA, notificationB) => {
         return notificationA.date < notificationB.date
       })
-    },
-    // featuredMeetups (state, getters) {
-    //   return getters.loadedMeetups.slice(0, 5)
-    // },
-    // loadedMeetup (state) {
-    //   return (meetupId) => {
-    //     return state.loadedMeetups.find((meetup) => {
-    //       return meetup.id === meetupId
-    //     })
-    //   }
-    // }
+    }
   }
 }

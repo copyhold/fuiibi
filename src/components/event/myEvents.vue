@@ -33,7 +33,7 @@
                 </v-layout>
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab small class="error mt-4" @click="alertB4remove"><v-icon dark>delete_forever</v-icon></v-btn>
+                <v-btn fab small class="error mt-4" @click="alertB4remove(item)"><v-icon dark>delete_forever</v-icon></v-btn>
               </v-flex>
             </v-layout>
           </v-container>
@@ -96,8 +96,9 @@
       }
     },
     methods: {
-      alertB4remove () {
-        alert('sure???')
+      alertB4remove (event) {
+        console.log('[alertB4remove] methods payload', event)
+        this.$store.dispatch('removeEventFromUser', event)
       }
     }
   }

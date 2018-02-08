@@ -22,7 +22,7 @@
               </v-flex>
               <v-flex xs3>
                 <v-list-tile-action>
-                  <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user.id)">Ignore</v-btn>
+                  <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
                 </v-list-tile-action>
 
               </v-flex>
@@ -94,24 +94,16 @@
       }
     },
     methods: {
-      removeFriend (userId) {
-        console.log('userID from removeFriendRequest ', userId)
-        // this.$store.dispatch('acceptFriendRequest', userId)
-      },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
         // this.$store.dispatch('sendFriendRequest', userId)
       },
-      // addFriend (userId) {
-      //   this.$store.dispatch('acceptFriendRequest', userId)
-      //   console.log('userID from addFriend ', userId)
-      // },
       addFriend (friend) {
         this.$store.dispatch('acceptFriendRequest', friend)
         console.log('userID from addFriend ', friend)
       },
-      refuseFriend (userId) {
-        console.log('userID from refuseFriend ', userId)
+      refuseFriend (user) {
+        this.$store.dispatch('refuseFriend', user)
       }
     }
   }

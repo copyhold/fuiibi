@@ -18,7 +18,7 @@
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn outline small class="greyColors" @click="removeFriend"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+              <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </template>
@@ -59,9 +59,9 @@
       }
     },
     methods: {
-      removeFriend (userId) {
-        console.log('userID from removeFriendRequest ', userId)
-        // this.$store.dispatch('sendFriendRequest', userId)
+      removeFriend (user) {
+        console.log('removeFriend', user)
+        this.$store.dispatch('removeFriend', user)
       },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
