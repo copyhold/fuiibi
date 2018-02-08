@@ -13,9 +13,9 @@ export default {
         user.imageUrl = payload.imageUrl
       }
     },
-    createEvent (state, payload) {
-      state.user.events.push(payload)
-    },
+    // createEvent (state, payload) {
+    //   state.user.events.push(payload)
+    // },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
       state.user.notifications.sort((notificationA, notificationB) => {
@@ -39,13 +39,11 @@ export default {
       console.log('[updateNotification] notification', notification);
     },
     addEventToMyEvents (state, payload) {
-      // console.log('addEventToMyEvents dans mutation', payload);
+      console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
         return eventA.event.dateToRank > eventB.event.dateToRank
       })
-      // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-      // state.user.fbKeysEvents[payload.id] = payload.fbKey
     },
     setLoadedUsers (state, payload) {
       state.users = payload
@@ -54,29 +52,17 @@ export default {
       state.users.push(payload)
       console.log('in mutation create user ', payload);
     },
-    // addFriendToUser(state, payload) {
-    //   const newFriend = payload
-    //   if(state.user.friends.findIndex(user => user.id === newFriend.id) >= 0) {
-    //     console.log('Refused to add this friend as it already exist in the friends list!!!');
-    //     return
-    //   }
-    //   console.log('[addFriendToUser] BEFORE PUSH state.user.friends', state.user.friends);
-    //   state.user.friends.push(newFriend)
-    //   console.log('[addFriendToUser] AFTER PUSH state.user.friends', state.user.friends);
-    //   // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-    //   // state.user.fbKeysFriends[newFriend.id] = payload.fbKey
-    // },
     addPendingInvitations(state, payload) {
       const newFriend = payload
       const id = newFriend.id
-      console.log('[addPendingInvitations] newFriend', newFriend);
+      // console.log('[addPendingInvitations] newFriend', newFriend);
       if(state.user.pendingInvitations.findIndex(friend => friend.id === payload.id) >= 0) {
         console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
         return
       }
-      console.log('[addPendingInvitations] pushing the new invittation of payload to user', state.user.pendingInvitations);
+      // console.log('[addPendingInvitations] pushing the new invittation of payload to user', state.user.pendingInvitations);
       state.user.pendingInvitations.push(payload)
-      console.log('[addPendingInvitations] state.user.pendingInvitations', state.user.pendingInvitations);
+      // console.log('[addPendingInvitations] state.user.pendingInvitations', state.user.pendingInvitations);
       // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
       // state.user.fbKeysInvitations[id] = payload.fbKey
     },
@@ -95,12 +81,12 @@ export default {
       const pendingFriends = state.user.pendingFriends
       // Below we check if we can find the friend that need to be removed from the pendingfriends. We check in the list of pendingfriends of the user if we can find it
       // With the splice, we get back a numer of element, here only the friend.id that need to be removed
-      console.log('[removePendingFriendFromUser] BEFORE REMOVAL pendingFriends', pendingFriends);
+      // console.log('[removePendingFriendFromUser] BEFORE REMOVAL pendingFriends', pendingFriends);
       pendingFriends.splice(pendingFriends.findIndex(friend => friend.id === payload), 1)
       // To erase this meetup from the list in the store, we need to use the reflect.deleteProperty from JS,
       // passing where? state.user.fbKeys and what? the payload as it's the user.id
       Reflect.deleteProperty(state.user.pendingFriends, payload)
-      console.log('[removePendingFriendFromUser] AFTER REMOVAL pendingFriends', pendingFriends);
+      // console.log('[removePendingFriendFromUser] AFTER REMOVAL pendingFriends', pendingFriends);
     },
     removePendingInvitationFromUser(state, payload) {
       const pendingInvitations = state.user.pendingInvitations
@@ -214,8 +200,7 @@ export default {
             friends: [],
             events: []
           }
-          console.log('[signUserIn] newUser', newUser);
-          console.log('[signUserI] setUser');
+          console.log('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
           commit('setUser', newUser)
         }
       )
@@ -231,10 +216,11 @@ export default {
     autoSignIn ({commit}, payload) {
       commit('setUser', {
         id: payload.uid,
-         events: [],
-         friends: [],
-         userName: payload.userName,
-         imageUrl: payload.imageUrl
+        email: payload.email
+        //  events: [],
+        //  friends: [],
+        //  userName: payload.userName,
+        //  imageUrl: payload.imageUrl
        })
     },
 
@@ -250,14 +236,16 @@ export default {
       let events = []
       let friends = []
       let notifications = []
-      let userName
-      let imageUrl
+      let userName = ''
+      let imageUrl = ''
       let pendingFriends = []
       let pendingInvitations = []
+      // Here below we use promise to get the info one after the other and send everything to the local storage once everything has been received
       // Fetch the userName and userImage
       firebase.database().ref('/users/' + getters.user.id).once('value')
       .then(data => {
         const userData = data.val()
+        // console.log('[fetchUserData] userData', userData);
         if (!getters.user.imageUrl) {
           this.imageUrl = userData.imageUrl
         }
@@ -266,14 +254,15 @@ export default {
           this.imageUrl = getters.user.imageUrl
         }
         this.userName = userData.userName
+        // console.log('[fetchUserData] this.userName', this.userName);
       })
       .then( _=>{
         // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
         firebase.database().ref('/users/' + getters.user.id + '/friends/').on('child_added', data => {
           const userId = data.val()
           const fbKey = data.key
-          console.log('[fetchUserData] child_added in friends data.val()', data.val())
-          console.log('[fetchUserData] child_added in friends data.key', data.key)
+          // console.log('[fetchUserData] child_added in friends data.val()', data.val())
+          // console.log('[fetchUserData] child_added in friends data.key', data.key)
           firebase.database().ref('/users/' + userId).once('value').then(data =>{
               const friendData = data.val()
               const newFriend = {
@@ -294,64 +283,64 @@ export default {
           // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
           // I should check if it's updated when there is a change in the value of one of the friends data.
           firebase.database().ref('/users/' + userId).once('value').then(data =>{
-            console.log('[fetchUserData] PENDINGFRIENDS data.val() ', data.val())
+            // console.log('[fetchUserData] PENDINGFRIENDS data.val() ', data.val())
             const friendData = data.val()
             const newFriend = {
               id: friendData.id,
               imageUrl: friendData.imageUrl,
               userName: friendData.userName,
               fbKey: fbKey
-            }
+              }
             pendingFriends.push(newFriend)
+            })
           })
+        })
+        .then(_=> {
+          firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
+            // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
+            const userId = data.val()
+            const fbKey = data.key
+            firebase.database().ref('/users/' + userId).once('value').then(data =>{
+              const friendData = data.val()
+              const newFriend = {
+                id: friendData.id,
+                fbKey: fbKey
+                }
+              commit('addPendingInvitations', newFriend)
+              })
+            })
+        })
+        .then( _=> {
+          const updatedUser = {
+            id: getters.user.id,
+            imageUrl: this.imageUrl,
+            userName: this.userName,
+            events: events,
+            friends: friends,
+            notifications: notifications,
+            pendingFriends: pendingFriends,
+            pendingInvitations: pendingInvitations
+          }
+          // console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
+          commit('setUser', updatedUser)
           commit('setLoading', false)
-          })
         })
         .catch(error => {
           console.log(error)
           commit('setLoading', false)
         })
-
-        firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
-          // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
-          const userId = data.val()
-          const fbKey = data.key
-          firebase.database().ref('/users/' + userId).once('value').then(data =>{
-            const friendData = data.val()
-            const newFriend = {
-              id: friendData.id,
-              fbKey: fbKey
-            }
-            commit('addPendingInvitations', newFriend)
-            // pendingInvitations.push(newFriend)
-          })
-          commit('setLoading', false)
-          })
-
-        // Once all the info fetched from events, friends and notifications, we can update the local store
-        const updatedUser = {
-          id: getters.user.id,
-          imageUrl: this.imageUrl,
-          userName: this.userName,
-          events: events,
-          friends: friends,
-          notifications: notifications,
-          pendingFriends: pendingFriends,
-          pendingInvitations: pendingInvitations
-        }
-        commit('setUser', updatedUser)
     },
 
     fetchUsersEvents ({commit, getters}) {
       commit('setLoading', true)
       firebase.database().ref('/users/' + getters.user.id + '/userEvents/').orderByChild("dateToRank").on('child_added', data => {
-        const eventId = data.val()
+        const key = data.val()
         const fbKey = data.key
-        firebase.database().ref('/events/' + eventId).once('value').then(data =>{
+        firebase.database().ref('/events/' + key).once('value').then(data =>{
           const eventData = data.val()
           // let counter;
           // // I get the number of element in the array users in the event and update the event of the store with the new event user number of the event.
-          // firebase.database().ref('events/' + eventId + '/users/').once('value')
+          // firebase.database().ref('events/' + key + '/users/').once('value')
           // .then(data =>{
           //   this.counter = data.numChildren()
           //   console.log('[fetchUsersEvents] counter => data.val().users.numChildren()', this.counter);
@@ -362,12 +351,14 @@ export default {
           // })
           const newEvent = {
             event: eventData,
-            eventId: eventId,
+            key: key,
             fbKey: fbKey
             // counter: this.counter
           }
           if (newEvent.event.imageUrl) {
+            console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
             commit('addEventToMyEvents', newEvent)
+            commit('addEvent', newEvent)
           }
           commit('setLoading', false)
         })
@@ -426,7 +417,7 @@ export default {
     },
 
     acceptFriendRequest ({commit, getters}, payload) {
-      console.log('[acceptFriendRequest] payload', payload);
+      // console.log('[acceptFriendRequest] payload', payload);
       const friendId = payload.id
       const user = getters.user
       commit('setLoading', true)
@@ -465,6 +456,11 @@ export default {
         console.log(error);
         commit('setLoading', false)
       })
+    },
+
+    removeFriend ({commit, getters}, payload) {
+      console.log('[removeFriend] payload', payload);
+
     },
 
     // ****************** REMOVE ITEMS FROM LOCAL STORE *********************

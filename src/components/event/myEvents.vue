@@ -13,37 +13,24 @@
               <v-flex xs3 sm2 md2>
                 <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
               </v-flex>
-              <!-- <v-container>
-                <v-layout> -->
               <v-flex xs7 sm8 md8 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div>
-                        <router-link :to="'/events/' + item.eventId">
+                        <router-link :to="'/events/' + item.key">
                           <h4 class="pl-2 primaryDark--text"> {{ item.event.title }}</h4>
                         </router-link>
-
-                        <!-- <v-btn flat :to="'/events/' + item.key" class="">
-                          <h3 class="primary--text mb0 mt0 pt0"> {{ item.event.title }}</h3>
-                        </v-btn> -->
                       </div>
                     </v-card-actions>
                   </v-card-title>
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
-                    <p class="location">{{ item.event.location.locality }}</p>
+                    <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                     <p class="date">{{ item.event.date | date}}</p>
                   </div>
                 </v-layout>
-                <!-- <v-layout>
-                  <v-card-actions wrap>
-                      <v-btn outline small color="red" class="ml-0 mt-2">
-                        <v-icon>delete</v-icon> Oups! Was not there
-                      </v-btn>
-                  </v-card-actions>
-                </v-layout> -->
               </v-flex>
               <v-flex xs2 sm2 md2>
                 <v-btn fab small class="error mt-4" @click="alertB4remove"><v-icon dark>delete_forever</v-icon></v-btn>

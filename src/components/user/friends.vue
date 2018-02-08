@@ -6,44 +6,44 @@
         </v-flex>
     </v-layout> -->
     <v-list subheader v-if="pendingFriends">
-          <v-subheader>Pending friends request</v-subheader>
+          <v-subheader>Friends invitations</v-subheader>
           <template v-for="user in pendingFriends" >
             <v-divider></v-divider>
             <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-              <v-flex xs3>
+              <v-flex xs2>
                 <v-list-tile-avatar>
                   <img :src="user.imageUrl"/>
                 </v-list-tile-avatar>
               </v-flex>
-              <v-flex xs9>
+              <v-flex xs4>
                 <v-list-tile-content>
                   <v-list-tile-title v-html="user.userName"></v-list-tile-title>
                 </v-list-tile-content>
               </v-flex>
-              <!-- <v-flex xs3>
+              <v-flex xs3>
                 <v-list-tile-action>
-                  <v-btn outline small class="green--text mt-2" @click="addFriend(user.id)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-                  <v-btn outline small class="red--text mt-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Refuse</v-btn>
+                  <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user.id)">Ignore</v-btn>
                 </v-list-tile-action>
-              </v-flex> -->
-              <!-- <v-flex xs3 class="ml-1">
+
+              </v-flex>
+              <v-flex xs3 class="ml-1">
                 <v-list-tile-action>
+                  <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
                 </v-list-tile-action>
-              </v-flex> -->
+              </v-flex>
             </v-list-tile>
-            <v-list-tile>
+            <!-- <v-list-tile>
               <v-flex xs6>
                 <v-list-tile-action>
-                  <v-btn outline small block class="green--text" @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-                  <!-- <v-btn outline small block class="green--text" @click="addFriend(user.id)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn> -->
+                  <v-btn outline small block class="primary--text" @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
                 </v-list-tile-action>
               </v-flex>
               <v-flex xs6>
                 <v-list-tile-action>
-                  <v-btn outline small block class="greyColors ml-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Refuse</v-btn>
+                  <v-btn outline small block class="greyColors ml-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Ignore</v-btn>
                 </v-list-tile-action>
               </v-flex>
-            </v-list-tile>
+            </v-list-tile> -->
           </template>
       </v-list>
       <v-divider></v-divider>

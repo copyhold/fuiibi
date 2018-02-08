@@ -103,17 +103,19 @@ new Vue({
     // console.log('should load it now')
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        console.log('[main.js] user', user)
         this.$store.dispatch('autoSignIn', user)
         this.$store.dispatch('fetchUserData')
         this.$store.dispatch('fetchUsersEvents')
         this.$store.dispatch('listenToNotifications')
         this.$store.dispatch('listenToNotificationsChanges')
         this.$store.dispatch('listenToInvitationRemoval')
+        this.$store.dispatch('loadUsers')
         // this.$store.dispatch('onEventChanged')
       }
     })
     // Here we load all the users of the app for TEST only, so that I can test friends requests
-    this.$store.dispatch('loadUsers')
+    // this.$store.dispatch('loadUsers')
     // this.$store.dispatch('loadNotifications')
   }
 })

@@ -73,9 +73,9 @@
     },
     methods: {
       /* eslint-disable */
-      wasThere (eventId) {
+      wasThere (key) {
         return this.$store.getters.user.events.findIndex(event => {
-          return event.eventId === eventId
+          return event.key === key
         }) >= 0
       },
       friendsCount (notification) {

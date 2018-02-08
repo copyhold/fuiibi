@@ -28,12 +28,19 @@
                 <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
               </v-list-tile-action>
               <v-list-tile-action v-else>
-                <v-btn @click="sendFriendRequest(user.id)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+                <v-btn @click="removeFriend(user.id)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
               </v-list-tile-action>
             </v-list-tile-action>
           </v-list-tile>
         </template>
     </v-list>
+    <v-layout>
+      <v-fab-transition >
+        <v-btn @click="refresh" color="orange" fixed bottom right fab class=" white--text">
+          <v-icon>autorenew</v-icon>
+        </v-btn>
+      </v-fab-transition>
+    </v-layout>
   </v-container>
 </template>
 
@@ -64,6 +71,13 @@
       }
     },
     methods: {
+      removeFriend (userId) {
+        console.log('removeFriend', userId)
+        this.$store.dispatch('removeFriend', userId)
+      },
+      refresh () {
+        this.$store.dispatch('loadUsers')
+      },
       sendFriendRequest (userId) {
         // console.log('userID from sendFriendRequest ', userId)
         this.$store.dispatch('sendFriendRequest', userId)

@@ -1,10 +1,6 @@
 <template lang="html">
   <v-container class="container">
-    <router-link
-        v-if="$routerHistory.hasHistory()"
-        :to="{ path: $routerHistory.previous().path }"
-        class="arrowBack"
-        >
+    <router-link v-if="$routerHistory.hasHistory()" :to="{ path: $routerHistory.previous().path }" class="arrowBack">
         <v-icon class="white--text">arrow_back</v-icon>
     </router-link>
     <v-layout row wrap v-if="loading">
@@ -21,20 +17,20 @@
               <h2>{{ event.event.title }}</h2>
           </v-card-title>
           <v-card-text>
-            <h3 class="mb-2"><v-icon class="mr-2">place</v-icon>
-              {{ event.event.location.route }}
-              {{ event.event.location.street_number }},
-              {{ event.event.location.locality }} - {{ event.event.location.country }}</h3>
-              <v-divider></v-divider>
-
-            <p class="mt-2"><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
-            <div >
+            <div class="mb-2">
               {{ event.event.description }}
             </div>
-            <div v-if="event.counter > 0">
+            <v-divider class="mb-2"></v-divider>
+            <p><v-icon class="mr-2">place</v-icon>
+              {{ event.event.location.route }}
+              {{ event.event.location.street_number }},
+              {{ event.event.location.locality }} - {{ event.event.location.country }}</p>
+            <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
+            <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
+            <div v-if="event.counter > 1" class="ml -2">
               <b>{{ event.counter }}</b> users were there
             </div>
-            <div v-else>
+            <div v-else class="ml-2">
               <b>{{ event.counter }}</b> user was there
             </div>
           </v-card-text>
@@ -71,8 +67,8 @@
               </v-layout>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Cancel</v-btn>
-                <v-btn color="green darken-1" flat="flat" @click="addPicture">Add</v-btn>
+                <v-btn class="primary--text" flat="flat" @click.native="dialog = false">Cancel</v-btn>
+                <v-btn raised class="primary" @click="addPicture">Add</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -87,18 +83,6 @@
     </v-layout>
   </v-container>
 </template>
-<!-- Below I create a template because I want to show it only if the user is the creator of the meetup. -->
-<!-- <template v-if="userIsCreator">
-  <v-spacer></v-spacer>
-  <!-- below I link my :meetup from the EditMeetupDetailsDialog.vue in the props to the meetup here that has been uploaded in this template -->
-  <!-- <app-edit-meetup-details-dialog :meetup="meetup"></app-edit-meetup-details-dialog>
-</template> -->
-<!-- <div class="info--text">
-   -
-</div> -->
-<!-- <div>
-  <app-edit-meetup-date-dialog :event="event" v-if="userIsCreator"></app-edit-meetup-date-dialog>
-</div> -->
 <script>
 export default {
   props: ['id'],
@@ -113,26 +97,12 @@ export default {
   },
   computed: {
     event () {
+      console.log('[event] id', this.id)
+      console.log('[event] event', event)
+      console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
+
       return this.$store.getters.getEventData(this.id)
     },
-    // eventLenght () {
-    //   console.log(this.event)
-    //   console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
-    //   console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
-    //   return this.event.event.users.__ob__.dep.subs.length
-    // },
-    // galery () {
-    //   return this.$store.getters.getGalery()
-    // },
-    // userIsAuthenticated () {
-    //   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-    // },
-    // userIsCreator () {
-    //   if (!this.userIsAuthenticated) {
-    //     return false
-    //   }
-    //   return this.$store.getters.user.id === this.meetup.creatorId
-    // },
     loading () {
       return this.$store.getters.loading
     }
@@ -163,7 +133,7 @@ export default {
     addPicture () {
       this.dialog = false
       // Vuex
-      this.$store.dispatch('addPicture', {eventId: this.id, image: this.image})
+      this.$store.dispatch('addPicture', {key: this.id, image: this.image})
     }
   }
 }
@@ -194,6 +164,7 @@ export default {
     top: 0px;
     font-size: 20px;
     font-weight: 200;
+    min-height: 120px;
   }
   @media only screen and (max-width: 599px) {
     .container {
@@ -219,5 +190,23 @@ export default {
       margin: 8px !important;
     }
   }
-
 </style>
+
+<!-- // eventLenght () {
+//   console.log(this.event)
+//   console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
+//   console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
+//   return this.event.event.users.__ob__.dep.subs.length
+// },
+// galery () {
+//   return this.$store.getters.getGalery()
+// },
+// userIsAuthenticated () {
+//   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
+// },
+// userIsCreator () {
+//   if (!this.userIsAuthenticated) {
+//     return false
+//   }
+//   return this.$store.getters.user.id === this.meetup.creatorId
+// }, -->
