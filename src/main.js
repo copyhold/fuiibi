@@ -110,6 +110,7 @@ new Vue({
         this.$store.dispatch('listenToNotifications')
         this.$store.dispatch('listenToNotificationsChanges')
         this.$store.dispatch('listenToInvitationRemoval')
+        this.$store.dispatch('listenToFriendRemoval')
         this.$store.dispatch('loadUsers')
         // this.$store.dispatch('onEventChanged')
       }

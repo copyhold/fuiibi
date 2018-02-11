@@ -74,9 +74,11 @@
       },
       pendingFriends () {
         if (this.$store.getters.user) {
-          if (this.$store.getters.user.pendingFriends.length > 0) {
-            // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
-            return this.$store.getters.user.pendingFriends
+          if (this.$store.getters.user.pendingFriends) {
+            if (this.$store.getters.user.pendingFriends.length > 0) {
+              // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
+              return this.$store.getters.user.pendingFriends
+            }
           }
         }
       },

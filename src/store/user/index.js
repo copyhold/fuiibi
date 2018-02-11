@@ -11,7 +11,7 @@ export default {
       const events = state.user.events
       events.splice(events.findIndex(event => event.key === payload), 1)
       Reflect.deleteProperty(state.user.events, payload)
-      console.log('[removeEventFromUser] mutation payload', payload);
+      // console.log('[removeEventFromUser] mutation payload', payload);
     },
     addProfilePicture (state, payload) {
       const user = payload.user
@@ -365,7 +365,7 @@ export default {
             // counter: this.counter
           }
           if (newEvent.event.imageUrl) {
-            console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
+            // console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
             commit('addEventToMyEvents', newEvent)
             commit('addEvent', newEvent)
           }
@@ -386,8 +386,8 @@ export default {
         // const users = []
         const userData = data.val()
         const fbKey = data.key
-        console.log('[loadUsers] userData', userData)
-        console.log('[loadUsers] fbKey', fbKey)
+        // console.log('[loadUsers] userData', userData)
+        // console.log('[loadUsers] fbKey', fbKey)
         const newUser = {
           id: userData.id,
           imageUrl: userData.imageUrl,
@@ -492,6 +492,18 @@ export default {
       firebase.database().ref('/users/' + user.id + '/friends').child(payload.fbKey).remove()
       // We update the store
       commit('removeFriendFromUser', friendId)
+      // We need to get the firebase key of the user in the friend's list to remove it from his database.
+      firebase.database().ref('/users/' + friendId + '/friends').once('value')
+      .then( data => {
+        const dataPairs = data.val()
+        console.log('[removeFriend] dataPairs', dataPairs);
+        for (let key in dataPairs) {
+          if (dataPairs[key] === user.id) {
+            console.log('[removeFriend] dans le for if (dataPairs[key] === user.id)', key)
+            firebase.database().ref('/users/' + friendId + '/friends').child(key).remove()
+          }
+        }
+      })
     },
     refuseFriend ({commit, getters}, payload) {
       const friendId = payload.id
@@ -512,6 +524,15 @@ export default {
         const friendId = data.val()
         console.log('[listenToInvitationRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())
         commit('removePendingInvitationFromUser', friendId)
+      })
+    },
+    listenToFriendRemoval ({commit, getters}) {
+      const userId = getters.user.id
+      console.log('[listenToFriendRemoval] avant d ecouter le child_removed');
+      firebase.database().ref('/users/' + userId + '/friends').on('child_removed', data => {
+        const friendId = data.val()
+        console.log('[listenToFriendRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())
+        commit('removeFriendFromUser', friendId)
       })
     }
   },

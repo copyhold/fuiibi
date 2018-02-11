@@ -21,18 +21,40 @@
               {{ event.event.description }}
             </div>
             <v-divider class="mb-2"></v-divider>
-            <p><v-icon class="mr-2">place</v-icon>
+            <p><v-icon class="mr-1">place</v-icon>
               {{ event.event.location.route }}
               {{ event.event.location.street_number }},
-              {{ event.event.location.locality }} - {{ event.event.location.country }}</p>
+              {{ event.event.location.locality }} - {{ event.event.location.country }}
+            </p>
             <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
+            <v-layout>
+              <v-flex xs10>
+                <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
+                <div v-if="event.counter > 1" class="ml -2">
+                  <b>{{ event.counter }}</b> users were there
+                </div>
+                <div v-else class="ml-2">
+                  <b>{{ event.counter }}</b> user was there
+                </div>
+              </v-flex>
+              <v-flex xs2 sm2 md2>
+                <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
+                <span v-else>
+                  <v-btn fab flat large class="iwt clicked" center></v-btn>
+                  <v-badge overlap overlay color="red" class="vuBadge">
+                    <v-icon dark slot="badge">check</v-icon>
+                  </v-badge>
+                </span>
+              </v-flex>
+            </v-layout>
+            <!--
             <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
             <div v-if="event.counter > 1" class="ml -2">
               <b>{{ event.counter }}</b> users were there
             </div>
             <div v-else class="ml-2">
               <b>{{ event.counter }}</b> user was there
-            </div>
+            </div>-->
           </v-card-text>
         </v-card>
       </v-flex>
@@ -55,7 +77,8 @@
     </v-layout>
     <v-layout row class="mb-2" justify-center fluid>
       <v-flex xs12>
-          <v-btn bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
+          <v-btn v-if="userWasThere" bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
+          <v-btn v-else bottom fixed large class="greyColors fullScreen darkgray--text"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
           <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
           <v-dialog v-model="dialog" max-width="310">
             <v-card>
@@ -105,9 +128,19 @@ export default {
     },
     loading () {
       return this.$store.getters.loading
+    },
+    userWasThere () {
+      console.log('[userWasThere]')
+      return this.$store.getters.user.events.findIndex(event => {
+        return event.key === this.id
+      }) >= 0
     }
   },
   methods: {
+    iwtClicked () {
+      console.log('[iwtClicked]')
+      this.$store.dispatch('iwtClicked', {key: this.id})
+    },
     onPickFile () {
       // the $refs below give us access to all the ref elements in the template of this component
       this.$refs.fileInput.click()
@@ -188,6 +221,22 @@ export default {
     }
     .dialog {
       margin: 8px !important;
+    }
+    .iwt{
+      height: 72px;
+      width: 72px;
+      background: url("../img/iwt2.png") center/95% no-repeat;
+      position: absolute;
+      right: 0px;
+      bottom: 8px;
+    }
+    .clicked{
+      filter: opacity(50%);
+    }
+    span.vuBadge {
+      bottom: 32px;
+      right: 16px;
+      position: absolute;
     }
   }
 </style>

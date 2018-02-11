@@ -8,7 +8,7 @@ export default {
   },
   mutations: {
     addEvent (state, payload) {
-      console.log('[addEvent] payload', payload);
+      // console.log('[addEvent] payload', payload);
       state.events.push(payload)
     },
     // updateEventCounter (state, payload) {
@@ -140,6 +140,8 @@ export default {
         // Here we get the event data from fb in order to add it to our store in the notif
         firebase.database().ref('/events/' + key).once('value')
         .then(data => {
+          const fbKey = data.key
+          const userEvents =  getters.user.events
           const event = data.val()
           const newNotif = {
             event: event,
@@ -148,7 +150,20 @@ export default {
             dateToRank : event.dateToRank,
             friendsCount : this.friendsCount
           }
+          const newEvent = {
+            event: event,
+            key: key,
+            fbKey: fbKey
+          }
           // I don't commit the addEvent below as it is done in the fetchEvents with the added_child.
+          if(userEvents.findIndex(event => event.key === key) >= 0) {
+            console.log('[listenToNotifications] dans myEvent', key);
+            // commit('addEvent', newEvent)
+            // console.log('[listenToNotifications] je regarde si cet evenement est dans la liste des userEvents, si non, on le rejoute dans le store', newEvent);
+          } else {
+            // console.log('[listenToNotifications] PAS *********** dans myEvent', key);
+            commit('addEvent', newEvent)
+          }
           // commit('addEvent', newEvent)
           commit('addNotification', newNotif)
           commit('setLoading', false)
@@ -337,7 +352,7 @@ export default {
       return (key) => {
         console.log('[getEventData] key', key);
         return state.events.find((event) => {
-          console.log('[getEventData] event', event);
+          // console.log('[getEventData] event', event);
           return event.key === key
         })
       }

@@ -44,10 +44,12 @@
       },
       filteredFriends () {
         if (this.$store.getters.user) {
-          if (this.$store.getters.user.friends.length > 0) {
-            return this.friends.filter((user) => {
-              return user.userName.match(this.search)
-            })
+          if (this.$store.getters.user.friends) {
+            if (this.$store.getters.user.friends.length > 0) {
+              return this.friends.filter((user) => {
+                return user.userName.match(this.search)
+              })
+            }
           }
         }
       },

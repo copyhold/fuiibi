@@ -97,7 +97,7 @@
     },
     methods: {
       alertB4remove (event) {
-        console.log('[alertB4remove] methods payload', event)
+        // console.log('[alertB4remove] methods payload', event)
         this.$store.dispatch('removeEventFromUser', event)
       }
     }
