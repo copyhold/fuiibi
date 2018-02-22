@@ -21,11 +21,16 @@
         </v-btn>
       </v-toolbar-items>
 
-      <v-bottom-nav absolute shift class="bottomAtTop primary hidden-sm-and-up">
+      <v-bottom-nav absolute class="bottomAtTop primary hidden-sm-and-up">
+        <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
+          <span>{{ item.title }}</span>
+        </v-btn>
+      </v-bottom-nav>
+
+      <v-bottom-nav absolute shift class="bottomAtTop primary hidden-sm-and-up" v-if="userIsAuthenticated" >
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
           <span>{{ item.title }}</span>
           <v-icon left>{{ item.icon }}</v-icon>
-
         </v-btn>
       </v-bottom-nav>
 
@@ -70,7 +75,7 @@
       sideMenu () {
         let sideMenu = [
           {icon: 'face', title: 'Sign Up', link: '/signup'},
-          {icon: 'lock_open', title: 'Sign In', link: '/signin'}
+          {icon: 'lock_open', title: 'Sign In', link: '/'}
         ]
         if (this.userIsAuthenticated) {
           sideMenu = [
@@ -83,7 +88,7 @@
       menuItems () {
         let menuItems = [
           {icon: 'face', title: 'Sign Up', link: '/signup'},
-          {icon: 'lock_open', title: 'Sign In', link: '/signin'}
+          {icon: 'lock_open', title: 'Sign In', link: '/'}
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
@@ -101,7 +106,7 @@
     methods: {
       onLogout () {
         this.$store.dispatch('logout')
-        this.$router.push('/signin')
+        this.$router.push('/')
       }
     }
   }
@@ -110,6 +115,12 @@
 <style media="screen">
   #app{
     background-color: rgb(239, 238, 236)
+  }
+  /*#app{
+    background: url("./images/icons/imageForBackground.png");
+  }*/
+  .clicked{
+    filter: opacity(50%);
   }
   .marginTop {
     margin-top: 60px;

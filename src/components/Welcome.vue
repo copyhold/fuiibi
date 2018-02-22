@@ -73,6 +73,27 @@
       addProfilePicture () {
         console.log('[addProfilePicture] clicked - this.image', this.image)
         this.$store.dispatch('addProfilePicture', {image: this.image})
+
+        // var deferredPrompt
+        // window.addEventListener('beforeinstallprompt', function (event) {
+        //   console.log('beforeinstallprompt fired')
+        //   event.preventDefault()
+        //   deferredPrompt = event
+        //   return false
+        // })
+        // if (deferredPrompt) {
+        //   deferredPrompt.prompt()
+        //   deferredPrompt.userChoice.then(function (choiceResult) {
+        //     console.log(choiceResult.outcome)
+        //
+        //     if (choiceResult.outcome === 'dismissed') {
+        //       console.log('User cancelled installation')
+        //     } else {
+        //       console.log('User added to home screen')
+        //     }
+        //   })
+        //   deferredPrompt = null
+        // }
       },
       onPickFile () {
         this.$refs.fileInput.click()

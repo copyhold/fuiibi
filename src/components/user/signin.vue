@@ -1,49 +1,57 @@
 <template >
-<v-container class="container">
+<v-container class="allPage">
+  <v-container class="container">
 
-  <v-layout row v-if="error">
-    <v-flex sx12 sm6 offset-sm3>
-      <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
-    </v-flex>
-  </v-layout>
+    <v-layout row v-if="error">
+      <v-flex sx12 sm6 offset-sm3>
+        <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
+      </v-flex>
+    </v-layout>
 
-  <v-layout row>
-    <v-flex xs12 sm6 offset-sm3>
-      <v-card>
-        <v-card-text>
-          <v-container>
-            <form @submit.prevent="onSignin">
+    <v-layout row>
+      <v-flex xs12 sm6 offset-sm3 >
+        <v-card class="tranparency">
+          <v-card-title primary-title>
+            <h2>Signin</h2>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <form @submit.prevent="onSignin">
 
-              <v-layout row>
-                <v-flex xs12>
-                  <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
-                  </v-text-field>
-                </v-flex>
-              </v-layout>
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
 
-              <v-layout row>
-                <v-flex xs12>
-                  <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
-                  </v-text-field>
-                </v-flex>
-              </v-layout>
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
+                    </v-text-field>
+                  </v-flex>
+                </v-layout>
 
-              <v-layout row>
-                <v-flex xs12>
-                  <v-btn type="submit" :disabled="loading" :loading="loading">
-                    Sign In
-                    <span slot="loader" class="custom-loader">
-                      <v-icon light>cached</v-icon>
-                    </span>
-                  </v-btn>
-                </v-flex>
-              </v-layout>
+                <v-layout row>
+                  <v-flex xs12>
+                    <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                      Sign In
+                      <span slot="loader" class="custom-loader">
+                        <v-icon light>cached</v-icon>
+                      </span>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
 
-            </form>
-          </v-container>
-        </v-card-text>
-      </v-card>
-    </v-flex>
+              </form>
+            </v-container>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
+  <v-layout justify-center>
+    <h2 class="white--text mt-4" justify-center>Keep your events alive.</h2>
   </v-layout>
 </v-container>
 </template>
@@ -88,11 +96,24 @@
 </script>
 
 <style scoped>
-    .container{
-      margin-top: 0;
+    .allPage{
+      background: url('../../images/welcomeImage1.jpg') no-repeat;
+      background-size: auto 100%;
+      -webkit-animation: slide 30s linear infinite;
+      height: 100vh;
+      width: 100vw;
     }
-
-
+    @-webkit-keyframes slide {
+      from { background-position: 0 0; }
+      to { background-position: -650px 0; }
+    }
+    .container{
+      margin-top: 0px;
+      background-color: rgba(255, 255, 255, 0);
+    }
+    .tranparency {
+      background-color: rgba(255, 255, 255, 0.7);
+    }
 /*This is the code to make the spinner spin*/
       .custom-loader {
         animation: loader 1s infinite;
@@ -130,6 +151,5 @@
           transform: rotate(360deg);
         }
       }
-
 
 </style>

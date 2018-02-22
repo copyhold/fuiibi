@@ -1,8 +1,12 @@
 <template lang="html">
   <v-container class="container">
-    <router-link
+    <!-- <router-link
         v-if="$routerHistory.hasHistory()"
         :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        > -->
+    <router-link
+        :to="'/notifications'"
         class="arrowBack"
         >
         <v-icon class="white--text">arrow_back</v-icon>

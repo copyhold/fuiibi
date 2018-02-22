@@ -18,17 +18,19 @@
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                <v-btn outline small class="greyColors" flat>Pending</v-btn>
+                <v-btn small class="greyColors" flat>Pending...</v-btn>
             </v-list-tile-action>
             <!-- <v-list-tile-action v-else-if="hasPendingInvitation(user)">
               <v-btn outline small class="greyColors" flat>Pending</v-btn>
             </v-list-tile-action> -->
             <v-list-tile-action v-else>
               <v-list-tile-action v-if="!isFriend(user)">
-                <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn>
+                <!-- <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn> -->
+                <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
               </v-list-tile-action>
               <v-list-tile-action v-else>
-                <v-btn @click="removeFriend(user)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+                <!-- <v-btn @click="removeFriend(user)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
+                <v-btn @click="removeFriend(user)" flat small class="greyColors">Remove</v-btn>
               </v-list-tile-action>
             </v-list-tile-action>
           </v-list-tile>
@@ -92,9 +94,11 @@
       hasPendingInvitation (user) {
         if (this.$store.getters.user) {
           // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-          return this.$store.getters.user.pendingInvitations.findIndex(friend => {
-            return friend.id === user.id
-          }) >= 0
+          if (this.$store.getters.user.pendingInvitations) {
+            return this.$store.getters.user.pendingInvitations.findIndex(friend => {
+              return friend.id === user.id
+            }) >= 0
+          }
         }
       },
       isPendingFriend (user) {
@@ -115,10 +119,7 @@
     border-color: #ced0d4;
     color: #4b4f56;
   }
-  /*.avatarImg{
-    background: url("../../images/profile.png") center/80% no-repeat;
-    overflow: hidden;
-  }*/
+
   #inputSearch {
     position: fixed;
     top: 50px;

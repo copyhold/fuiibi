@@ -1,6 +1,14 @@
 <template lang="html">
   <v-container class="container">
-    <router-link v-if="$routerHistory.hasHistory()" :to="{ path: $routerHistory.previous().path }" class="arrowBack">
+    <!-- <router-link v-if="$routerHistory.hasHistory()" :to="{ path: $routerHistory.previous().path }" class="arrowBack"> -->
+      <!-- <router-link
+          :to="$router.go(-1)"
+          class="arrowBack"
+          > -->
+      <router-link
+          :to="'/notifications'"
+          class="arrowBack"
+          >
         <v-icon class="white--text">arrow_back</v-icon>
     </router-link>
     <v-layout row wrap v-if="loading">
@@ -30,11 +38,11 @@
             <v-layout>
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
-                <div v-if="event.counter > 1" class="ml -2">
-                  <b>{{ event.counter }}</b> users were there
+                <div v-if="event.event.counter > 1" class="ml -2">
+                  <b>{{ event.event.counter }}</b> users were there
                 </div>
                 <div v-else class="ml-2">
-                  <b>{{ event.counter }}</b> user was there
+                  <b>{{ event.event.counter }}</b> user was there
                 </div>
               </v-flex>
               <v-flex xs2 sm2 md2>
@@ -64,9 +72,15 @@
         <v-card>
           <v-container fluid>
             <v-layout row wrap>
-              <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id">
-                <v-card flat tile>
-                  <v-card-media :src="pic.imageUrl" height="150px" @click="carousel = true">
+              <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
+                <v-card flat tile class="picInGallery">
+                  <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" >
+                  </v-card-media>
+                </v-card>
+              </v-flex>
+              <v-flex xs3 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-xs-only">
+                <v-card flat tile class="picInGallery">
+                  <v-card-media :src="pic.imageUrl" height="150px" @click="carousel = true" >
                   </v-card-media>
                 </v-card>
               </v-flex>
@@ -77,8 +91,12 @@
     </v-layout>
     <v-layout row class="mb-2" justify-center fluid>
       <v-flex xs12>
-          <v-btn v-if="userWasThere" bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
-          <v-btn v-else bottom fixed large class="greyColors fullScreen darkgray--text"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
+        <v-fab-transition >
+          <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon>add_a_photo</v-icon></v-btn>
+          <v-btn v-else fixed bottom right fab class="greyColors darkgray--text mb-3"><v-icon>add_a_photo</v-icon></v-btn>
+        </v-fab-transition >
+          <!-- <v-btn v-if="userWasThere" bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
+          <v-btn v-else bottom fixed large class="greyColors fullScreen darkgray--text"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn> -->
           <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
           <v-dialog v-model="dialog" max-width="310">
             <v-card>
@@ -95,6 +113,7 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+
       </v-flex>
     </v-layout>
     <v-layout>
@@ -173,6 +192,9 @@ export default {
 </script>
 
 <style scoped>
+  .picInGallery{
+    padding: 1px;
+  }
   .container{
     margin-top: 0;
   }
@@ -225,7 +247,7 @@ export default {
     .iwt{
       height: 72px;
       width: 72px;
-      background: url("../img/iwt2.png") center/95% no-repeat;
+      background: url("../img/iwt3.png") center/95% no-repeat;
       position: absolute;
       right: 0px;
       bottom: 8px;

@@ -13,7 +13,7 @@
               <v-flex xs3 sm2 md2>
                 <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
               </v-flex>
-              <v-flex xs7 sm8 md8 class="ml-3">
+              <v-flex xs9 sm10 md10 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -31,10 +31,16 @@
                     <p class="date">{{ item.event.date | date}}</p>
                   </div>
                 </v-layout>
+                <v-layout>
+                    <v-btn flat small class="greyColors" absolute @click="alertB4remove(item)">Remove</v-btn>
+                    <!-- <v-btn flat small class="greyColors " absolute outline @click="alertB4remove(item)"><v-icon dark class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
+                    <!-- <v-btn fab small class="error mt-4" @click="alertB4remove(item)"><v-icon dark>delete_forever</v-icon></v-btn> -->
+                </v-layout>
               </v-flex>
-              <v-flex xs2 sm2 md2>
+              <!-- <v-flex xs2 sm2 md2>
+                <v-btn outline small class="greyColors" @click="alertB4remove(item)">Remove</v-btn>
                 <v-btn fab small class="error mt-4" @click="alertB4remove(item)"><v-icon dark>delete_forever</v-icon></v-btn>
-              </v-flex>
+              </v-flex> -->
             </v-layout>
           </v-container>
         </v-card>
@@ -81,7 +87,9 @@
     computed: {
       events () {
         // console.log('myEvents', this.$store.getters.user.events)
-        return this.$store.getters.user.events
+        if (this.$store.getters.user) {
+          return this.$store.getters.user.events
+        }
       },
       loading () {
         return this.$store.getters.loading
@@ -110,6 +118,13 @@
 }
 p {
   margin-bottom: 4px;
+}
+.greyColors{
+  background-color: #f6f7f9;
+  border-color: #ced0d4;
+  color: #4b4f56;
+  right: 0px;
+  bottom: 8px;
 }
 .date {
   color: grey;

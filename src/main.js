@@ -18,8 +18,11 @@ import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
-import Router from 'vue-router'
-import { routerHistory, writeHistory } from 'vue-router-back-button'
+// import Router from 'vue-router'
+// import { routerHistory, writeHistory } from 'vue-router-back-button'
+
+// eslint-disable-next-line
+//************************ SERVICE WORKER *****************************
 
 // if (!window.Promise) {
 //   window.Promise = Promise
@@ -39,23 +42,28 @@ import { routerHistory, writeHistory } from 'vue-router-back-button'
 // want as well to propose it after the user click the add picture button
 
 // eslint-disable-next-line
-var deferredPrompt
+// var deferredPrompt
+//
+// window.addEventListener('beforeinstallprompt', function (event) {
+//   console.log('beforeinstallprompt fired')
+//   event.preventDefault()
+//   deferredPrompt = event
+//   return false
+// })
 
-window.addEventListener('beforeinstallprompt', function (event) {
-  console.log('beforeinstallprompt fired')
-  event.preventDefault()
-  deferredPrompt = event
-  return false
-})
+// eslint-disable-next-line
+//***************************************************************************************************************
 
-Vue.use(Router)
-Vue.use(routerHistory)
-
-router.afterEach(writeHistory)
+// Vue.use(Router)
+// Vue.use(routerHistory)
+// //
+// router.afterEach(writeHistory)
 
 Vue.use(Vuetify, { theme: {
-  primary: '#00695c',
-  primaryDark: '#003d33',
+  primaryDark: '#01021E',
+  primary: '#0E1E51',
+  // primary: '#00695c',
+  // primaryDark: '#003d33',
   primaryLight: '#439889',
   secondary: '#004d40',
   accent: '#82B1FF',
@@ -86,8 +94,8 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router,
   store,
+  router,
   template: '<App/>',
   components: { App },
   created () {

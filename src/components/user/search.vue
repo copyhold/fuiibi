@@ -57,13 +57,13 @@
   }
   #inputSearch {
     position: fixed;
-    top: 40px;
+    top: 42px;
     right: 0px;
     width: 100%;
     height: 56px;
     padding: 8px;
     z-index: 2;
-    background: #00695c;
+    background: #0E1E51;
     font-size: 20px;
   }
   input {

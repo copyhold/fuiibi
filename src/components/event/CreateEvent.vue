@@ -1,8 +1,16 @@
 <template >
   <v-container class="container">
-    <router-link
+    <!-- <router-link
         v-if="$routerHistory.hasHistory()"
         :to="{ path: $routerHistory.previous().path }"
+        class="arrowBack"
+        > -->
+    <!-- <router-link
+        :to="$routerHistory.history.back()"
+        class="arrowBack"
+        > -->
+    <router-link
+        :to="'/notifications'"
         class="arrowBack"
         >
         <v-icon class="white--text">arrow_back</v-icon>
@@ -50,12 +58,12 @@
 
           <v-divider></v-divider>
 
-          <v-layout row wrap>
+          <!-- <v-layout row wrap>
             <v-flex xs12 sm12 offset-sm3>
               <v-btn raised outline class="primaryLight primaryLight--text" @click="getLocation">Current Location </v-btn>
               <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn>
             </v-flex>
-          </v-layout>
+          </v-layout> -->
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>

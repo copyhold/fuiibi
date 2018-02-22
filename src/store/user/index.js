@@ -19,9 +19,6 @@ export default {
         user.imageUrl = payload.imageUrl
       }
     },
-    // createEvent (state, payload) {
-    //   state.user.events.push(payload)
-    // },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
       state.user.notifications.sort((notificationA, notificationB) => {
@@ -45,7 +42,7 @@ export default {
       console.log('[updateNotification] notification', notification);
     },
     addEventToMyEvents (state, payload) {
-      console.log('[addEventToMyEvents] mutation => payload', payload);
+      // console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
         return eventA.event.dateToRank > eventB.event.dateToRank
@@ -55,7 +52,9 @@ export default {
       state.users = payload
     },
     addUser (state, payload) {
-      state.users.push(payload)
+      if (state.users.findIndex(user => user.id === payload.id) < 0) {
+        state.users.push(payload)
+      }
     },
     createUser (state, payload) {
       state.users.push(payload)
@@ -64,16 +63,13 @@ export default {
     addPendingInvitations(state, payload) {
       const newFriend = payload
       const id = newFriend.id
-      // console.log('[addPendingInvitations] newFriend', newFriend);
-      if(state.user.pendingInvitations.findIndex(friend => friend.id === payload.id) >= 0) {
-        console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
-        return
+      if (state.user.pendingInvitations) {
+        if(state.user.pendingInvitations.findIndex(friend => friend.id === payload.id) >= 0) {
+          console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
+          return
+        }
+        state.user.pendingInvitations.push(payload)
       }
-      // console.log('[addPendingInvitations] pushing the new invittation of payload to user', state.user.pendingInvitations);
-      state.user.pendingInvitations.push(payload)
-      // console.log('[addPendingInvitations] state.user.pendingInvitations', state.user.pendingInvitations);
-      // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-      // state.user.fbKeysInvitations[id] = payload.fbKey
     },
     addPendingFriendToUser(state, payload) {
       const newFriend = payload
@@ -226,10 +222,6 @@ export default {
       commit('setUser', {
         id: payload.uid,
         email: payload.email
-        //  events: [],
-        //  friends: [],
-        //  userName: payload.userName,
-        //  imageUrl: payload.imageUrl
        })
     },
 
@@ -270,8 +262,6 @@ export default {
         firebase.database().ref('/users/' + getters.user.id + '/friends/').on('child_added', data => {
           const userId = data.val()
           const fbKey = data.key
-          // console.log('[fetchUserData] child_added in friends data.val()', data.val())
-          // console.log('[fetchUserData] child_added in friends data.key', data.key)
           firebase.database().ref('/users/' + userId).once('value').then(data =>{
               const friendData = data.val()
               const newFriend = {
@@ -365,8 +355,9 @@ export default {
             // counter: this.counter
           }
           if (newEvent.event.imageUrl) {
-            // console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
+            console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
             commit('addEventToMyEvents', newEvent)
+            // I add the event already with a pic event so the new one created will come from the createEvent
             commit('addEvent', newEvent)
           }
           commit('setLoading', false)
@@ -386,8 +377,6 @@ export default {
         // const users = []
         const userData = data.val()
         const fbKey = data.key
-        // console.log('[loadUsers] userData', userData)
-        // console.log('[loadUsers] fbKey', fbKey)
         const newUser = {
           id: userData.id,
           imageUrl: userData.imageUrl,
@@ -398,28 +387,6 @@ export default {
         commit('addUser', newUser)
         commit('setLoading', false)
         })
-      // firebase.database().ref('users').once('value')
-      // .then((data) => {
-      //   const users = []
-      //   const obj = data.val()
-      //   for (let key in obj) {
-      //     console.log('[]');
-      //     users.push({
-      //       id: key,
-      //       userName: obj[key].userName,
-      //       imageUrl: obj[key].imageUrl,
-      //       friends: []
-      //     })
-      //   }
-      //   commit('setLoadedUsers', users)
-      //   commit('setLoading', false)
-      // })
-      // .catch(
-      //   (error) => {
-      //     console.log(error)
-      //     commit('setLoading', false)
-      //   }
-      // )
     },
 
     // **************ACTIONS****************

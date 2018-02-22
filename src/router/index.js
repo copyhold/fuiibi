@@ -2,8 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 // import Home from '@/components/Home'
 import CreateEvent from '@/components/event/CreateEvent'
-import Meetups from '@/components/event/Meetups'
-import meetup from '@/components/event/meetup'
 import event from '@/components/event/event'
 import myEvents from '@/components/event/myEvents'
 import Profile from '@/components/user/Profile'
@@ -30,30 +28,16 @@ export default new Router({
       name: 'Search',
       component: Search
     },
-    // {
-    //   path: '/',
-    //   name: 'Notifications',
-    //   component: Notifications
-    // },
-    // {
-    //   path: '/index',
-    //   name: 'Notifications',
-    //   component: Notifications
-    // },
     {
       path: '/myEvents',
       name: 'My Events',
       component: myEvents
     },
     {
-      path: '/meetups',
-      name: 'Meetups',
-      component: Meetups
-    },
-    {
       path: '/notifications',
       name: 'Notifications',
-      component: Notifications
+      component: Notifications,
+      beforeEnter: AuthGard
     },
     {
       path: '/friends',
@@ -66,12 +50,6 @@ export default new Router({
       component: CreateEvent,
       // Here below, we check that the auth-gard allow to enter this page, that the user is authenticated
       beforeEnter: AuthGard
-    },
-    {
-      path: '/meetups/:id',
-      name: 'Meetup',
-      props: true,
-      component: meetup
     },
     {
       path: '/events/:id',
@@ -97,7 +75,7 @@ export default new Router({
       component: signup
     },
     {
-      path: '/signin',
+      path: '/',
       name: 'signin',
       component: signin
     }

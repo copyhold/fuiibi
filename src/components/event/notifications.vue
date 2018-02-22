@@ -27,6 +27,8 @@
                 <v-layout>
                   <div offset-xs3>
                     <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
+                    <!-- <p class="location" v-if="locality">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p> -->
+                    <!-- <p class="location" v-else>{{ notification.event.location.country }}</p> -->
                     <p class="date">{{ notification.event.date | date}}</p>
                   </div>
                 </v-layout>
@@ -65,7 +67,9 @@
   export default {
     computed: {
       notifications () {
-        return this.$store.getters.user.notifications
+        if (this.$store.getters.user) {
+          return this.$store.getters.user.notifications
+        }
       },
       loading () {
         return this.$store.getters.loading
@@ -78,13 +82,13 @@
           return event.key === key
         }) >= 0
       },
-      friendsCount (notification) {
-        notification.friendsCount > 0
-      },
+      // friendsCount (notification) {
+      //   notification.friendsCount > 0
+      // },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', notification)
       },
-      myFriends (notification) {
+      // myFriends (notification) {
         // var counter = 0
         // var friends = this.$store.getters.user.friends
         // var eventUsers = notification.event.users
@@ -99,8 +103,8 @@
         //     }
         //   })
         // }
-        return notification.event.users.counter
-      },
+      //   return notification.event.users.counter
+      // },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
         if (diff < 60) {
@@ -142,7 +146,7 @@
   .iwt{
     height: 90px;
     width: 90px;
-    background: url("../img/iwt2.png") center/95% no-repeat;
+    background: url("../img/iwt3.png") center/95% no-repeat;
     position: absolute;
     right: 0px;
   }

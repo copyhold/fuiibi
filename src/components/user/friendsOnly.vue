@@ -18,7 +18,8 @@
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn>
+              <!-- <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
+              <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </template>
@@ -78,6 +79,7 @@
     background-color: #f6f7f9;
     border-color: #ced0d4;
     color: #4b4f56;
+    left: 16px;
   }
   .container{
     margin-top: 0;
