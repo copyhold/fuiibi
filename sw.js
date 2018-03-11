@@ -1,15 +1,22 @@
-var CACHE_STATIC_NAME = 'static-v4'
-var CACHE_DYNAMIC_NAME ='dynamic-v2'
+var CACHE_STATIC_NAME = 'static-v6'
+var CACHE_DYNAMIC_NAME ='dynamic-v4'
 var STATIC_FILES = [
   '/',
   '/src/App.vue',
   '/src/main.js',
   '/index.html',
   '/src/components/Welcome.vue',
-  'src/components/img/iwt2.png',
-  'src/images/icons/app-icon-48x48.png',
-  'src/images/icons/app-icon-96x96.png',
-  'src/images/icons/app-icon-144x144.png',
+  'src/components/img/iwt3.png',
+  'src/images/icons/icon-48x48.png',
+  'src/images/icons/icon-72x72.png',
+  'src/images/icons/icon-96x96.png',
+  'src/images/icons/icon-128x128.png',
+  'src/images/icons/icon-144x144.png',
+  'src/images/icons/icon-152x152.png',
+  'src/images/icons/icon-192x192.png',
+  'src/images/icons/icon-384x384.png',
+  'src/images/icons/icon-512x512.png',
+  'src/images/welcomeImage1.jpg',
   'https://fonts.googleapis.com/css?family=Roboto:400,700',
   'https://fonts.googleapis.com/icon?family=Material+Icons',
   'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'

@@ -17,9 +17,12 @@
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
-                      <router-link :to="'/events/' + notification.key">
+                      <!-- <router-link :to="'/events/' + notification.key">
                         <h4 class="pl-2 primaryDark--text"> {{ notification.event.title }}</h4>
-                      </router-link>
+                      </router-link> -->
+                      <div @click="eventDetails(notification.key)">
+                        <h4 class="pl-2 primaryDark--text"> {{ notification.event.title }}</h4>
+                      </div>
                         <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
                   </v-card-title>
@@ -27,8 +30,8 @@
                 <v-layout>
                   <div offset-xs3>
                     <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
-                    <!-- <p class="location" v-if="locality">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p> -->
-                    <!-- <p class="location" v-else>{{ notification.event.location.country }}</p> -->
+                    <!-- <p class="location" v-if="locality(notification)">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
+                    <p class="location" v-else>{{ notification.event.location.country }}</p> -->
                     <p class="date">{{ notification.event.date | date}}</p>
                   </div>
                 </v-layout>
@@ -56,7 +59,7 @@
       </v-flex>
     </v-layout>
     <v-fab-transition >
-      <v-btn router to="/event/new" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn @click="newEvent" color="orange" fixed bottom right fab class=" white--text">
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -67,15 +70,28 @@
   export default {
     computed: {
       notifications () {
-        if (this.$store.getters.user) {
+        if (this.$store.getters.user.notifications) {
+          // console.log('[notifications] this.$store.getters.user.notifications', this.$store.getters.user.notifications)
           return this.$store.getters.user.notifications
         }
       },
       loading () {
         return this.$store.getters.loading
+      },
+      locality (notification) {
+        if (notification.event) {
+          console.log('[locality] notification.event', notification.event)
+          return true
+        }
       }
     },
     methods: {
+      newEvent () {
+        this.$router.push('/event/new')
+      },
+      eventDetails (key) {
+        this.$router.push('/events/' + key)
+      },
       /* eslint-disable */
       wasThere (key) {
         return this.$store.getters.user.events.findIndex(event => {
@@ -86,27 +102,11 @@
       //   notification.friendsCount > 0
       // },
       iwtClicked (notification) {
-        this.$store.dispatch('iwtClicked', notification)
+        this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , userName: this.$store.getters.user.userName})
       },
-      // myFriends (notification) {
-        // var counter = 0
-        // var friends = this.$store.getters.user.friends
-        // var eventUsers = notification.event.users
-        // var friend
-        // console.log('friends', friends);
-        // console.log('eventUsers', eventUsers);
-        // for (friend in friends) {
-        //   console.log(this.$store.getters.user.events);
-        //   this.eventUsers.findIndex(user => {
-        //     if(user === friend.id) {
-        //       console.log('found friend');
-        //     }
-        //   })
-        // }
-      //   return notification.event.users.counter
-      // },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
+        // console.log('[timeStamp] notification', notification);
         if (diff < 60) {
           return diff + 'min'
         }

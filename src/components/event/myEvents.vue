@@ -47,7 +47,7 @@
       </v-flex>
     </v-layout>
     <v-fab-transition >
-      <v-btn router to="/event/new" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn @click="newEvent" color="orange" fixed bottom right fab class=" white--text">
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -104,6 +104,9 @@
       }
     },
     methods: {
+      newEvent () {
+        this.$router.push('/event/new')
+      },
       alertB4remove (event) {
         // console.log('[alertB4remove] methods payload', event)
         this.$store.dispatch('removeEventFromUser', event)

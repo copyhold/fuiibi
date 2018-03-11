@@ -12,11 +12,11 @@ export default {
       state.events.push(payload)
     },
     updateEventCounter (state, payload) {
-      console.log('[updateEventCounter] dans mutation, payload', payload);
+      // console.log('[updateEventCounter] dans mutation, payload', payload);
       const eventData = state.events.find(event => {
         return event.key === payload.key
       })
-      console.log('[updateEventCounter] dans mutation, event', eventData);
+      // console.log('[updateEventCounter] dans mutation, event', eventData);
       // if (payload.counter) {
       //   console.log('[updateEventCounter] dans if (payload.counter)');
       //   eventData.event.counter = payload.counter
@@ -27,8 +27,8 @@ export default {
         return event.key === payload.key
       })
       eventData.event = payload.event
-      console.log('in addpicture eventData', eventData);
-      console.log('in addpicture mutation', payload);
+      console.log('[updateEvent] eventData', eventData);
+      console.log('[updateEvent] mutation payload', payload);
     }
   },
   actions: {
@@ -49,13 +49,17 @@ export default {
       // let id = payload.eventId
       let imageUrl = ''
       let key
-      console.log('[addpicture] imaage', image)
+      console.log('[addpicture] image', image)
       console.log('[addpicture] id', id)
+      console.log('[addPicture] this.imageUrl', this.imageUrl)
       //Reach out to firebase and store it
+      // Not sure about the below, but it seems that I push anything in order to get the key from FB
+      // and then I stock the image in FB storage and then I update it to the event pictures with the real pic.
       firebase.database().ref('events/' + id + '/pictures/').push(imageUrl)
       .then((data) => {
         key = data.key
         console.log('key of the resoponse from firebase when stocking the imagge', key)
+        console.log('[addPicture] imageUrl', this.imageUrl)
         return key
       }).then(key => {
         // I stock the event's image in FB storage
@@ -66,6 +70,7 @@ export default {
       .then(fileData => {
         imageUrl = fileData.metadata.downloadURLs[0]
         // to reach the specific item witht the key in the events array:
+        console.log('[addPicture] imageUrl', imageUrl);
         return firebase.database().ref('events/' + id + '/pictures/' + key).update({imageUrl: imageUrl})
       }).then(() => {
         // here we commit that to my local store
@@ -83,87 +88,52 @@ export default {
     },
 
     listenToNotifications ({commit, getters}) {
-      var clickerName;
-      var friendsCount;
-      var counter;
-      var eventsUsers;
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
       firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_added', data => {
         // In order to find the data.ref_.key, I console.log the data and look into the response
         const key = data.ref_.key
-        // I want to get the name of the user that sent this notification
-        firebase.database().ref('users/' + getters.user.id + '/notifications/' + key).limitToLast(1).on('child_added', data => {
-          const clickerId = data.val()
-          // Let's get the userName of the clicker to pass it to the notification
-          firebase.database().ref('users/' + clickerId).once('value')
-          .then( data => {
-            this.clickerName = data.val().userName
-            })
-          });
-        // J'ESSAYE DE PRENDRE LES FRIENDS ET DE VOIR SI ILS SONT DANS LES USERS DE L'EVENT
-        firebase.database().ref('users/' + getters.user.id + '/friends/').once('value')
+        const notifData = data.val()
+        var thisEvent;
+        var counter;
+
+        firebase.database().ref('/events/' + key).once('value')
         .then( data => {
-          const friendsArray = data.val()
-          // console.log('friendsArray', friendsArray);
-          firebase.database().ref('events/' + key + '/users/').once('value')
-          .then( data => {
-            this.eventsUsers = data.val()
-            // console.log('eventsUsers', this.eventsUsers)
-          })
-          for (let friend in friendsArray) {
-            const userId = friendsArray[friend]
-            // console.log('[listenToNotifications] userId dans for (let friend in friendsArray)', userId);
-            // if(this.eventsUsers.findIndex(friend => friend.id === userId) >= 0) {
-            //   counter++
-            //   console.log('counter', counter);
-            // }
-            // console.log('[listenToNotifications] friend in friendsArray', userId.length);
-          }
-        })
-        // I get the number of element in the array users in the event and update the event of the store with the new event user number of the event.
-        // firebase.database().ref('events/' + key + '/users/').once('value')
-        // .then(data =>{
-        //   this.counter = data.numChildren()
-        // })
-        // I get the numer of users in the event. The issue is that it need to be updated each time there is one more user announced
-        firebase.database().ref('events/' + key + '/users/').once('value', data => {
-          console.log('[listenToNotifications] data', data.val());
-          const counter = data.numChildren()
-          console.log('[listenToNotifications] counter', counter);
-          commit('updateEventCounter', {counter: counter, key: key})
+          this.thisEvent = data.val()
+          console.log('[listenToNotifications] this.thisEvent', this.thisEvent);
         })
         .then( _=> {
-          firebase.database().ref('events/' + key + '/users/').on('child_added', data => {
-            console.log('[listenToNotifications] data', data.val());
-            counter++
-            console.log('[listenToNotifications] counter', counter);
-            commit('updateEventCounter', {counter: counter, key: key})
+          firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
+          .then( data => {
+            // console.log('[listenToNotifications] users', data.val());
+            this.counter = data.numChildren()
+            // console.log('[listenToNotifications] counter', this.counter);
           })
         })
-        // Here we get the event data from fb in order to add it to our store in the notif
-        firebase.database().ref('/events/' + key).once('value')
-        .then(data => {
+        .then( _=> {
           const fbKey = data.key
           const userEvents =  getters.user.events
-          const event = data.val()
+          console.log('[listenToNotifications] userEvents', userEvents);
+          // const event = data.val()
           const newNotif = {
-            event: event,
+            event: this.thisEvent,
             key: key,
-            clickerName : this.clickerName,
-            dateToRank : event.dateToRank,
-            friendsCount : this.friendsCount
+            clickerName : notifData.clickerName,
+            dateToRank : notifData.dateToRank,
+            friendsCount : this.counter
           }
+          ////   VERIFIER QUE LE FBKEY SOIT JUSTE!!!!!!!!!!!!!!!!!!!!!!
           const newEvent = {
-            event: event,
+            event: this.thisEvent,
             key: key,
             fbKey: fbKey
           }
           // I commit the new event only if it doesn't exist in the userEvents list. Otherwhise, it's done by the fetchEvents and createEvent.
-          if(userEvents.findIndex(event => event.key === key) < 0) {
+          if(userEvents.findIndex(event => this.thisEvent.key === key) < 0) {
             console.log('[listenToNotifications] new event commited from here because not on eventuser list', newEvent);
             commit('addEvent', newEvent)
           }
+          console.log('[listenToNotifications] newNotif', newNotif);
           commit('addNotification', newNotif)
           commit('setLoading', false)
         })
@@ -171,67 +141,57 @@ export default {
     },
 
     listenToNotificationsChanges ({commit, getters}) {
-      var clickerName;
-      var friendsCount;
+      // var clickerName;
+      // var friendsCount;
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
       firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_changed', data => {
         // In order to find the data.ref_.key, I console.log the data and look into the response
         const key = data.ref_.key
-        firebase.database().ref('users/' + getters.user.id + '/notifications/' + key).once('value')
-        .then(data => {
-          this.friendsCount = data.numChildren()
-          console.log('[listenToNotificationsChanges] data.val()', data.val());
-          console.log('[listenToNotificationsChanges] friendsCount', friendsCount);
-        })
-        // I want to get the name of the user that sent this notification
-        firebase.database().ref('users/' + getters.user.id + '/notifications/' + key).limitToLast(1).on('child_added', data => {
-          const clickerId = data.val()
-          console.log('[listenToNotificationsChanges] clickerId', clickerId);
-          // Let's get the userName of the clicker to pass it to the notification
-          firebase.database().ref('users/' + clickerId).once('value')
-          .then( data => {
-            this.clickerName = data.val().userName
-            console.log('[listenToNotificationsChanges] this.clickerName', this.clickerName);
-            })
-        });
-        // Here we get the event data from fb in order to add it to our store in the notif
+        const notifData = data.val()
+        var thisEvent;
+        var counter;
+
         firebase.database().ref('/events/' + key).once('value')
-        .then(data => {
-          const event = data.val()
-          const newNotif = {
-            // event: event,
-            key: key,
-            clickerName : this.clickerName,
-            dateToRank : - Date.now(),
-            friendsCount : this.friendsCount
-          }
-          console.log('[listenToNotificationsChanges] newNotif avant de le faire le commit de updateNotification', newNotif);
-          commit('updateNotification', newNotif)
-          commit('setLoading', false)
+        .then( data => {
+          this.thisEvent = data.val()
+          console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
+        })
+        .then( _=> {
+          firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
+          .then( data => {
+            this.counter = data.numChildren()
+          })
+        })
+        .then( _ => {
+          firebase.database().ref('/events/' + key).once('value')
+          .then(data => {
+            const fbKey = data.key
+            const userEvents =  getters.user.events
+            const event = data.val()
+            const newNotif = {
+              key: key,
+              clickerName : notifData.clickerName,
+              dateToRank : notifData.dateToRank,
+              friendsCount : this.counter
+            }
+
+            // Here update firebase
+            console.log('[listenToNotificationsChanges] newNotif avant de le faire le commit de updateNotification', newNotif);
+            commit('updateNotification', newNotif)
+            commit('setLoading', false)
+          })
         })
       })
     },
 
-    // onEventChanged ({commit, getters}) {
-    //   // commit('setLoading', true)
-    //   firebase.database().ref('events').on('child_changed', data =>{
-    //     const key = data.ref_.key
-    //     // I get the number of element in the array users in the event and update the event of the store with the new event user number of the event.
-    //     firebase.database().ref('events/' + key + '/users/').once('value')
-    //     .then(data => {
-    //       let counter = data.numChildren()
-    //       console.log('[onEventChanged] {counter, key} just avant le commit', counter, key);
-    //       commit ('updateEventCounter', {counter, key})
-    //       // commit('setLoading', false)
-    //     })
-    //   })
-    // },
-
     iwtClicked ({commit, getters}, payload) {
       console.log('[iwtClicked] notification - payload', payload);
-      const key = payload.key
-      // I push the new event key in the events array of the creator user
+      const key = payload.notification.key
+      const clickerId = payload.userId
+      const clickerName = payload.userName
+      console.log('[iwtClicked] clickerId', clickerId);
+      // I push the new event key in the events array of the clicker user
       firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
       .catch((error) => {
         console.log(error);
@@ -247,8 +207,16 @@ export default {
         const dataPairs = data.val()
         for (let item in dataPairs) {
           const userId = dataPairs[item]
-          // I send notifications to each friend of the user on the newly created event
-          firebase.database().ref('/users/' + userId + '/notifications/' + key).push(getters.user.id)
+          // I send notifications to each friend of the user about the clicked event
+          firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
+          console.log('[iwtClicked] after push userId');
+          console.log('[iwtClicked] clickerName', clickerName);
+          // I update the clickerId and the dateToRank
+          firebase.database().ref('/users/' + userId + '/notifications/' + key).update({
+            clickerName: clickerName,
+            clickerId: clickerId,
+            dateToRank: - Date.now()
+          });
         }
         commit('setLoading', false)
       })
@@ -258,7 +226,7 @@ export default {
       })
     },
 
-    createEvent ({commit, getters}, payload) {
+    createEvent ({commit, getters, dispatch}, payload) {
       const eventData = {
         title: payload.title,
         location: payload.location,
@@ -266,8 +234,8 @@ export default {
         date: payload.date.toISOString(),
         duration: payload.duration,
         creatorId: getters.user.id,
-        creationDate: Date(),
-        dateToRank: - Date.now()
+        creationDate: Date()
+        // dateToRank: - Date.now()
       }
       console.log('[createEvent] eventData', eventData);
       let imageUrl
@@ -284,7 +252,6 @@ export default {
         firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
         .then( data => {
           this.fbKey = data.key
-          console.log('[createEvent] fbkey', this.fbKey);
         })
         .catch((error) => {
           console.log(error);
@@ -307,7 +274,10 @@ export default {
       })
       .then(fileData => {
         imageUrl = fileData.metadata.downloadURLs[0]
+        // addPicture(payload.image, key)
+        dispatch('addPicture', {image:payload.image, key: key})
         // to reach the specific item with the key in the events array and set the imageUrl stored above:
+        // Here we set the picture as the event picture
         return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
       }).then(() => {
         // here we commit that to my local store
@@ -321,23 +291,16 @@ export default {
           creationDate: new Date(),
           imageUrl: imageUrl,
           users: this.users,
-          dateToRank: - Date.now(),
-          counter: 1
+          dateToRank: - Date.now()
+          // counter: 1
         }
-        // const newEvent = {
-        //   event: newEventData,
-        //   key: key,
-        //   dateToRank: - Date.now(),
-        //   clickerName : getters.user.userName,
-        //   counter: 1
-        // }
 
         const newEvent = {
           event: newEventData,
           key: key,
           fbKey: this.fbKey
         }
-        // I commit here in the addEvent only the events created here. The one already existing are fetched by the fetchEvents.
+        // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
         commit('addEvent', newEvent)
         commit('addEventToMyEvents', newEvent)
         // I get the friend's list of the user in order to send them notifications
@@ -347,7 +310,14 @@ export default {
           for (let item in dataPairs) {
             const userId = dataPairs[item]
             // I send notifications to each friend of the user on the newly created event
-            firebase.database().ref('/users/' + userId + '/notifications/' + key).push(getters.user.id)
+            firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
+            // I set the clickerId and the dateToRank
+            console.log('[createEvent] just b4 .set clickerName etc');
+            firebase.database().ref('/users/' + userId + '/notifications/' + key).update({
+              clickerName: getters.user.userName,
+              clickerId: getters.user.id,
+              dateToRank: - Date.now()
+            });
           }
           commit('setLoading', false)
         })

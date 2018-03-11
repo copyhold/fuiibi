@@ -21,6 +21,7 @@ export default {
     },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
+      console.log('[mutations addNotification] payload', payload);
       state.user.notifications.sort((notificationA, notificationB) => {
         return notificationA.dateToRank > notificationB.dateToRank
       })
@@ -39,13 +40,16 @@ export default {
       if (payload.friendsCount) {
         notification.friendsCount = payload.friendsCount
       }
+      state.user.notifications.sort((notificationA, notificationB) => {
+        return notificationA.dateToRank > notificationB.dateToRank
+      })
       console.log('[updateNotification] notification', notification);
     },
     addEventToMyEvents (state, payload) {
       // console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        return eventA.event.dateToRank > eventB.event.dateToRank
+        return eventA.event.date < eventB.event.date
       })
     },
     setLoadedUsers (state, payload) {
@@ -337,25 +341,13 @@ export default {
         const fbKey = data.key
         firebase.database().ref('/events/' + key).once('value').then(data =>{
           const eventData = data.val()
-          // let counter;
-          // // I get the number of element in the array users in the event and update the event of the store with the new event user number of the event.
-          // firebase.database().ref('events/' + key + '/users/').once('value')
-          // .then(data =>{
-          //   this.counter = data.numChildren()
-          //   console.log('[fetchUsersEvents] counter => data.val().users.numChildren()', this.counter);
-          //   // commit ('updateEventUsersCounter', {counter, key})
-          // })
-          // .then( _=> {
-          //
-          // })
           const newEvent = {
             event: eventData,
             key: key,
             fbKey: fbKey
-            // counter: this.counter
           }
           if (newEvent.event.imageUrl) {
-            console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
+            // console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
             commit('addEventToMyEvents', newEvent)
             // I add the event already with a pic event so the new one created will come from the createEvent
             commit('addEvent', newEvent)

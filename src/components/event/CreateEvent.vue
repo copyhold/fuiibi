@@ -1,23 +1,11 @@
 <template >
   <v-container class="container">
-    <!-- <router-link
-        v-if="$routerHistory.hasHistory()"
-        :to="{ path: $routerHistory.previous().path }"
-        class="arrowBack"
-        > -->
-    <!-- <router-link
-        :to="$routerHistory.history.back()"
-        class="arrowBack"
-        > -->
-    <router-link
-        :to="'/notifications'"
-        class="arrowBack"
-        >
+    <div @click="back" class="arrowBack">
         <v-icon class="white--text">arrow_back</v-icon>
-    </router-link>
+    </div>
     <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
-        <h2>Create a new event </h2>
+      <v-flex xs12 sm6 offset-sm3 class="mt-2">
+        <h3 class="mb-2">Create a new event </h3>
         <v-switch v-bind:label="`Public`" v-model="ex11"></v-switch>
       </v-flex>
     </v-layout>
@@ -43,7 +31,7 @@
           <v-layout row class="mb-2">
             <v-flex xs12 sm6 offset-sm3>
               <!-- In order to load an image to Firebase -->
-              <v-btn raised outline class="primaryLight primaryLight--text" @click="onPickFile">Upload Image </v-btn>
+              <v-btn raised outline class="primary primary--text" @click="onPickFile">Upload Image </v-btn>
               <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
             the accept image is in order to accept image and nothing else-->
               <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
@@ -68,13 +56,15 @@
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
                 <v-icon class="mr-3">place</v-icon>
-                <vue-google-autocomplete
-                id="autoComplete"
-                classname="form-control"
-                placeholder="Location*"
-                v-on:placechanged="getAddressData"
-                >
+                <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
                 </vue-google-autocomplete>
+                <!-- <vuetify-google-autocomplete
+                    id="map"
+                    prepend-icon="place"
+                    placeholder="Start typing"
+                    v-on:placechanged="getAddressData"
+                >
+                </vuetify-google-autocomplete> -->
             </v-flex>
           </v-layout>
 
@@ -114,16 +104,7 @@
           <v-layout>
             <v-flex xs12 sm6 offset-sm3>
               <v-flex xs12>
-                <v-select
-                  v-bind:items="states"
-                  v-model="durationInput"
-                  label="Duration"
-                  single-line
-                  auto
-                  prepend-icon="history"
-                  hide-details
-                  required
-                ></v-select>
+                <v-select v-bind:items="states" v-model="durationInput" label="Duration" single-line auto prepend-icon="history" hide-details required></v-select>
               </v-flex>
             </v-flex>
           </v-layout>
@@ -140,14 +121,10 @@
 </template>
 
 <script>
-  // import VueGoogleAutocomplete from 'vue-google-autocomplete'
-  //
-  // Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
-
   export default {
     data () {
       return {
-        durationInput: '2 hours',
+        durationInput: '',
         ex11: true,
         modal2: false,
         modal: false,
@@ -161,7 +138,7 @@
         // eslint-disable-next-line
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
-        address: {},
+        address: '',
         items: [
           { text: 'State 1' },
           { text: 'State 2' },
@@ -182,7 +159,12 @@
     // },
     computed: {
       formIsValid () {
-        return this.title !== '' && this.address !== '' && this.imageUrl !== ''
+        if (this.address.country && this.address.locality && this.address.route) {
+          console.log('[formIsValid] this.address', this.address);
+          return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+        }
+        // console.log('[formIsValid] this.address', this.address);
+        // return this.title !== '' && this.address.country !== {} && this.imageUrl !== ''
       },
       submittableDateTime () {
         const date = new Date(this.date)
@@ -199,15 +181,25 @@
       }
     },
     methods: {
+      back () {
+        this.$router.go(-1)
+      },
       /**
       * When the location found
       * @param {Object} addressData Data of the found location
       * @param {Object} placeResultData PlaceResult object
       * @param {String} id Input container ID
       */
+      // getAddressData: function (addressData, placeResultData, id) {
+      //     this.address = addressData;
+      // },
       getAddressData: function (addressData, placeResultData, id) {
-          this.address = addressData;
+        console.log('[getAddressData]');
+        this.address = addressData;
       },
+      // getAddressData: function (addressData, placeResultData) {
+      //   this.address = addressData;
+      // },
       getLocation () {
         console.log('getLocation')
         console.log('durationInput', this.durationInput);

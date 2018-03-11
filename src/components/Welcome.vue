@@ -42,7 +42,12 @@
           <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="3">
-          <v-card color="grey lighten-3" class="mb-5" height="300px">Time to look for friends! Let's search for them!</v-card>
+          <v-card color="grey lighten-3" class="mb-5" height="300px">
+            <v-card-text>Now that your account has been set up, you are ready to look for your friends using the app!
+              We will redicect you to the search page so that you can contact your friends. If you would like to have Fuiibi's icon on your
+              mobile, you should accept when it will be proposed to you, otherwise, just go to setting and check how to do it! Enjoy!
+            </v-card-text>
+          </v-card>
           <v-btn color="info" @click.native="e1 = 2" flat><v-icon></v-icon>Back</v-btn>
           <v-btn @click.native="addProfilePicture" color="primary" :to="'/search'" >Finish</v-btn>
         </v-stepper-content>
@@ -73,6 +78,47 @@
       addProfilePicture () {
         console.log('[addProfilePicture] clicked - this.image', this.image)
         this.$store.dispatch('addProfilePicture', {image: this.image})
+
+        var date = new Date()
+        var fbKey = 'welcomeEvent'
+        var key = 'welcomeEvent'
+        var event = {
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=241c26b9-e086-4f03-ad49-63ead90c87d9',
+          title: 'Your subscribtion',
+          description: 'Congratulations for your first event! This event has been created automatically and will be deleted soon. But go and open your fist personal event and it will be automatically shared with all your friends.',
+          counter: 2,
+          creationDate: Date(),
+          location: {
+            administrative_area_level_1: 'My room',
+            country: 'Planet earth',
+            latitude: 1,
+            longitude: 1,
+            locality: 'Home',
+            postal_code: '4747'
+          },
+          date: date.toISOString(),
+          duration: '2 minutes',
+          creatorId: this.$store.getters.user.id,
+          dateToRank: -Date.now()
+        }
+        var clickerName = 'Fuiibi team'
+
+        const newNotif = {
+          event: event,
+          key: key,
+          clickerName: clickerName,
+          dateToRank: event.dateToRank,
+          friendsCount: this.counter
+        }
+        const newEvent = {
+          event: event,
+          key: key,
+          fbKey: fbKey
+        }
+
+        this.$store.commit('addEventToMyEvents', newEvent)
+        this.$store.commit('addNotification', newNotif)
+        this.$store.commit('addEvent', newEvent)
 
         // var deferredPrompt
         // window.addEventListener('beforeinstallprompt', function (event) {

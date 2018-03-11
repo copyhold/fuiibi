@@ -16,6 +16,7 @@ import EditMeetupDateDialog from './components/event/Edit/EditMeetupDateDialog.v
 import RegisterDialog from './components/event/Registration/RegisterDialog.vue'
 import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
+// import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
 // import Router from 'vue-router'
@@ -37,11 +38,11 @@ import FriendsOnly from './components/user/friendsOnly.vue'
 //     console.log(err)
 //   })
 // }
-
-// Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
-// want as well to propose it after the user click the add picture button
-
-// eslint-disable-next-line
+//
+// // Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
+// // want as well to propose it after the user click the add picture button
+//
+// // eslint-disable-next-line
 // var deferredPrompt
 //
 // window.addEventListener('beforeinstallprompt', function (event) {
@@ -58,6 +59,11 @@ import FriendsOnly from './components/user/friendsOnly.vue'
 // Vue.use(routerHistory)
 // //
 // router.afterEach(writeHistory)
+
+// Vue.use(VuetifyGoogleAutocomplete, {
+//   apiKey: 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY' // Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
+//   // version: '...', // Optional
+// })
 
 Vue.use(Vuetify, { theme: {
   primaryDark: '#01021E',
@@ -86,6 +92,7 @@ Vue.component('app-alert', AlertCmp)
 Vue.component('app-meetup-register-dialog', RegisterDialog)
 Vue.component('app-event-addpicture-dialog', AddPictureDialog)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
+// Vue.component('vuetify-google-autocomplete', VuetifyGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
 Vue.component('friends-only', FriendsOnly)
 

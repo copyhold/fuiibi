@@ -1,16 +1,11 @@
 <template lang="html">
   <v-container class="container">
-    <!-- <router-link v-if="$routerHistory.hasHistory()" :to="{ path: $routerHistory.previous().path }" class="arrowBack"> -->
-      <!-- <router-link
-          :to="$router.go(-1)"
-          class="arrowBack"
-          > -->
-      <router-link
-          :to="'/notifications'"
-          class="arrowBack"
-          >
+    <!-- <router-link :to="'/notifications'" class="arrowBack">
+      <v-icon class="white--text">arrow_back</v-icon>
+    </router-link> -->
+    <div @click="back" class="arrowBack">
         <v-icon class="white--text">arrow_back</v-icon>
-    </router-link>
+    </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
@@ -69,7 +64,6 @@
     </v-layout>
     <v-layout class="mt-2">
       <v-flex xs12 sm12>
-        <v-card>
           <v-container fluid>
             <v-layout row wrap>
               <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
@@ -86,7 +80,6 @@
               </v-flex>
             </v-layout>
           </v-container>
-        </v-card>
       </v-flex>
     </v-layout>
     <v-layout row class="mb-2" justify-center fluid>
@@ -156,6 +149,9 @@ export default {
     }
   },
   methods: {
+    back () {
+      this.$router.go(-1)
+    },
     iwtClicked () {
       console.log('[iwtClicked]')
       this.$store.dispatch('iwtClicked', {key: this.id})
