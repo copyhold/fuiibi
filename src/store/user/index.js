@@ -21,7 +21,7 @@ export default {
     },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
-      console.log('[mutations addNotification] payload', payload);
+      // console.log('[mutations addNotification] payload', payload);
       state.user.notifications.sort((notificationA, notificationB) => {
         return notificationA.dateToRank > notificationB.dateToRank
       })
@@ -34,6 +34,9 @@ export default {
       if (payload.clickerName) {
         notification.clickerName = payload.clickerName
       }
+      if (payload.userId) {
+        notification.userId = payload.userId
+      }
       if (payload.dateToRank) {
         notification.dateToRank = payload.dateToRank
       }
@@ -44,6 +47,16 @@ export default {
         return notificationA.dateToRank > notificationB.dateToRank
       })
       console.log('[updateNotification] notification', notification);
+    },
+    updateUser (state, payload) {
+      console.log('[updateNotification] check the payload', payload)
+      const user = state.users.find(user => {
+        return user.id === payload.id
+      })
+      if (user.userEvents) {
+        user.userEvents = payload.userEvents
+      }
+      console.log('[updateuser] user', user);
     },
     addEventToMyEvents (state, payload) {
       // console.log('[addEventToMyEvents] mutation => payload', payload);
@@ -56,6 +69,7 @@ export default {
       state.users = payload
     },
     addUser (state, payload) {
+      // console.log('[addUser] payload', payload);
       if (state.users.findIndex(user => user.id === payload.id) < 0) {
         state.users.push(payload)
       }
@@ -339,6 +353,7 @@ export default {
       firebase.database().ref('/users/' + getters.user.id + '/userEvents/').orderByChild("dateToRank").on('child_added', data => {
         const key = data.val()
         const fbKey = data.key
+        // console.log('[fetchUsersEvents] fbKey - key', fbKey, key);
         firebase.database().ref('/events/' + key).once('value').then(data =>{
           const eventData = data.val()
           const newEvent = {
@@ -347,9 +362,10 @@ export default {
             fbKey: fbKey
           }
           if (newEvent.event.imageUrl) {
-            // console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
+            //console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
             commit('addEventToMyEvents', newEvent)
             // I add the event already with a pic event so the new one created will come from the createEvent
+            // console.log('[fetchUsersEvents] b4 commit addevent => newEvent', newEvent);
             commit('addEvent', newEvent)
           }
           commit('setLoading', false)
@@ -373,12 +389,61 @@ export default {
           id: userData.id,
           imageUrl: userData.imageUrl,
           userName: userData.userName,
-          fbKey: fbKey
+          fbKey: fbKey,
+          userEvents: userData.userEvents
         }
         // users.push(newFriend)
         commit('addUser', newUser)
         commit('setLoading', false)
         })
+    },
+
+    getUserData ({commit, getters}, payload) {
+      commit('setLoading', true)
+      const newUserEvents = []
+      firebase.database().ref('users/' + payload.userId).once('value')
+      .then( data => {
+        const userData = data.val()
+        const userEventsList = userData.userEvents
+        console.log('[getUserData] data', userData);
+        // ATTENTION THE FB KEY BELOW IS THE USER FBKEY AND NOT THE EVENT AS SENT TO THE STORE BELOW!!!!!!!!!!!!!!!!!
+        const fbKey = data.key
+        // const userEvents = []
+        for (let item in userEventsList) {
+          let eventId = userEventsList[item]
+          firebase.database().ref('events/' + eventId).once('value')
+          .then( data => {
+            const eventData = data.val()
+            const newEvent = {
+              event: eventData,
+              key: eventId,
+              fbKey: eventId
+            }
+            newUserEvents.push(newEvent)
+            commit('addEvent', newEvent)
+          })
+        }
+        // console.log('[getUserData] userEvents', userEvents);
+        // const newUser = {
+        //   id: payload.userId,
+        //   userEvents: userEvents
+        // }
+        // console.log('[getUserData] data', newUser);
+        // // users.push(newFriend)
+        // commit('updateUser', newUser)
+        // commit('setLoading', false)
+      })
+      .then( _ => {
+        console.log('[getUserData] userEvents', newUserEvents);
+        const newUser = {
+          id: payload.userId,
+          userEvents: newUserEvents
+        }
+        console.log('[getUserData] data', newUser);
+        // users.push(newFriend)
+        commit('updateUser', newUser)
+        commit('setLoading', false)
+      })
     },
 
     // **************ACTIONS****************

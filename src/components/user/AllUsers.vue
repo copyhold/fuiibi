@@ -10,19 +10,16 @@
         <!-- <template v-for="user in users" > -->
         <template v-for="user in filteredUsers" >
           <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
             <v-list-tile-avatar class="avatarImg">
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
-            <v-list-tile-content>
+            <v-list-tile-content  @click="getUserPage(user)" >
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
                 <v-btn small class="greyColors" flat>Pending...</v-btn>
             </v-list-tile-action>
-            <!-- <v-list-tile-action v-else-if="hasPendingInvitation(user)">
-              <v-btn outline small class="greyColors" flat>Pending</v-btn>
-            </v-list-tile-action> -->
             <v-list-tile-action v-else>
               <v-list-tile-action v-if="!isFriend(user)">
                 <!-- <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn> -->
@@ -73,6 +70,11 @@
       }
     },
     methods: {
+      getUserPage (key) {
+        console.log('[getUserPage] clicked key', key)
+        this.$store.dispatch('getUserData', {userId: key.id})
+        this.$router.push('/users/' + key.id)
+      },
       removeFriend (user) {
         console.log('removeFriend', user)
         this.$store.dispatch('removeFriend', user)

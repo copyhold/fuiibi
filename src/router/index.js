@@ -9,10 +9,11 @@ import signin from '@/components/user/signin'
 import signup from '@/components/user/signup'
 import AuthGard from './auth-guard'
 import friends from '@/components/user/friends'
-import friend from '@/components/user/friend'
+// import friend from '@/components/user/friend'
 import Notifications from '@/components/event/notifications'
 import Welcome from '@/components/Welcome'
 import Search from '@/components/user/search'
+import userPage from '@/components/user/userPage'
 
 Vue.use(Router)
 
@@ -58,11 +59,17 @@ export default new Router({
       component: event
     },
     {
-      path: '/friends/:id',
-      name: 'Friend',
+      path: '/users/:id',
+      name: 'UserPage',
       props: true,
-      component: friend
+      component: userPage
     },
+    // {
+    //   path: '/friends/:id',
+    //   name: 'Friend',
+    //   props: true,
+    //   component: friend
+    // },
     {
       path: '/profile',
       name: 'Profile',

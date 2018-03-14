@@ -1,14 +1,11 @@
 <template lang="html">
   <v-container class="container">
-    <!-- <router-link :to="'/notifications'" class="arrowBack">
-      <v-icon class="white--text">arrow_back</v-icon>
-    </router-link> -->
     <div @click="back" class="arrowBack">
         <v-icon class="white--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :witdh="7":size="70" v-if="loading"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-else>

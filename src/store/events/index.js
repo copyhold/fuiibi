@@ -8,8 +8,16 @@ export default {
   },
   mutations: {
     addEvent (state, payload) {
+      // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
+      if (state.events.findIndex(events => events.key === payload.key) < 0) {
+        console.log('[addEvent] event added', payload.key);
+        state.events.push(payload)
+      }
+      else {
+        console.log('[addEvent] event not added as already existing');
+      }
       // console.log('[addEvent] payload', payload);
-      state.events.push(payload)
+      // state.events.push(payload)
     },
     updateEventCounter (state, payload) {
       // console.log('[updateEventCounter] dans mutation, payload', payload);
@@ -100,7 +108,7 @@ export default {
         firebase.database().ref('/events/' + key).once('value')
         .then( data => {
           this.thisEvent = data.val()
-          console.log('[listenToNotifications] this.thisEvent', this.thisEvent);
+          // console.log('[listenToNotifications] this.thisEvent', this.thisEvent);
         })
         .then( _=> {
           firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
@@ -111,29 +119,31 @@ export default {
           })
         })
         .then( _=> {
+          // HERE THE FBKEY AND KEY ARE THE SAME AS IT'S NOT PASSED IN THE NOTIFICATION OBJECT AND WE DONT NEED IT ANYWAY AS WE WONT DELETE NOTIFICATIONS
           const fbKey = data.key
           const userEvents =  getters.user.events
-          console.log('[listenToNotifications] userEvents', userEvents);
           // const event = data.val()
           const newNotif = {
             event: this.thisEvent,
             key: key,
             clickerName : notifData.clickerName,
+            userId: notifData.userId,
             dateToRank : notifData.dateToRank,
             friendsCount : this.counter
           }
-          ////   VERIFIER QUE LE FBKEY SOIT JUSTE!!!!!!!!!!!!!!!!!!!!!!
           const newEvent = {
             event: this.thisEvent,
             key: key,
             fbKey: fbKey
           }
           // I commit the new event only if it doesn't exist in the userEvents list. Otherwhise, it's done by the fetchEvents and createEvent.
-          if(userEvents.findIndex(event => this.thisEvent.key === key) < 0) {
-            console.log('[listenToNotifications] new event commited from here because not on eventuser list', newEvent);
+          if (userEvents.findIndex(item => item.key === key) < 0) {
+            console.log('[listenToNotifications] NOT ON THE userEvents', newEvent);
             commit('addEvent', newEvent)
+          }else {
+            console.log('[listenToNotifications] ALREADY IN THE userEvents else *******************************');
           }
-          console.log('[listenToNotifications] newNotif', newNotif);
+          // console.log('[listenToNotifications] newNotif', newNotif);
           commit('addNotification', newNotif)
           commit('setLoading', false)
         })
@@ -172,6 +182,7 @@ export default {
             const newNotif = {
               key: key,
               clickerName : notifData.clickerName,
+              userId: notifData.userId,
               dateToRank : notifData.dateToRank,
               friendsCount : this.counter
             }
@@ -188,9 +199,9 @@ export default {
     iwtClicked ({commit, getters}, payload) {
       console.log('[iwtClicked] notification - payload', payload);
       const key = payload.notification.key
-      const clickerId = payload.userId
+      const userId = payload.userId
       const clickerName = payload.userName
-      console.log('[iwtClicked] clickerId', clickerId);
+      console.log('[iwtClicked] clickerId', userId);
       // I push the new event key in the events array of the clicker user
       firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
       .catch((error) => {
@@ -214,7 +225,7 @@ export default {
           // I update the clickerId and the dateToRank
           firebase.database().ref('/users/' + userId + '/notifications/' + key).update({
             clickerName: clickerName,
-            clickerId: clickerId,
+            userId: userId,
             dateToRank: - Date.now()
           });
         }
@@ -234,8 +245,8 @@ export default {
         date: payload.date.toISOString(),
         duration: payload.duration,
         creatorId: getters.user.id,
-        creationDate: Date()
-        // dateToRank: - Date.now()
+        creationDate: Date(),
+        dateToRank: - Date.now()
       }
       console.log('[createEvent] eventData', eventData);
       let imageUrl
@@ -308,14 +319,14 @@ export default {
         .then(data => {
           const dataPairs = data.val()
           for (let item in dataPairs) {
-            const userId = dataPairs[item]
+            const friendId = dataPairs[item]
             // I send notifications to each friend of the user on the newly created event
-            firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
+            firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
             // I set the clickerId and the dateToRank
             console.log('[createEvent] just b4 .set clickerName etc');
-            firebase.database().ref('/users/' + userId + '/notifications/' + key).update({
+            firebase.database().ref('/users/' + friendId + '/notifications/' + key).update({
               clickerName: getters.user.userName,
-              clickerId: getters.user.id,
+              userId: getters.user.id,
               dateToRank: - Date.now()
             });
           }

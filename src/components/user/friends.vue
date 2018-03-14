@@ -16,7 +16,7 @@
                 </v-list-tile-avatar>
               </v-flex>
               <v-flex xs4>
-                <v-list-tile-content>
+                <v-list-tile-content @click="getUserPage(user)">
                   <v-list-tile-title v-html="user.userName"></v-list-tile-title>
                 </v-list-tile-content>
               </v-flex>
@@ -32,18 +32,6 @@
                 </v-list-tile-action>
               </v-flex>
             </v-list-tile>
-            <!-- <v-list-tile>
-              <v-flex xs6>
-                <v-list-tile-action>
-                  <v-btn outline small block class="primary--text" @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-                </v-list-tile-action>
-              </v-flex>
-              <v-flex xs6>
-                <v-list-tile-action>
-                  <v-btn outline small block class="greyColors ml-1" @click="refuseFriend(user.id)"><v-icon class="mr-1">close</v-icon>Ignore</v-btn>
-                </v-list-tile-action>
-              </v-flex>
-            </v-list-tile> -->
           </template>
       </v-list>
       <v-divider></v-divider>
@@ -96,6 +84,11 @@
       }
     },
     methods: {
+      getUserPage (key) {
+        console.log('[getUserPage] clicked key', key)
+        this.$store.dispatch('getUserData', {userId: key.id})
+        this.$router.push('/users/' + key.id)
+      },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
         // this.$store.dispatch('sendFriendRequest', userId)

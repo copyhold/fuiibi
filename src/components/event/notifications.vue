@@ -2,7 +2,7 @@
   <v-container class="container">
     <v-layout row>
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
@@ -17,11 +17,8 @@
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
-                      <!-- <router-link :to="'/events/' + notification.key">
-                        <h4 class="pl-2 primaryDark--text"> {{ notification.event.title }}</h4>
-                      </router-link> -->
                       <div @click="eventDetails(notification.key)">
-                        <h4 class="pl-2 primaryDark--text"> {{ notification.event.title }}</h4>
+                        <h4 class="pl-2 primaryDark--text bold"> {{ notification.event.title }}</h4>
                       </div>
                         <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
@@ -38,9 +35,9 @@
                 <v-layout>
                   <div offset-xs3>
                     <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
-                    <p><b>{{ notification.clickerName }}</b> was there!</p>
-                    <!-- <p v-if="friendsCount(notification)"><b>{{ notification.clickerName }}</b> was there!</p>
-                    <p else><b>{{ notification.clickerName }}</b> and {{ notification.friendsCount }} friends were there!</p> -->
+                    <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
+                    <p v-if="friendsCount(notification)" class="bold" @click="getUserPage(notification)">{{ notification.clickerName }} was there!</p>
+                    <p else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount }} friends were there!</p>
                   </div>
                 </v-layout>
               </v-flex>
@@ -92,15 +89,20 @@
       eventDetails (key) {
         this.$router.push('/events/' + key)
       },
+      getUserPage (key) {
+        console.log('[getUserPage] clicked key', key)
+        this.$store.dispatch('getUserData', {userId: key.userId})
+        this.$router.push('/users/' + key.userId)
+      },
       /* eslint-disable */
       wasThere (key) {
         return this.$store.getters.user.events.findIndex(event => {
           return event.key === key
         }) >= 0
       },
-      // friendsCount (notification) {
-      //   notification.friendsCount > 0
-      // },
+      friendsCount (notification) {
+        notification.friendsCount > 0
+      },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , userName: this.$store.getters.user.userName})
       },
@@ -122,6 +124,9 @@
 </script>
 
 <style scoped>
+.bold{
+  font-weight: 500;
+}
 .application a {
     text-decoration: none;
   }

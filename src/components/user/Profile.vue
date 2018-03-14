@@ -1,16 +1,8 @@
 <template lang="html">
   <v-container class="container">
-    <!-- <router-link
-        v-if="$routerHistory.hasHistory()"
-        :to="{ path: $routerHistory.previous().path }"
-        class="arrowBack"
-        > -->
-    <router-link
-        :to="'/notifications'"
-        class="arrowBack"
-        >
+    <div @click="back" class="arrowBack">
         <v-icon class="white--text">arrow_back</v-icon>
-    </router-link>
+    </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
@@ -63,6 +55,9 @@
       }
     },
     methods: {
+      back () {
+        this.$router.go(-1)
+      },
       sendFriendRequest (userId) {
         console.log('userID from sendFriendRequest ', userId)
         this.$store.dispatch('sendFriendRequest', userId)

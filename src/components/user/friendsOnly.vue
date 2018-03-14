@@ -14,7 +14,7 @@
             <v-list-tile-avatar>
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
-            <v-list-tile-content>
+            <v-list-tile-content @click="getUserPage(user)">
               <v-list-tile-title v-html="user.userName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
@@ -62,6 +62,11 @@
       }
     },
     methods: {
+      getUserPage (key) {
+        console.log('[getUserPage] clicked key', key)
+        this.$store.dispatch('getUserData', {userId: key.id})
+        this.$router.push('/users/' + key.id)
+      },
       removeFriend (user) {
         console.log('removeFriend', user)
         this.$store.dispatch('removeFriend', user)

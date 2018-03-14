@@ -2,7 +2,7 @@
   <v-container class="container">
     <v-layout row>
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+          <v-progress-circular indeterminate color="primary" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
@@ -18,9 +18,9 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div>
-                        <router-link :to="'/events/' + item.key">
-                          <h4 class="pl-2 primaryDark--text"> {{ item.event.title }}</h4>
-                        </router-link>
+                        <div @click="eventDetails(item.key)">
+                          <h4 class="pl-2 primaryDark--text bold"> {{ item.event.title }}</h4>
+                        </div>
                       </div>
                     </v-card-actions>
                   </v-card-title>
@@ -86,7 +86,6 @@
 
     computed: {
       events () {
-        // console.log('myEvents', this.$store.getters.user.events)
         if (this.$store.getters.user) {
           return this.$store.getters.user.events
         }
@@ -104,6 +103,9 @@
       }
     },
     methods: {
+      eventDetails (key) {
+        this.$router.push('/events/' + key)
+      },
       newEvent () {
         this.$router.push('/event/new')
       },
@@ -116,6 +118,9 @@
 </script>
 
 <style scoped>
+.bold{
+  font-weight: 500;
+}
 .application a {
     text-decoration: none;
 }
