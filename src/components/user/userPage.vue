@@ -11,15 +11,15 @@
     <v-layout row wrap>
       <v-flex xs12>
 
-        <v-card>
-          <v-card-media :src="user.imageUrl" height="300px">
+        <v-card class="mb-1">
+          <v-card-media :src="user.imageUrl" height="120px" >
           </v-card-media>
           <v-card-title class="eventTitle">
-              <h2>{{ user.userName }}</h2>
+              <h2>{{ user.firstName }}</h2>
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <h3> some more info about the user</h3>
+            <h3> some more info about the user sdfsdf</h3>
           </v-card-text>
         </v-card>
 
@@ -34,14 +34,12 @@
               <v-flex xs3 sm2 md2>
                 <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
               </v-flex>
-              <v-flex xs9 sm10 md10 class="ml-3">
+              <v-flex xs7 sm8 md8 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
-                      <div>
-                        <div @click="eventDetails(item.key)">
-                          <h4 class="pl-2 primaryDark--text bold"> {{ item.event.title }}</h4>
-                        </div>
+                      <div @click="eventDetails(item.key)">
+                        <h4 class="primaryDark--text bold"> {{ item.event.title }}</h4>
                       </div>
                     </v-card-actions>
                   </v-card-title>
@@ -52,6 +50,15 @@
                     <p class="date">{{ item.event.date | date}}</p>
                   </div>
                 </v-layout>
+              </v-flex>
+              <v-flex xs2 sm2 md2>
+                <v-btn fab large class="iwt" center v-if="!wasThere(item.key)" @click="iwtClicked(item)"></v-btn>
+                <span v-else>
+                  <v-btn fab flat large class="iwt clicked" center></v-btn>
+                  <v-badge overlap overlay color="red" class="vuBadge">
+                    <v-icon dark slot="badge">check</v-icon>
+                  </v-badge>
+                </span>
               </v-flex>
             </v-layout>
           </v-container>
@@ -100,50 +107,66 @@ export default {
     }
   },
   methods: {
+    eventDetails (key) {
+      this.$router.push('/events/' + key)
+    },
+    wasThere (key) {
+      return this.$store.getters.user.events.findIndex(event => {
+        return event.key === key
+      }) >= 0
+    },
     back () {
       this.$router.go(-1)
     },
-    iwtClicked () {
-      console.log('[iwtClicked]')
-      this.$store.dispatch('iwtClicked', {key: this.id})
-    },
-    onPickFile () {
-      // the $refs below give us access to all the ref elements in the template of this component
-      this.$refs.fileInput.click()
-    },
-    onFilePicked (event) {
-      // We get the wanted file
-      const files = event.target.files
-      // As we can choose only one file, we take the first one in the array
-      let filename = files[0].name
-      // Simple chack if the file is valid
-      if (filename.lastIndexOf('.') <= 0) {
-        return alert('Please enter a valid image')
-      }
-      // Turn it into base64
-      const fileReader = new FileReader()
-      fileReader.addEventListener('load', () => {
-        // the result here is a base64 image
-        this.imageUrl = fileReader.result
-      })
-      fileReader.readAsDataURL(files[0])
-      this.image = files[0]
-    },
-    addPicture () {
-      this.dialog = false
-      // Vuex
-      this.$store.dispatch('addPicture', {key: this.id, image: this.image})
+    // iwtClicked () {
+    //   console.log('[iwtClicked]')
+    //   this.$store.dispatch('iwtClicked', {key: this.id})
+    // }
+    iwtClicked (notification) {
+      this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
     }
   }
 }
 </script>
 
 <style scoped>
-  .picInGallery{
-    padding: 1px;
+  .bold{
+    font-weight: 500;
   }
   .container{
     margin-top: 0;
+    padding: 8px;
+  }
+  .application a {
+    text-decoration: none;
+  }
+  .timer{
+    position: absolute;
+    right: 200px;
+    color: grey;
+  }
+  .card__title--primary {
+    padding: 0px 0px;
+  }
+  div.card_actions{
+    padding: 8px 0px;
+    margin: 0px;
+  }
+  div {
+    margin: 0px;
+  }
+  .btn_content{
+    padding: 0px;
+  }
+  .iwt{
+    height: 90px;
+    width: 90px;
+    background: url("../img/iwt3.png") center/95% no-repeat;
+    position: absolute;
+    right: 0px;
+  }
+  .clicked{
+    filter: opacity(50%);
   }
   .btn--block {
     margin: 0;
@@ -169,6 +192,13 @@ export default {
     min-height: 120px;
   }
   @media only screen and (max-width: 599px) {
+    .timer{
+      right: 24px;
+      font-size: 12px;
+    }
+    p {
+      font-size: 13px;
+    }
     .container {
       padding: 0;
     }
@@ -181,16 +211,6 @@ export default {
       left: 24px;
       z-index: 3;
     }
-    .carousel {
-      min-height: 100%;
-      width: 100vw;
-    }
-    .carousel__item {
-      background-size: contain;
-    }
-    .dialog {
-      margin: 8px !important;
-    }
     .iwt{
       height: 72px;
       width: 72px;
@@ -199,6 +219,12 @@ export default {
       right: 0px;
       bottom: 8px;
     }
+    p {
+      margin-bottom: 4px;
+    }
+    /* p.location {
+          margin-bottom: 0px;
+    } */
     .clicked{
       filter: opacity(50%);
     }

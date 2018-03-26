@@ -36,7 +36,7 @@
 
     </v-toolbar>
 
-    <v-navigation-drawer v-model="sideNav" fixed clipped>
+    <v-navigation-drawer v-model="sideNav" fixed clipped right>
       <v-list>
         <v-list-tile v-for="item in sideMenu" :key="item.title" :to="item.link">
           <v-list-tile-action>

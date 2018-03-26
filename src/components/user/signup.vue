@@ -19,7 +19,14 @@
 
                   <v-layout row>
                     <v-flex xs12>
-                      <v-text-field name="userName" label="User name" id="userName" v-model="userName" type="text" required>
+                      <v-text-field name="firstName" label="First name" id="firstName" v-model="firstName" type="text" required>
+                      </v-text-field>
+                    </v-flex>
+                  </v-layout>
+
+                  <v-layout row>
+                    <v-flex xs12>
+                      <v-text-field name="lastName" label="Last name" id="lastName" v-model="lastName" type="text" required>
                       </v-text-field>
                     </v-flex>
                   </v-layout>
@@ -77,7 +84,8 @@
         confirmPassword: '',
         imageUrl: '',
         image: '',
-        userName: ''
+        firstName: '',
+        lastName: ''
       }
     },
     computed: {
@@ -105,8 +113,8 @@
     methods: {
       onSignup () {
         // Vuex
-        // this.$store.dispatch('signUserUp', {userName: this.userName, email: this.email, password: this.password, image: this.image})
-        this.$store.dispatch('signUserUp', {userName: this.userName, email: this.email, password: this.password})
+        // this.$store.dispatch('signUserUp', {firstName: this.firstName, email: this.email, password: this.password, image: this.image})
+        this.$store.dispatch('signUserUp', {firstName: this.firstName, lastName: this.lastName, email: this.email, password: this.password})
       },
       onDismissed () {
         this.$store.dispatch('clearError')

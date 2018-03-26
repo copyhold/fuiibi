@@ -27,8 +27,6 @@
                 <v-layout>
                   <div offset-xs3>
                     <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
-                    <!-- <p class="location" v-if="locality(notification)">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
-                    <p class="location" v-else>{{ notification.event.location.country }}</p> -->
                     <p class="date">{{ notification.event.date | date}}</p>
                   </div>
                 </v-layout>
@@ -104,7 +102,7 @@
         notification.friendsCount > 0
       },
       iwtClicked (notification) {
-        this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , userName: this.$store.getters.user.userName})
+        this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
       },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
@@ -129,78 +127,78 @@
 }
 .application a {
     text-decoration: none;
+}
+.timer{
+  position: absolute;
+  right: 200px;
+  color: grey;
+}
+.container{
+  margin-top: 0;
+  padding: 8px;
+}
+.card__title--primary {
+  padding: 0px 16px;
+}
+.card_actions{
+  padding: 0px;
+}
+.btn_content{
+  padding: 0px;
+}
+.iwt{
+  height: 90px;
+  width: 90px;
+  background: url("../img/iwt3.png") center/95% no-repeat;
+  position: absolute;
+  right: 0px;
+}
+.clicked{
+  filter: opacity(50%);
+}
+span.vuBadge {
+    bottom: 36px;
+    right: 24px;
+    position: absolute;
+}
+.btn__content {
+  padding: 0px !important;
+}
+.card__actions {
+  padding: 0px;
+}
+.card__title--primary {
+  padding: 0px 0px;
+}
+.card__actions > *, .card__actions .btn {
+  margin: 0 -8px;
+}
+p {
+  margin-bottom: 4px;
+}
+.date {
+  color: grey;
+}
+p.location {
+      margin-bottom: 0px;
+}
+@media screen and (max-width: 600px) {
+  .iwt{
+    height: 60px;
+    width: 60px;
+    margin-top: 40px;
   }
   .timer{
-    position: absolute;
-    right: 200px;
-    color: grey;
-  }
-  .container{
-    margin-top: 0;
-    padding: 8px;
-  }
-  .card__title--primary {
-    padding: 0px 16px;
-  }
-  .card_actions{
-    padding: 0px;
-  }
-  .btn_content{
-    padding: 0px;
-  }
-  .iwt{
-    height: 90px;
-    width: 90px;
-    background: url("../img/iwt3.png") center/95% no-repeat;
-    position: absolute;
-    right: 0px;
-  }
-  .clicked{
-    filter: opacity(50%);
-  }
-  span.vuBadge {
-      bottom: 36px;
-      right: 24px;
-      position: absolute;
-  }
-  .btn__content {
-    padding: 0px !important;
-  }
-  .card__actions {
-    padding: 0px;
-  }
-  .card__title--primary {
-    padding: 0px 0px;
-  }
-  .card__actions > *, .card__actions .btn {
-    margin: 0 -8px;
+    right: 24px;
+    font-size: 12px;
   }
   p {
-    margin-bottom: 4px;
+    font-size: 13px;
   }
-  .date {
-    color: grey;
+  span.vuBadge {
+      bottom: 28px;
+      right: 20px;
+      position: absolute;
   }
-  p.location {
-        margin-bottom: 0px;
-  }
-  @media screen and (max-width: 600px) {
-    .iwt{
-      height: 60px;
-      width: 60px;
-      margin-top: 40px;
-    }
-    .timer{
-      right: 24px;
-      font-size: 12px;
-    }
-    p {
-      font-size: 13px;
-    }
-    span.vuBadge {
-        bottom: 28px;
-        right: 20px;
-        position: absolute;
-    }
-  }
+}
 </style>

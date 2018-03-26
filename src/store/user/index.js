@@ -56,6 +56,15 @@ export default {
       if (user.userEvents) {
         user.userEvents = payload.userEvents
       }
+      if (payload.livingIn) {
+        user.livingIn = payload.livingIn
+      }
+      if (payload.dateOfBirth) {
+        user.dateOfBirth = payload.dateOfBirth
+      }
+      if (payload.gender) {
+        user.gender = payload.gender
+      }
       console.log('[updateuser] user', user);
     },
     addEventToMyEvents (state, payload) {
@@ -143,7 +152,8 @@ export default {
           const newUser = {
             id: user.uid,
             email: user.email,
-            userName: payload.userName,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
             notifications: [],
             events: [],
             friends: [],
@@ -214,12 +224,26 @@ export default {
       .then(
         user => {
           commit('setLoading', false)
-          const userName = firebase.database().ref('users/' + user.uid + 'userName').once('value')
+          const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
+          const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
+          const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
           const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
+          const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
+          const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
+          const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
+          const userData = firebase.database().ref('users/' + user.uid).once('value')
+          console.log('[signUserIn] userData', userData);
+          console.log('[signUserIn] userData.firstName', userData.firstName);
+
           const newUser = {
             id: user.uid,
-            userName: this.userName,
+            firstName: this.firstName,
+            lastName: this.lastName,
             imageUrl: this.imageUrl,
+            email: this.email,
+            livingIn: this.livingIn,
+            gender: this.gender,
+            dateOfBirth: this.dateOfBirth,
             friends: [],
             events: []
           }
@@ -255,12 +279,17 @@ export default {
       let events = []
       let friends = []
       let notifications = []
-      let userName = ''
+      let firstName = ''
+      let email = ''
+      let lastName = ''
       let imageUrl = ''
+      let dateOfBirth = ''
+      let gender = ''
+      let livingIn = {}
       let pendingFriends = []
       let pendingInvitations = []
       // Here below we use promise to get the info one after the other and send everything to the local storage once everything has been received
-      // Fetch the userName and userImage
+      // Fetch the firstName and userImage
       firebase.database().ref('/users/' + getters.user.id).once('value')
       .then(data => {
         const userData = data.val()
@@ -272,8 +301,20 @@ export default {
           // console.log('[fetchUserData] image prise est this.imageUrl = getters.user.imageUrl');
           this.imageUrl = getters.user.imageUrl
         }
-        this.userName = userData.userName
-        // console.log('[fetchUserData] this.userName', this.userName);
+        this.firstName = userData.firstName
+        this.lastName = userData.lastName
+        this.email = userData.email
+        if (!getters.user.livingIn) {
+          this.livingIn = userData.livingIn
+        }
+        if (!getters.user.gender) {
+          this.gender = userData.gender
+        }
+        if (!getters.user.gender) {
+          this.dateOfBirth = userData.dateOfBirth
+        }
+
+        console.log('[fetchUserData] this.email', this.email);
       })
       .then( _=>{
         // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
@@ -285,7 +326,8 @@ export default {
               const newFriend = {
                 id: friendData.id,
                 imageUrl: friendData.imageUrl,
-                userName: friendData.userName,
+                firstName: friendData.firstName,
+                lastName: friendData.lastName,
                 fbKey: fbKey
               }
               friends.push(newFriend)
@@ -305,7 +347,8 @@ export default {
             const newFriend = {
               id: friendData.id,
               imageUrl: friendData.imageUrl,
-              userName: friendData.userName,
+              firstName: friendData.firstName,
+              lastName: friendData.lastName,
               fbKey: fbKey
               }
             pendingFriends.push(newFriend)
@@ -331,14 +374,19 @@ export default {
           const updatedUser = {
             id: getters.user.id,
             imageUrl: this.imageUrl,
-            userName: this.userName,
+            firstName: this.firstName,
+            email: this.email,
+            dateOfBirth: this.dateOfBirth,
+            gender: this.gender,
+            livingIn: this.livingIn,
+            lastName: this.lastName,
             events: events,
             friends: friends,
             notifications: notifications,
             pendingFriends: pendingFriends,
             pendingInvitations: pendingInvitations
           }
-          // console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
+          console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
           commit('setUser', updatedUser)
           commit('setLoading', false)
         })
@@ -388,7 +436,8 @@ export default {
         const newUser = {
           id: userData.id,
           imageUrl: userData.imageUrl,
-          userName: userData.userName,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
           fbKey: fbKey,
           userEvents: userData.userEvents
         }
@@ -423,15 +472,6 @@ export default {
             commit('addEvent', newEvent)
           })
         }
-        // console.log('[getUserData] userEvents', userEvents);
-        // const newUser = {
-        //   id: payload.userId,
-        //   userEvents: userEvents
-        // }
-        // console.log('[getUserData] data', newUser);
-        // // users.push(newFriend)
-        // commit('updateUser', newUser)
-        // commit('setLoading', false)
       })
       .then( _ => {
         console.log('[getUserData] userEvents', newUserEvents);
@@ -444,6 +484,15 @@ export default {
         commit('updateUser', newUser)
         commit('setLoading', false)
       })
+    },
+
+    updateUser ({commit, getters}, payload) {
+      firebase.database().ref('users/' + payload.id).update({
+        dateOfBirth: payload.dateOfBirth,
+        livingIn: payload.livingIn,
+        gender: payload.gender
+      })
+      commit('updateUser', payload)
     },
 
     // **************ACTIONS****************

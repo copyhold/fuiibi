@@ -47,14 +47,6 @@
                 </span>
               </v-flex>
             </v-layout>
-            <!--
-            <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
-            <div v-if="event.counter > 1" class="ml -2">
-              <b>{{ event.counter }}</b> users were there
-            </div>
-            <div v-else class="ml-2">
-              <b>{{ event.counter }}</b> user was there
-            </div>-->
           </v-card-text>
         </v-card>
       </v-flex>
@@ -129,10 +121,7 @@ export default {
   },
   computed: {
     event () {
-      console.log('[event] id', this.id)
-      console.log('[event] event', event)
       console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
-
       return this.$store.getters.getEventData(this.id)
     },
     loading () {
@@ -149,9 +138,12 @@ export default {
     back () {
       this.$router.go(-1)
     },
+    // iwtClicked () {
+    //   console.log('[iwtClicked]')
+    //   this.$store.dispatch('iwtClicked', {key: this.id})
+    // },
     iwtClicked () {
-      console.log('[iwtClicked]')
-      this.$store.dispatch('iwtClicked', {key: this.id})
+      this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
     },
     onPickFile () {
       // the $refs below give us access to all the ref elements in the template of this component

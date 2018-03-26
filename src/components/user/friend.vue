@@ -16,7 +16,7 @@
       <v-flex xs12>
         <v-card>
           <v-card-title>
-            <h2 class="primary--text">{{ user.userName }}</h2>
+            <h2 class="primary--text">{{ user.firstName }}</h2>
           </v-card-title>
           <v-card-media :src="user.imageUrl" height="400px">
           </v-card-media>

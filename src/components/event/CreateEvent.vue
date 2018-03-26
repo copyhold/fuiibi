@@ -152,11 +152,6 @@
         ]
       }
     },
-    // mounted() {
-    // // To demonstrate functionality of exposed component functions
-    // // Here we make focus on the user input
-    // this.$refs.address.focus();
-    // },
     computed: {
       formIsValid () {
         if (this.address.country && this.address.locality && this.address.route) {

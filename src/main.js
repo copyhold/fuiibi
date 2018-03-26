@@ -54,12 +54,6 @@ import FriendsOnly from './components/user/friendsOnly.vue'
 
 // eslint-disable-next-line
 //***************************************************************************************************************
-
-// Vue.use(Router)
-// Vue.use(routerHistory)
-// //
-// router.afterEach(writeHistory)
-
 // Vue.use(VuetifyGoogleAutocomplete, {
 //   apiKey: 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY' // Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
 //   // version: '...', // Optional

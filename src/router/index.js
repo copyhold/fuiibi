@@ -9,6 +9,7 @@ import signin from '@/components/user/signin'
 import signup from '@/components/user/signup'
 import AuthGard from './auth-guard'
 import friends from '@/components/user/friends'
+import settings from '@/components/user/settings'
 // import friend from '@/components/user/friend'
 import Notifications from '@/components/event/notifications'
 import Welcome from '@/components/Welcome'
@@ -44,6 +45,11 @@ export default new Router({
       path: '/friends',
       name: 'Friends',
       component: friends
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: settings
     },
     {
       path: '/event/new',

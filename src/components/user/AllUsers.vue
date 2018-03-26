@@ -15,7 +15,7 @@
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
             <v-list-tile-content  @click="getUserPage(user)" >
-              <v-list-tile-title v-html="user.userName"></v-list-tile-title>
+              <v-list-tile-title v-html="user.firstName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
                 <v-btn small class="greyColors" flat>Pending...</v-btn>
@@ -57,7 +57,7 @@
       },
       filteredUsers () {
         return this.users.filter((user) => {
-          return user.userName.match(this.search)
+          return user.firstName.match(this.search)
         })
       },
       loading () {

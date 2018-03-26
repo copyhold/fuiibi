@@ -151,8 +151,6 @@ export default {
     },
 
     listenToNotificationsChanges ({commit, getters}) {
-      // var clickerName;
-      // var friendsCount;
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
       firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_changed', data => {
@@ -200,7 +198,7 @@ export default {
       console.log('[iwtClicked] notification - payload', payload);
       const key = payload.notification.key
       const userId = payload.userId
-      const clickerName = payload.userName
+      const clickerName = payload.firstName
       console.log('[iwtClicked] clickerId', userId);
       // I push the new event key in the events array of the clicker user
       firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
@@ -285,7 +283,6 @@ export default {
       })
       .then(fileData => {
         imageUrl = fileData.metadata.downloadURLs[0]
-        // addPicture(payload.image, key)
         dispatch('addPicture', {image:payload.image, key: key})
         // to reach the specific item with the key in the events array and set the imageUrl stored above:
         // Here we set the picture as the event picture
@@ -325,7 +322,7 @@ export default {
             // I set the clickerId and the dateToRank
             console.log('[createEvent] just b4 .set clickerName etc');
             firebase.database().ref('/users/' + friendId + '/notifications/' + key).update({
-              clickerName: getters.user.userName,
+              clickerName: getters.user.firstName,
               userId: getters.user.id,
               dateToRank: - Date.now()
             });
