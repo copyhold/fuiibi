@@ -37,7 +37,7 @@
       <v-divider></v-divider>
       <friends-only></friends-only>
     <v-fab-transition >
-      <v-btn router to="/search" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn router to="/search" color="orange" ripple fixed bottom right fab class=" white--text">
         <v-icon>search</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -105,9 +105,13 @@
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
   .container{
     margin-top: 0;
     padding: 8px;
+    margin-bottom: 56px;
   }
   .greyColors{
     background-color: #f6f7f9;

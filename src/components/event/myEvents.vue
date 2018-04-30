@@ -19,7 +19,7 @@
                     <v-card-actions wrap>
                       <div>
                         <div @click="eventDetails(item.key)">
-                          <h4 class="pl-2 primaryDark--text bold"> {{ item.event.title }}</h4>
+                          <h4 class="pl-2 secondaryDark--text bold"> {{ item.event.title }}</h4>
                         </div>
                       </div>
                     </v-card-actions>
@@ -118,6 +118,9 @@
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
 .bold{
   font-weight: 500;
 }
@@ -140,6 +143,7 @@ p {
 .container{
   margin-top: 0;
   padding: 8px;
+  margin-bottom: 56px;
 }
 .card_actions{
   padding: 0px;

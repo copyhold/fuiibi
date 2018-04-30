@@ -10,7 +10,7 @@ export default {
     addEvent (state, payload) {
       // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
       if (state.events.findIndex(events => events.key === payload.key) < 0) {
-        console.log('[addEvent] event added', payload.key);
+        // console.log('[addEvent] event added', payload.key);
         state.events.push(payload)
       }
       else {
@@ -215,13 +215,20 @@ export default {
       .then(data => {
         const dataPairs = data.val()
         for (let item in dataPairs) {
-          const userId = dataPairs[item]
+          // const userId = dataPairs[item]
+          const friendId = dataPairs[item]
+          console.log('[iwtClicked] friendId', friendId);
+
           // I send notifications to each friend of the user about the clicked event
-          firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
+          firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
+          // firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
           console.log('[iwtClicked] after push userId');
           console.log('[iwtClicked] clickerName', clickerName);
+          console.log('[iwtClicked] userId', userId);
+
           // I update the clickerId and the dateToRank
-          firebase.database().ref('/users/' + userId + '/notifications/' + key).update({
+          // QUAND JE CLIQUE SUR UN USER, C'EST LA PAGE DE CELUI QUI EST LOADER QUI APPARAIT CAR IL EST COMME CA DANS FIREBASE
+          firebase.database().ref('/users/' + friendId + '/notifications/' + key).update({
             clickerName: clickerName,
             userId: userId,
             dateToRank: - Date.now()

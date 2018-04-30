@@ -6,7 +6,7 @@
         </v-flex>
     </v-layout>
     <div @click="back" class="arrowBack">
-        <v-icon class="white--text">arrow_back</v-icon>
+        <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap>
       <v-flex xs12>
@@ -39,7 +39,7 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div @click="eventDetails(item.key)">
-                        <h4 class="primaryDark--text bold"> {{ item.event.title }}</h4>
+                        <h4 class="secondaryDark--text bold"> {{ item.event.title }}</h4>
                       </div>
                     </v-card-actions>
                   </v-card-title>
@@ -87,9 +87,9 @@ export default {
       return this.$store.getters.getUser(this.id)
     },
     userEvents () {
-      console.log('[user] id', this.id)
+      // console.log('[user] id', this.id)
       // console.log('[user] user', user)
-      console.log('[user] this.user.userEvents', this.user.userEvents)
+      // console.log('[user] this.user.userEvents', this.user.userEvents)
       return this.user.userEvents
     },
     events () {
@@ -207,7 +207,7 @@ export default {
     }
     .arrowBack {
       position: fixed;
-      top: 56px;
+      top: 8px;
       left: 24px;
       z-index: 3;
     }

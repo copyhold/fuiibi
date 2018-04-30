@@ -1,7 +1,7 @@
 <template lang="html">
   <v-container class="container">
     <div @click="back" class="arrowBack">
-        <v-icon class="white--text">arrow_back</v-icon>
+        <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -20,7 +20,7 @@
                 <br>
                 So for chrome users:<br>
                 Click three dots on the right up corner of the browser.<br>
-                
+
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
@@ -145,7 +145,7 @@
   }
   .arrowBack {
     position: fixed;
-    top: 56px;
+    top: 8px;
     left: 24px;
     z-index: 3;
   }

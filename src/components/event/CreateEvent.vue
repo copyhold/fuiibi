@@ -1,7 +1,7 @@
 <template >
   <v-container class="container">
     <div @click="back" class="arrowBack">
-        <v-icon class="white--text">arrow_back</v-icon>
+        <v-icon class="secondary--text">arrow_back</v-icon>
     </div>
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3 class="mt-2">
@@ -29,12 +29,12 @@
           </v-layout>
 
           <v-layout row class="mb-2">
-            <v-flex xs12 sm6 offset-sm3>
+            <v-flex xs12 sm6>
               <!-- In order to load an image to Firebase -->
-              <v-btn raised outline class="primary primary--text" @click="onPickFile">Upload Image </v-btn>
+              <v-btn raised outline class="primary secondary--text" @click="onPickFile"><v-icon class="mr-2">photo_camera</v-icon>Upload Image </v-btn>
               <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
             the accept image is in order to accept image and nothing else-->
-              <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
+              <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
             </v-flex>
           </v-layout>
 
@@ -46,12 +46,17 @@
 
           <v-divider></v-divider>
 
-          <!-- <v-layout row wrap>
+          <v-layout row wrap>
             <v-flex xs12 sm12 offset-sm3>
-              <v-btn raised outline class="primaryLight primaryLight--text" @click="getLocation">Current Location </v-btn>
-              <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn>
+              <v-btn xs12 sm12 offset-sm3 v-if="locationInNavigator && showLocationButton" raised outline class="primary secondary--text" @click="getLocation">Use current Location </v-btn>
+              <v-flex xs12 class="text-xs-center">
+                <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
+              </v-flex>
+              <div class="mdl-spinner mdl-js-spinner is-active" id="location-loader"></div>
+              </div>
+              <!-- <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn> -->
             </v-flex>
-          </v-layout> -->
+          </v-layout>
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
@@ -76,8 +81,8 @@
                   <template slot-scope="{ save, cancel }">
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
-                      <v-btn flat color="primary" @click="save">OK</v-btn>
+                      <v-btn flat color="secondaryDark" @click="cancel">Cancel</v-btn>
+                      <v-btn flat color="secondaryDark" @click="save">OK</v-btn>
                     </v-card-actions>
                   </template>
                 </v-date-picker>
@@ -92,8 +97,8 @@
                 <v-time-picker v-model="time" format="24hr" actions>
                   <template slot-scope="{ save, cancel }">
                     <v-card-actions>
-                      <v-btn flat color="primary" @click="cancel">Cancel</v-btn>
-                      <v-btn flat color="primary" @click="save">Save</v-btn>
+                      <v-btn flat color="secondaryDark" @click="cancel">Cancel</v-btn>
+                      <v-btn flat color="secondaryDark" @click="save">Save</v-btn>
                     </v-card-actions>
                   </template>
                 </v-time-picker>
@@ -124,6 +129,10 @@
   export default {
     data () {
       return {
+        where: '',
+        fetchedLocation: {lat: 0, lng: 0},
+        showLocationButton: true,
+        searchingForLocation: false,
         durationInput: '',
         ex11: true,
         modal2: false,
@@ -161,6 +170,16 @@
         // console.log('[formIsValid] this.address', this.address);
         // return this.title !== '' && this.address.country !== {} && this.imageUrl !== ''
       },
+      locationInNavigator() {
+        if (!navigator.geolocation && !this.showLocationButton) {
+          console.log(' no geolocation in navigator');
+          // We dont show this button it there is no access to the geolocation
+          return false;
+        }
+
+          return true;
+
+      },
       submittableDateTime () {
         const date = new Date(this.date)
         if (typeof this.time === 'string') {
@@ -188,16 +207,56 @@
       // getAddressData: function (addressData, placeResultData, id) {
       //     this.address = addressData;
       // },
-      getAddressData: function (addressData, placeResultData, id) {
-        console.log('[getAddressData]');
+      getAddressData: (addressData, placeResultData, id) => {
         this.address = addressData;
+        console.log('[getAddressData], addressData, placeResultData, id ', addressData, 'placeResultData', placeResultData, 'id:', id);
       },
       // getAddressData: function (addressData, placeResultData) {
       //   this.address = addressData;
       // },
       getLocation () {
         console.log('getLocation')
-        console.log('durationInput', this.durationInput);
+        if (!navigator.geolocation) {
+          console.log('no geolocation in browser');
+          return;
+        }
+        console.log('after if navigator');
+        let sawAlert = false
+        // We hide the button and show the spinner
+        this.searchingForLocation = true;
+        this.showLocationButton = false;
+        console.log('just before navigator.geolocation.getCurrentPosition');
+        navigator.geolocation.getCurrentPosition( position => {
+          console.log('in navigator.geolocation.getCurrentPosition');
+          this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
+          console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
+
+          this.lat = position.coords.latitude;
+          this.lon = position.coords.longitude;
+          var geocoder = new google.maps.Geocoder;
+          let myPlace = new google.maps.LatLng(this.lat,this.lon);
+          let geopos = `${this.lat},${this.lon}`;
+          let latlngStr = geopos.split(',', 2);
+          var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+          console.log(latlng)
+          geocoder.geocode({'location': latlng}, (results, status) => {
+          this.where = results[0].formatted_address
+          console.log('this.were', this.where);
+
+          });
+          this.searchingForLocation = false;
+          this.showLocationButton = true
+
+        }), err => {
+          console.log(err);
+          this.searchingForLocation = false;
+          this.showLocationButton = true
+          if (!sawAlert) {
+            alert('Couldn\'t load location, please try mannually')
+            sawAlert = true
+          }
+          this.fetchedLocation = {lat: 0, lng: 0}
+        }, {timeout: 7000}
       },
       showMap () {
         console.log('showMap')
@@ -252,14 +311,17 @@
 <style scoped>
   .container{
     margin-top: 0;
+    margin-bottom: 56px;
   }
   @media screen and (max-width: 600px) {
     .container {
       padding: 8px;
+      background-color: #fff;
+      margin-bottom: 56px;
     }
     .arrowBack {
       position: fixed;
-      top: 56px;
+      top: 8px;
       left: 24px;
       z-index: 3;
     }
@@ -267,8 +329,12 @@
   #autoComplete{
     min-height: 30px;
     margin: 15px 0px;
-    width: 87%;
+    width: 85%;
     font-size: 17px;
+    border-bottom: solid 1px grey;
+    background-color: #fff;
+  }
+  #autoComplete:selected {
     border-bottom: solid 1px grey;
   }
   input {

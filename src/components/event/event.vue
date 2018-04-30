@@ -1,7 +1,7 @@
 <template lang="html">
   <v-container class="container">
     <div @click="back" class="arrowBack">
-        <v-icon class="white--text">arrow_back</v-icon>
+        <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -77,25 +77,23 @@
           <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon>add_a_photo</v-icon></v-btn>
           <v-btn v-else fixed bottom right fab class="greyColors darkgray--text mb-3"><v-icon>add_a_photo</v-icon></v-btn>
         </v-fab-transition >
-          <!-- <v-btn v-if="userWasThere" bottom fixed large class="orange fullScreen white--text" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn>
-          <v-btn v-else bottom fixed large class="greyColors fullScreen darkgray--text"><v-icon class="mr-3">add_a_photo</v-icon>Add a picture</v-btn> -->
-          <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
-          <v-dialog v-model="dialog" max-width="310">
-            <v-card>
-              <v-card-title class="headline">Add this picture</v-card-title>
-              <v-layout row>
-                <v-flex xs12 sm6 class="ml-3">
-                  <img :src="imageUrl" class="profilePic" >
-                </v-flex>
-              </v-layout>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn class="primary--text" flat="flat" @click.native="dialog = false">Cancel</v-btn>
-                <v-btn raised class="primary" @click="addPicture">Add</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-
+        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
+        <v-dialog v-model="dialog" max-width="310">
+          <v-card>
+            <v-card-title class="headline">Add this picture</v-card-title>
+            <v-layout row>
+              <v-flex xs12 sm6 class="ml-3">
+                <img :src="imageUrl" class="profilePic" ref="imageToCanvas">
+                <canvas ref="canvas" width="320px" height="240px"></canvas>
+              </v-flex>
+            </v-layout>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn class="primary--text" flat="flat" @click.native="dialog = false">Cancel</v-btn>
+              <v-btn raised class="primary" @click="addPicture">Add</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-flex>
     </v-layout>
     <v-layout>
@@ -163,9 +161,24 @@ export default {
       fileReader.addEventListener('load', () => {
         // the result here is a base64 image
         this.imageUrl = fileReader.result
+        console.log('[onFilePicked]this.imageUrl', this.imageUrl)
+        // var img = new Image();
+        var img = new Image()
+        img.src = this.imageUrl
+        img.addEventListener('load', _ => {
+          let context = this.$refs.canvas.getContext('2d')
+          console.log('context', context)
+          // Now I create the image - what?, top, left, width, height
+          context.drawImage(this.$refs.imageToCanvas, 0, 0, this.$refs.imageToCanvas.width, this.$refs.imageToCanvas.height)
+        })
       })
       fileReader.readAsDataURL(files[0])
       this.image = files[0]
+      // J'essaye de mettre l'image dans le canvas
+      // let context = this.$refs.canvas.getContext('2d')
+      // console.log('context', context)
+      // // Now I create the image - what?, top, left, width, height
+      // context.drawImage(this.imageUrl, 0, 0, this.$refs.canvas.width, 300)
     },
     addPicture () {
       this.dialog = false
@@ -177,11 +190,15 @@ export default {
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
   .picInGallery{
     padding: 1px;
   }
   .container{
     margin-top: 0;
+    margin-bottom: 56px;
   }
   .btn--block {
     margin: 0;
@@ -215,7 +232,7 @@ export default {
     }
     .arrowBack {
       position: fixed;
-      top: 56px;
+      top: 8px;
       left: 24px;
       z-index: 3;
     }

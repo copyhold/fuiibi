@@ -1,17 +1,14 @@
 <template>
   <v-container>
-    <router-link
-        :to="'/friends'"
-        class="arrowBack"
-        >
-        <v-icon class="white--text">arrow_back</v-icon>
+    <router-link :to="'/friends'" class="arrowBack">
+        <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </router-link>
     <v-layout id="inputSearch" >
-      <v-text-field solo label="Search" append-icon="search" class="ml-5" v-model="search"></v-text-field>
+      <v-text-field solo label="Search" append-icon="search" v-model="search"></v-text-field>
     </v-layout>
-    <v-tabs fixed centered>
-      <v-tabs-bar color="primary--text">
-        <v-tabs-slider color="primary"></v-tabs-slider>
+    <v-tabs fixed centered >
+      <v-tabs-bar color="secondaryDark--text">
+        <v-tabs-slider color="secondaryDark"></v-tabs-slider>
         <v-tabs-item :href="'#allUsers'">
           App users
         </v-tabs-item>
@@ -49,9 +46,12 @@
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
 .arrowBack {
   position: fixed;
-  top: 56px;
+  top: 8px;
   left: 24px;
   z-index: 3;
   }
@@ -60,10 +60,11 @@
     top: 42px;
     right: 0px;
     width: 100%;
-    height: 56px;
-    padding: 8px;
+    height: 42px;
+    padding: 0px;
     z-index: 2;
-    background: #0E1E51;
+    /* background: #0E1E51;
+    background: #fff; */
     font-size: 20px;
   }
   input {
@@ -77,6 +78,7 @@
   }
   .container {
     padding: 0px;
+    margin-bottom: 56px;
   }
   .tabs {
     overflow: hidden;

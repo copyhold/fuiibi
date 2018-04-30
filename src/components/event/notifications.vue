@@ -18,7 +18,7 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div @click="eventDetails(notification.key)">
-                        <h4 class="pl-2 primaryDark--text bold"> {{ notification.event.title }}</h4>
+                        <h4 class="pl-2 secondaryDark--text bold"> {{ notification.event.title }}</h4>
                       </div>
                         <p class="timer">{{ timeStamp(notification) }}</p>
                     </v-card-actions>
@@ -54,7 +54,7 @@
       </v-flex>
     </v-layout>
     <v-fab-transition >
-      <v-btn @click="newEvent" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn @click="newEvent" color="orange" ripple fixed bottom right fab class=" white--text" >
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -122,6 +122,9 @@
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
 .bold{
   font-weight: 500;
 }
@@ -136,6 +139,7 @@
 .container{
   margin-top: 0;
   padding: 8px;
+  margin-bottom: 56px;
 }
 .card__title--primary {
   padding: 0px 16px;

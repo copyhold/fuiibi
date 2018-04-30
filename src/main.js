@@ -60,12 +60,17 @@ import FriendsOnly from './components/user/friendsOnly.vue'
 // })
 
 Vue.use(Vuetify, { theme: {
-  primaryDark: '#01021E',
+  primaryDark: '#F5F5F5',
   primary: '#0E1E51',
+  primaryWhite: '#fff',
+  // primaryDark: '#01021E',
+  // primary: '#0E1E51',
   // primary: '#00695c',
   // primaryDark: '#003d33',
   primaryLight: '#439889',
-  secondary: '#004d40',
+  secondary: '#0E1E51',
+  secondaryDark: '#01021E',
+  // secondary: '#004d40',
   accent: '#82B1FF',
   error: '#FF5252',
   info: '#2196F3',

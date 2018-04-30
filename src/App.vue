@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <v-toolbar class="primaryDark" dark fixed app>
-      <v-toolbar-side-icon @click="sideNav = !sideNav" class="hidden-xs-only">
-      </v-toolbar-side-icon>
-      <v-toolbar-title right class="ml-4">
-        <router-link to="/notifications" tag="span" style="cursor: pointer">Fuiibi</router-link>
+    <v-toolbar class="primaryWhite" fixed app>
+      <!-- <v-toolbar-side-icon @click="sideNav = !sideNav" class="hidden-xs-only">
+      </v-toolbar-side-icon> -->
+      <v-toolbar-title absolute class="center">
+        <router-link to="/notifications" tag="span" style="cursor: pointer" class="fuiibi">Fuiibi</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -12,29 +12,28 @@
         <v-icon class="pl-4">more_vert</v-icon>
       </v-btn>
 
-      <v-spacer class="hidden-xs-only"></v-spacer>
+      <!-- <v-spacer class="hidden-xs-only"></v-spacer> -->
 
-      <v-toolbar-items class="hidden-xs-only">
+      <!-- <v-toolbar-items class="hidden-xs-only">
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
           <v-icon left>{{ item.icon }}</v-icon>
           <span class="hidden-sm-and-down">{{ item.title }}</span>
         </v-btn>
-      </v-toolbar-items>
-
-      <v-bottom-nav absolute class="bottomAtTop primary hidden-sm-and-up">
-        <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
-          <span>{{ item.title }}</span>
-        </v-btn>
-      </v-bottom-nav>
-
-      <v-bottom-nav absolute shift class="bottomAtTop primary hidden-sm-and-up" v-if="userIsAuthenticated" >
-        <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
-          <span>{{ item.title }}</span>
-          <v-icon left>{{ item.icon }}</v-icon>
-        </v-btn>
-      </v-bottom-nav>
-
+      </v-toolbar-items> -->
     </v-toolbar>
+
+    <v-bottom-nav fixed class="bottomAtTop primaryWhite hidden-sm-and-up">
+      <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
+        <span>{{ item.title }}</span>
+      </v-btn>
+    </v-bottom-nav>
+
+    <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
+      <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
+        <span>{{ item.title }}</span>
+        <v-icon left>{{ item.icon }}</v-icon>
+      </v-btn>
+    </v-bottom-nav>
 
     <v-navigation-drawer v-model="sideNav" fixed clipped right>
       <v-list>
@@ -113,8 +112,24 @@
 </script>
 
 <style media="screen">
+  .toolbar .toolbar__content > .btn:last-child, .toolbar .toolbar__extension > .btn:last-child {
+    margin-right: 0px;
+  }
+  .center {
+    margin-left: 50%;
+  }
+  .bottom-nav {
+      bottom: 4px;
+    }
+  .fuiibi {
+    font-family: 'Italianno', cursive;
+    font-size: 33px;
+  }
   #app{
     background-color: rgb(239, 238, 236)
+  }
+  .bottomAtTop {
+    bottom: 60px;
   }
   /*#app{
     background: url("./images/icons/imageForBackground.png");
@@ -127,7 +142,7 @@
   }
   @media screen and (max-width: 600px) {
     .marginTop {
-      margin-top: 96px;
+      margin-top: 40px;
     }
     div.toolbar__content {
       height: 40px !important;
@@ -135,7 +150,10 @@
     .btn .icon--left {
       margin-right: 0px;
     }
-    .toolbar .toolbar__content > *:not(.btn):not(.menu):last-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):last-child {
+    .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
+    margin-left: 40%;
+    }
+    /* .toolbar .toolbar__content > *:not(.btn):not(.menu):last-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):last-child {
        margin-right: 0px;
        width: 100%;
        -webkit-box-pack: end;
@@ -144,20 +162,8 @@
        position: absolute;
        top: -20px;
        right: 0px;
-    }
+    } */
   }
 
-
-
-  /*.toolbar .toolbar__content > *:not(.btn):not(.menu):last-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):last-child {
-      margin-right: 0px;
-      width: 77%;
-      -webkit-box-pack: end;
-      -ms-flex-pack: end;
-      justify-content: flex-end;
-      position: absolute;
-      top: -60px;
-      right: 0px;
-  }*/
 
 </style>

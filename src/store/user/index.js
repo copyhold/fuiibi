@@ -452,6 +452,7 @@ export default {
       const newUserEvents = []
       firebase.database().ref('users/' + payload.userId).once('value')
       .then( data => {
+        console.log('[getUserData] payload.userId', payload.userId);
         const userData = data.val()
         const userEventsList = userData.userEvents
         console.log('[getUserData] data', userData);

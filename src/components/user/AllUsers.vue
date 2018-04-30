@@ -35,7 +35,7 @@
     </v-list>
     <v-layout>
       <v-fab-transition >
-        <v-btn @click="refresh" color="orange" fixed bottom right fab class=" white--text">
+        <v-btn @click="refresh" color="orange" fixed bottom right fab ripple class=" white--text">
           <v-icon>autorenew</v-icon>
         </v-btn>
       </v-fab-transition>
@@ -116,6 +116,9 @@
 </script>
 
 <style scoped>
+.btn--bottom:not(.btn--absolute) {
+    bottom: 72px;
+}
 .greyColors{
     background-color: #f6f7f9;
     border-color: #ced0d4;
@@ -147,6 +150,7 @@
   .container{
     margin-top: 0;
     padding: 8px;
+    margin-bottom: 56px;
   }
   .card__title--primary {
      padding-top: 0px;

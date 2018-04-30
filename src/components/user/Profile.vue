@@ -1,7 +1,7 @@
 <template lang="html">
   <v-container class="container">
     <div @click="back" class="arrowBack">
-        <v-icon class="white--text">arrow_back</v-icon>
+        <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -211,10 +211,13 @@
 </script>
 
 <style scoped>
+  .btn--bottom:not(.btn--absolute) {
+      bottom: 72px;
+  }
   #autoComplete{
     min-height: 30px;
     margin: 15px 0px;
-    width: 86%;
+    width: 84%;
     font-size: 17px;
     border-bottom: solid 1px grey;
   }
@@ -232,6 +235,7 @@
   .container{
     margin-top: 0;
     padding: 8px;
+    margin-bottom: 32px;
   }
   .card__title--primary {
      padding-top: 0px;
@@ -242,7 +246,7 @@
   }
   .arrowBack {
     position: fixed;
-    top: 56px;
+    top: 8px;
     left: 24px;
     z-index: 3;
   }
