@@ -74,17 +74,18 @@
     <v-layout row class="mb-2" justify-center fluid>
       <v-flex xs12>
         <v-fab-transition >
-          <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"  @click.native.stop="dialog = true"><v-icon>add_a_photo</v-icon></v-btn>
+          <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"><v-icon>add_a_photo</v-icon></v-btn>
           <v-btn v-else fixed bottom right fab class="greyColors darkgray--text mb-3"><v-icon>add_a_photo</v-icon></v-btn>
         </v-fab-transition >
         <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
-        <v-dialog v-model="dialog" max-width="310">
+        <v-dialog v-model="dialog" fullscreen>
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <v-flex xs12 sm6 class="ml-3">
-                <img :src="imageUrl" class="profilePic" ref="imageToCanvas">
-                <canvas ref="canvas" width="320px" height="240px"></canvas>
+              <v-flex xs12 sm6 class="ml-0">
+                <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
+                <!-- <canvas ref="canvas" width="window.innerWidth * 0.9"></canvas> -->
+                <canvas ref="canvas"></canvas>
               </v-flex>
             </v-layout>
             <v-card-actions>
@@ -97,8 +98,9 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <v-dialog v-model="carousel" max-width="500">
-        <v-carousel hide-delimiters hide-controls :cycle="cycle" >
+      <v-dialog v-model="carousel" fullscreen id="carousel">
+        <v-carousel hide-delimiters hide-controls :cycle="cycle">
+          <v-icon class="mr-1" dark large @click="closeDialog">close</v-icon>
           <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
         </v-carousel>
       </v-dialog>
@@ -133,13 +135,12 @@ export default {
     }
   },
   methods: {
+    closeDialog () {
+      this.carousel = false
+    },
     back () {
       this.$router.go(-1)
     },
-    // iwtClicked () {
-    //   console.log('[iwtClicked]')
-    //   this.$store.dispatch('iwtClicked', {key: this.id})
-    // },
     iwtClicked () {
       this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
     },
@@ -147,7 +148,19 @@ export default {
       // the $refs below give us access to all the ref elements in the template of this component
       this.$refs.fileInput.click()
     },
+    dataURItoBlob (dataURI) {
+      var byteString = atob(dataURI.split(',')[1])
+      var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+      var ab = new ArrayBuffer(byteString.length)
+      var ia = new Uint8Array(ab)
+      for (var i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i)
+      }
+      var blob = new Blob([ab], {type: mimeString})
+      return blob
+    },
     onFilePicked (event) {
+      this.dialog = true
       // We get the wanted file
       const files = event.target.files
       // As we can choose only one file, we take the first one in the array
@@ -161,25 +174,24 @@ export default {
       fileReader.addEventListener('load', () => {
         // the result here is a base64 image
         this.imageUrl = fileReader.result
-        console.log('[onFilePicked]this.imageUrl', this.imageUrl)
-        // var img = new Image();
         var img = new Image()
         img.src = this.imageUrl
         img.addEventListener('load', _ => {
           let context = this.$refs.canvas.getContext('2d')
-          console.log('context', context)
+          let image = this.$refs.imageToCanvas
+          let imageWidth = window.outerWidth
+          this.$refs.canvas.width = imageWidth
+          this.$refs.canvas.height = imageWidth * image.height / image.width
           // Now I create the image - what?, top, left, width, height
-          context.drawImage(this.$refs.imageToCanvas, 0, 0, this.$refs.imageToCanvas.width, this.$refs.imageToCanvas.height)
+          context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+          this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+          console.log('this.image', this.image)
         })
       })
       fileReader.readAsDataURL(files[0])
-      this.image = files[0]
-      // J'essaye de mettre l'image dans le canvas
-      // let context = this.$refs.canvas.getContext('2d')
-      // console.log('context', context)
-      // // Now I create the image - what?, top, left, width, height
-      // context.drawImage(this.imageUrl, 0, 0, this.$refs.canvas.width, 300)
+      // this.image = files[0]
     },
+
     addPicture () {
       this.dialog = false
       // Vuex
@@ -189,10 +201,13 @@ export default {
 }
 </script>
 
-<style scoped>
-.btn--bottom:not(.btn--absolute) {
+<style scope>
+  div.dialog.dialog--active.dialog--fullscreen {
+    background-color: black;
+  }
+  .btn--bottom:not(.btn--absolute) {
     bottom: 72px;
-}
+  }
   .picInGallery{
     padding: 1px;
   }
@@ -223,6 +238,17 @@ export default {
     font-weight: 200;
     min-height: 120px;
   }
+  @media screen and (orientation: portrait) {
+      #carousel {
+        width: 100%;
+      }
+    }
+
+    @media screen and (orientation: landscape) {
+      #carousel {
+        height: 100%;
+      }
+    }
   @media only screen and (max-width: 599px) {
     .container {
       padding: 0;
@@ -233,7 +259,7 @@ export default {
     .arrowBack {
       position: fixed;
       top: 8px;
-      left: 24px;
+      left: 8px;
       z-index: 3;
     }
     .carousel {
@@ -243,9 +269,9 @@ export default {
     .carousel__item {
       background-size: contain;
     }
-    .dialog {
+    /* .dialog {
       margin: 8px !important;
-    }
+    } */
     .iwt{
       height: 72px;
       width: 72px;

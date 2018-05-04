@@ -1,17 +1,17 @@
 <template >
   <v-container class="container">
-    <v-dialog persistent v-model="welcome">
+    <v-dialog v-model="welcome" fullscreen>
       <v-stepper v-model="e1">
       <v-stepper-header>
         <v-stepper-step step="1" :complete="e1 > 1">Welcome message</v-stepper-step>
         <v-divider></v-divider>
         <v-stepper-step step="2" :complete="e1 > 2">Choose a profile picture</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step step="3">Be ready to look for friends</v-stepper-step>
+        <v-stepper-step step="3">Let's look for friends</v-stepper-step>
       </v-stepper-header>
       <v-stepper-items>
         <v-stepper-content step="1">
-          <v-card color="grey lighten-3" class="mb-5" height="300px">
+          <v-card color="grey lighten-3" class="mb-5" height="380">
             <v-card-title class="primary--text title">Welcome to Fuiibi!</v-card-title>
             <v-card-text>Store your and your friend's pictures around the events you will create.
               One single place for all the pictures sorted in a time line.
@@ -21,7 +21,7 @@
           <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="2">
-          <v-card color="grey lighten-3" class="mb-5" height="300px">
+          <v-card color="grey lighten-3" class="mb-5" height="380">
             <v-card-title class="primary--text title">Add your profile picture</v-card-title>
 
             <v-layout row class="mb-2">
@@ -33,7 +33,8 @@
 
             <v-layout row>
               <v-flex xs12 sm6 class="mt-3">
-                <img :src="imageUrl" class="profilePic" >
+                <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
+                <canvas ref="canvas"></canvas>
               </v-flex>
             </v-layout>
           </v-card>
@@ -158,9 +159,32 @@
         fileReader.addEventListener('load', () => {
           // the result here is a base64 image
           this.imageUrl = fileReader.result
+          var img = new Image()
+          img.src = this.imageUrl
+          img.addEventListener('load', _ => {
+            let context = this.$refs.canvas.getContext('2d')
+            let image = this.$refs.imageToCanvas
+            let imageWidth = window.outerWidth - 16
+            this.$refs.canvas.width = imageWidth
+            this.$refs.canvas.height = imageWidth * image.height / image.width
+            // Now I create the image - what?, top, left, width, height
+            context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+            this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+            console.log('this.image', this.image)
+          })
         })
         fileReader.readAsDataURL(files[0])
-        this.image = files[0]
+      },
+      dataURItoBlob (dataURI) {
+        var byteString = atob(dataURI.split(',')[1])
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        var ab = new ArrayBuffer(byteString.length)
+        var ia = new Uint8Array(ab)
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i)
+        }
+        var blob = new Blob([ab], {type: mimeString})
+        return blob
       }
     }
   }
@@ -187,61 +211,3 @@
   }
 
 </style>
-
-
-<!-- <v-layout row>
-    <v-flex xs12 class="text-xs-center">
-      <v-progress-circular indeterminate color="red" :witdh="7" :size="20" v-if="loading" class="mt-5"></v-progress-circular>
-    </v-flex>
-</v-layout>
-<v-layout row wrap v-for="meetup in meetups" :key="meetup.id" class="mb-1" v-if="!loading">
-  <v-flex xs12 sm12 md10 offset-md2>
-    <v-card height="120px">
-      <v-container fluid>
-        <v-layout col xs8>
-          <v-flex xs3 sm4 md4>
-            <v-card-media
-            :src="meetup.imageUrl"
-            height="100px"
-            style="background-color: white">
-            </v-card-media>
-          </v-flex>
-          <v-flex xs7 sm6 md5>
-            <v-card-title primary-title >
-              <v-card-actions wrap>
-                <div>
-                  <v-btn flat :to="'/meetups/' + meetup.id" class="">
-                    <h3 class="primary--text mb0 mt0 pt0"> {{ meetup.title }}</h3>
-                  </v-btn>
-                </div>
-              </v-card-actions>
-                <div>
-                  {{ meetup.date | date}}
-                </div>
-            </v-card-title>
-            <!-- <v-card-actions>
-              <v-btn flat :to="'/meetups/' + meetup.id">
-                <v-icon left light>arrow_forward</v-icon>
-                View Meetup</v-btn>
-            </v-card-actions>
-          </v-flex>
-          <v-flex xs2 sm2 md3 offset-md4 offset-sm2>
-            <v-btn fab large class="iwt" center></v-btn>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </v-card>
-  </v-flex>
-</v-layout>
-<v-fab-transition >
-  <v-btn router to="/meetup/new"
-    color="orange"
-    fixed
-    bottom
-    right
-    fab
-    class=" white--text"
-    >
-    <v-icon>add</v-icon>
-  </v-btn>
-</v-fab-transition> -->

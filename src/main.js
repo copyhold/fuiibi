@@ -19,6 +19,9 @@ import VueGoogleAutocomplete from 'vue-google-autocomplete'
 // import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
+import { VueTyper } from 'vue-typer'
+// import Typewriter from 'vue-typewriter'
+
 // import Router from 'vue-router'
 // import { routerHistory, writeHistory } from 'vue-router-back-button'
 
@@ -94,8 +97,10 @@ Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 // Vue.component('vuetify-google-autocomplete', VuetifyGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
 Vue.component('friends-only', FriendsOnly)
+Vue.component('vue-typer', VueTyper)
 
 Vue.config.productionTip = false
+// Vue.use(Typewriter)
 
 /* eslint-disable no-new */
 new Vue({

@@ -40,7 +40,8 @@
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-              <img :src="imageUrl" height="150px">
+              <img :src="imageUrl" ref="imageToCanvas" style="display: none">
+              <canvas ref="canvas"></canvas>
             </v-flex>
           </v-layout>
 
@@ -164,7 +165,8 @@
     computed: {
       formIsValid () {
         if (this.address.country && this.address.locality && this.address.route) {
-          console.log('[formIsValid] this.address', this.address);
+
+
           return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
         }
         // console.log('[formIsValid] this.address', this.address);
@@ -240,9 +242,20 @@
           var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
           console.log(latlng)
           geocoder.geocode({'location': latlng}, (results, status) => {
+          console.log('results ', results);
+          this.address = {
+            administrative_area_level_1: results[4].address_components["0"].long_name,
+            country: results[4].address_components[1].long_name,
+            latitude: this.lat,
+            longitude: this.lon,
+            locality: results["0"].address_components[1].long_name,
+            route: results["0"].address_components["0"].long_name,
+            street_number: results["0"].address_components["0"].long_name
+          }
+          console.log('[this address nvo object]', this.address);
           this.where = results[0].formatted_address
           console.log('this.were', this.where);
-
+          document.getElementById('autoComplete').value = this.where
           });
           this.searchingForLocation = false;
           this.showLocationButton = true
@@ -299,10 +312,33 @@
         fileReader.addEventListener('load', () => {
           // the result here is a base64 image
           this.imageUrl = fileReader.result
+          var img = new Image()
+          img.src = this.imageUrl
+          img.addEventListener('load', _ => {
+            let context = this.$refs.canvas.getContext('2d')
+            let image = this.$refs.imageToCanvas
+            let imageWidth = window.outerWidth - 16
+            this.$refs.canvas.width = imageWidth
+            this.$refs.canvas.height = imageWidth * image.height / image.width
+            // Now I create the image - what?, top, left, width, height
+            context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+            this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+            console.log('this.image', this.image)
+          })
         })
         fileReader.readAsDataURL(files[0])
-        this.image = files[0]
-      }
+      },
+      dataURItoBlob (dataURI) {
+        var byteString = atob(dataURI.split(',')[1])
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        var ab = new ArrayBuffer(byteString.length)
+        var ia = new Uint8Array(ab)
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i)
+        }
+        var blob = new Blob([ab], {type: mimeString})
+        return blob
+      },
     }
   }
 </script>

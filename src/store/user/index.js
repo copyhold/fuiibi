@@ -187,7 +187,8 @@ export default {
         let imageUrl
         // We store the profile image of the user in FB storage.
         const filename = payload.image.name
-        const ext = filename.slice(filename.lastIndexOf('.'))
+        // const ext = filename.slice(filename.lastIndexOf('.'))
+        const ext = 'png'
         return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
         .then(fileData => {
           imageUrl = fileData.metadata.downloadURLs[0]

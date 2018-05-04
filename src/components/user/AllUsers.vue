@@ -15,7 +15,8 @@
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
             <v-list-tile-content  @click="getUserPage(user)" >
-              <v-list-tile-title v-html="user.firstName"></v-list-tile-title>
+              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+              <!-- <v-list-tile-title v-html="user.lastName"></v-list-tile-title> -->
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
                 <v-btn small class="greyColors" flat>Pending...</v-btn>
@@ -70,6 +71,42 @@
       }
     },
     methods: {
+      // **********************************FIND CONTACTS IN MOBILE*******************************************
+      // JavaScript
+      // function readContacts() {
+      //   var api = navigator.contacts || navigator.mozContacts;
+      //
+      //   if (api) {
+      //     var criteria = {
+      //       sortBy: 'familyName',
+      //       sortOrder: 'ascending'
+      //     };
+      //
+      //     var finder = api.find(criteria);
+      //     if (finder && finder.then) {
+      //       finder.then(function (contacts) {
+      //           consoleLog('Found ' + contacts.length + ' contacts.');
+      //           if (contacts.length) {
+      //             consoleLog('First contact: ' + contacts[0].givenName[0] + ' ' + contacts[0].familyName[0]);
+      //           }
+      //         })
+      //         .catch(function (err) {
+      //           consoleLog('Fetching contacts failed: ' + err.name);
+      //         });
+      //     } else {
+      //       consoleLog('Only obsolete Contacts API accessible.');
+      //     }
+      //   } else {
+      //     consoleLog('Contacts API not supported.');
+      //   }
+      // }
+      //
+      // function consoleLog(data) {
+      //   var logElement = document.getElementById('log');
+      //   logElement.innerHTML += data + '\n';
+      // }
+      // ***********************************************************************************************************************
+
       getUserPage (key) {
         console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})
@@ -116,6 +153,12 @@
 </script>
 
 <style scoped>
+div.list__tile.list__tile--avatar {
+  padding: 0 0px 0px 8px;
+}
+.theme--light .list .list__tile:not(.list__tile--active), .application .theme--light.list .list__tile:not(.list__tile--active) {
+  padding: 0 0px 0px 8px;
+}
 .btn--bottom:not(.btn--absolute) {
     bottom: 72px;
 }

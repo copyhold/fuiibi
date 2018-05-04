@@ -56,9 +56,9 @@ export default {
 </script>
 
 <style scoped>
-.btn--bottom:not(.btn--absolute) {
-    bottom: 72px;
-}
+  .btn--bottom:not(.btn--absolute) {
+      bottom: 72px;
+  }
   .container{
     margin-top: 0;
     margin-bottom: 56px;

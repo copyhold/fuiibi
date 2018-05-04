@@ -136,6 +136,7 @@ export default {
   .container{
     margin-top: 0;
     padding: 8px;
+    margin-bottom: 56px;
   }
   .application a {
     text-decoration: none;
@@ -208,7 +209,7 @@ export default {
     .arrowBack {
       position: fixed;
       top: 8px;
-      left: 24px;
+      left: 8px;
       z-index: 3;
     }
     .iwt{

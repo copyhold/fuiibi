@@ -57,22 +57,23 @@ export default {
       // let id = payload.eventId
       let imageUrl = ''
       let key
+      console.log('[addpicture] image', payload)
       console.log('[addpicture] image', image)
       console.log('[addpicture] id', id)
-      console.log('[addPicture] this.imageUrl', this.imageUrl)
       //Reach out to firebase and store it
-      // Not sure about the below, but it seems that I push anything in order to get the key from FB
+      // Below I send an empty imageUrl in order to get the key from FB
       // and then I stock the image in FB storage and then I update it to the event pictures with the real pic.
       firebase.database().ref('events/' + id + '/pictures/').push(imageUrl)
       .then((data) => {
         key = data.key
         console.log('key of the resoponse from firebase when stocking the imagge', key)
-        console.log('[addPicture] imageUrl', this.imageUrl)
+        // console.log('[addPicture] imageUrl', this.imageUrl)
         return key
       }).then(key => {
         // I stock the event's image in FB storage
         const filename = payload.image.name
-        const ext = filename.slice(filename.lastIndexOf('.'))
+        // const ext = filename.slice(filename.lastIndexOf('.'))
+        const ext = 'png'
         return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
       })
       .then(fileData => {
@@ -285,7 +286,8 @@ export default {
       }).then(key => {
         // I stock the event's image in FB storage
         const filename = payload.image.name
-        const ext = filename.slice(filename.lastIndexOf('.'))
+        // const ext = filename.slice(filename.lastIndexOf('.'))
+        const ext = 'png'
         return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
       })
       .then(fileData => {

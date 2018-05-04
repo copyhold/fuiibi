@@ -51,7 +51,27 @@
     </v-layout>
   </v-container>
   <v-layout justify-center>
-    <h2 class="white--text mt-4" justify-center>Keep your events alive.</h2>
+    <vue-typer text='Keep your events '
+    class="slogan"
+    :repeat='0'
+    :re-type-delay='1000'
+    :pre-type-delay='300'
+    :type-delay='150'
+    caret-animation='blink'
+    erase-style='backspace'
+    :erase-on-complete='false'
+    ></vue-typer>
+    <vue-typer :text='["active", "all live", "alive!"]'
+    class="slogan"
+    :repeat='0'
+    :re-type-delay='300'
+    :pre-type-delay='2560'
+    :type-delay='150'
+    caret-animation='blink'
+    erase-style='backspace'
+    :erase-on-complete='false'
+    ></vue-typer>
+    <!-- <h2 class="white--text mt-4"justify-center>Keep your events alive.</h2> -->
   </v-layout>
 </v-container>
 </template>
@@ -96,8 +116,13 @@
 </script>
 
 <style scoped>
+    .slogan {
+      font-weight: bold;
+      font-size: 17px;
+      font-family: 'PT Mono', monospace;
+    }
     .allPage{
-      background: url('../../images/welcomeImage1.jpg') no-repeat;
+      /* background: url('../../images/welcomeImage1.jpg') no-repeat; */
       background-size: auto 100%;
       -webkit-animation: slide 30s linear infinite;
       height: 100vh;

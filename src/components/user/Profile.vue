@@ -247,7 +247,7 @@
   .arrowBack {
     position: fixed;
     top: 8px;
-    left: 24px;
+    left: 8px;
     z-index: 3;
   }
 </style>
