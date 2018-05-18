@@ -5,28 +5,39 @@
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout> -->
-    <v-list subheader v-if="pendingFriends">
+    <v-list subheader v-if="pendingFriends"  xs12>
           <v-subheader>Friends invitations</v-subheader>
-          <template v-for="user in pendingFriends" >
+          <template v-for="user in pendingFriends">
             <v-divider></v-divider>
-            <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-              <v-flex xs2>
+            <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2">
+              <v-flex xs2 >
                 <v-list-tile-avatar>
                   <img :src="user.imageUrl"/>
                 </v-list-tile-avatar>
+                <!-- <v-list-tile-content>
+                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" @click="getUserPage(user)"></v-list-tile-title>
+                  <v-list-tile-sub-title>
+                    <v-list-tile-action>
+                      <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
+                      <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
+                    </v-list-tile-action>
+                  </v-list-tile-sub-title>
+                </v-list-tile-content> -->
               </v-flex>
-              <v-flex xs4>
+              <v-flex xs8 class="ml-3">
                 <v-list-tile-content @click="getUserPage(user)">
-                  <v-list-tile-title v-html="user.firstName"></v-list-tile-title>
+                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
                 </v-list-tile-content>
               </v-flex>
-              <v-flex xs3>
+            </v-list-tile>
+            <v-divider></v-divider>
+            <v-list-tile class="short">
+              <v-flex xs6 >
                 <v-list-tile-action>
                   <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
                 </v-list-tile-action>
-
               </v-flex>
-              <v-flex xs3 class="ml-1">
+              <v-flex xs6>
                 <v-list-tile-action>
                   <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
                 </v-list-tile-action>
@@ -105,12 +116,15 @@
 </script>
 
 <style scoped>
+.short{
+  height: 40px;
+}
 .btn--bottom:not(.btn--absolute) {
     bottom: 72px;
 }
   .container{
     margin-top: 0;
-    padding: 8px;
+    padding: 0px;
     margin-bottom: 56px;
   }
   .greyColors{

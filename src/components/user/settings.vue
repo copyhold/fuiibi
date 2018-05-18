@@ -10,17 +10,26 @@
     </v-layout>
     <v-layout row wrap v-else>
       <v-flex xs12>
-        <v-expansion-panel>
+        <v-expansion-panel class="mb-5">
           <v-expansion-panel-content>
             <div slot="header">Add Fuiibi's icon on your home srceen</div>
             <v-card>
-              <v-card-text>If you are using Chrome, please process as follow.
+              <v-card-text><p>If you are using Chrome, please process as follow.
                 For the other browsers, this technology is not yet supported.
-                We will update this tutorial as soon as it will be supported.
-                <br>
-                So for chrome users:<br>
-                Click three dots on the right up corner of the browser.<br>
+                We will update this tutorial as soon as it will be supported.</p>
+                <p>So for chrome users:</p>
+                <p>Click on the three dots on the right up corner of the browser.</p>
+                <v-divider></v-divider>
+                <v-card-media src="../src/images/screenTop.png" height="72px" class="mt-2 mb-2"></v-card-media>
+                <v-divider></v-divider>
+                <p>Once the menu is opened, just click on the "Add to Home screen".</p>
+                <v-divider></v-divider>
+                <v-card-media src="../src/images/menuOpen.png" height="567px" class="mt-2 mb-2"></v-card-media>
+                <v-divider></v-divider>
 
+                <p>That's it, you can now find Fuiibi's icon on your desktop,
+                  no need to enter and download from any store. And your app
+                  will be always updated automaticly. Enjoy!</p>
               </v-card-text>
             </v-card>
           </v-expansion-panel-content>
@@ -61,11 +70,6 @@
         </v-card> -->
       </v-flex>
     </v-layout>
-    <v-fab-transition >
-      <v-btn router to="/event/new" color="green" fixed bottom right fab class=" white--text">
-        <v-icon>edit</v-icon>
-      </v-btn>
-    </v-fab-transition>
   </v-container>
 
 </template>
@@ -129,6 +133,10 @@
 </script>
 
 <style scoped>
+  p {
+    margin: 8px 0px;
+  }
+
   .greyColor{
     color: grey;
   }

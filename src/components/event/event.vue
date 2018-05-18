@@ -30,11 +30,11 @@
             <v-layout>
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
-                <div v-if="event.event.counter > 1" class="ml -2">
-                  <b>{{ event.event.counter }}</b> users were there
+                <div v-if="totalUserCount > 1" class="ml -2">
+                  <b>{{ totalUserCount }}</b> users were there
                 </div>
                 <div v-else class="ml-2">
-                  <b>{{ event.event.counter }}</b> user was there
+                  <b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
               <v-flex xs2 sm2 md2>
@@ -85,7 +85,7 @@
               <v-flex xs12 sm6 class="ml-0">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <!-- <canvas ref="canvas" width="window.innerWidth * 0.9"></canvas> -->
-                <canvas ref="canvas"></canvas>
+                <canvas ref="canvas" class="fitScreen"></canvas>
               </v-flex>
             </v-layout>
             <v-card-actions>
@@ -99,7 +99,11 @@
     </v-layout>
     <v-layout>
       <v-dialog v-model="carousel" fullscreen id="carousel">
-        <v-carousel hide-delimiters hide-controls :cycle="cycle">
+        <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
+          <v-icon class="mr-1" dark large @click="closeDialog">close</v-icon>
+          <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
+        </v-carousel>
+        <v-carousel  hide-delimiters :cycle="cycle" class="hidden-xs-only">
           <v-icon class="mr-1" dark large @click="closeDialog">close</v-icon>
           <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
         </v-carousel>
@@ -127,6 +131,10 @@ export default {
     loading () {
       return this.$store.getters.loading
     },
+    totalUserCount () {
+      console.log('this.event.event.users.length', this.event.event.users.__ob__.dep.subs.length)
+      return this.event.event.users.__ob__.dep.subs.length
+    },
     userWasThere () {
       console.log('[userWasThere]')
       return this.$store.getters.user.events.findIndex(event => {
@@ -135,6 +143,7 @@ export default {
     }
   },
   methods: {
+
     closeDialog () {
       this.carousel = false
     },
@@ -179,7 +188,8 @@ export default {
         img.addEventListener('load', _ => {
           let context = this.$refs.canvas.getContext('2d')
           let image = this.$refs.imageToCanvas
-          let imageWidth = window.outerWidth
+          // let imageWidth = window.outerWidth
+          let imageWidth = window.outerWidth * 2
           this.$refs.canvas.width = imageWidth
           this.$refs.canvas.height = imageWidth * image.height / image.width
           // Now I create the image - what?, top, left, width, height
@@ -202,6 +212,18 @@ export default {
 </script>
 
 <style scope>
+  .carousel {
+    min-height: 100%;
+    max-height: 400px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .carousel__item {
+    background-size: contain;
+  }
+  .fitScreen {
+    max-width: 100vw;
+  }
   div.dialog.dialog--active.dialog--fullscreen {
     background-color: black;
   }
@@ -221,9 +243,6 @@ export default {
   .btn--bottom {
     bottom: 0px;
   }
-  .fullScreen {
-    width: 868px;
-  }
   .profilePic{
     width: 250px;
   }
@@ -238,7 +257,7 @@ export default {
     font-weight: 200;
     min-height: 120px;
   }
-  @media screen and (orientation: portrait) {
+  /* @media screen and (orientation: portrait) {
       #carousel {
         width: 100%;
       }
@@ -248,13 +267,10 @@ export default {
       #carousel {
         height: 100%;
       }
-    }
+    } */
   @media only screen and (max-width: 599px) {
     .container {
       padding: 0;
-    }
-    .fullScreen {
-      width: 100vw;
     }
     .arrowBack {
       position: fixed;
@@ -289,6 +305,16 @@ export default {
       position: absolute;
     }
   }
+  @media only screen and (max-width: 1200px) {
+    .carousel {
+      min-height: 100%;
+      width: 100vw;
+    }
+    .carousel__item {
+      background-size: contain;
+    }
+  }
+
 </style>
 
 <!-- // eventLenght () {

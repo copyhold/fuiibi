@@ -2,18 +2,23 @@
   <v-container class="container">
     <v-layout row>
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="primary" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
       <v-flex xs12 sm12 md12>
-        <v-card height="120px">
+        <!-- <v-card height="120px"> -->
+          <!-- ******************************************************************************** -->
+        <v-card height="216px">
+
           <v-container fluid>
             <v-layout col xs12>
-              <v-flex xs3 sm2 md2>
-                <v-card-media :src="notification.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
+              <v-flex xs12 sm12 md12 @click="eventDetails(notification.key)">
+                <v-card-media :src="notification.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
               </v-flex>
-              <v-flex xs7 sm8 md8 class="ml-3">
+            </v-layout>
+            <v-layout col xs12>
+              <v-flex xs10 sm10 md10 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -34,7 +39,56 @@
                   <div offset-xs3>
                     <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
                     <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
-                    <p v-if="friendsCount(notification)" class="bold" @click="getUserPage(notification)">{{ notification.clickerName }} was there!</p>
+                    <p v-if="notification.friendsCount <= 1" @click="getUserPage(notification)"><span class="bold">{{ notification.clickerName }}</span> was there!</p>
+                    <p v-else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount }} friends were there!</p>
+                  </div>
+                </v-layout>
+              </v-flex>
+              <v-flex xs2 sm2 md2>
+                <v-btn fab large class="iwt" center v-if="!wasThere(notification.key)" @click="iwtClicked(notification)"></v-btn>
+                <span v-else>
+                  <v-btn fab flat large class="iwt clicked" center></v-btn>
+                  <v-badge overlap overlay color="red" class="vuBadge">
+                    <v-icon dark slot="badge">check</v-icon>
+                  </v-badge>
+                </span>
+              </v-flex>
+            </v-layout>
+
+
+
+          </v-container>
+          <!-- ********************************************************************************** -->
+
+<!--
+
+          <v-container fluid>
+            <v-layout col xs12>
+              <v-flex xs3 sm2 md2>
+                <v-card-media :src="notification.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
+              </v-flex>
+              <v-flex xs7 sm8 md8 class="ml-3">
+                <v-layout>
+                  <v-card-title primary-title >
+                    <v-card-actions wrap>
+                      <div @click="eventDetails(notification.key)">
+                        <h4 class="pl-2 secondaryDark--text bold"> {{ notification.event.title }}</h4>
+                      </div>
+                        <p class="timer">{{ timeStamp(notification) }}</p>
+                    </v-card-actions>
+                  </v-card-title>
+                </v-layout>
+                <v-layout>
+                  <div offset-xs3>
+                    <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
+                    <p class="date">{{ notification.event.date | date}}</p>
+                  </div>
+                </v-layout>
+                <v-layout>
+                  <div offset-xs3> -->
+                    <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
+                    <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
+                    <!-- <p v-if="friendsCount(notification)" class="bold" @click="getUserPage(notification)">{{ notification.clickerName }} was there!</p>
                     <p else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount }} friends were there!</p>
                   </div>
                 </v-layout>
@@ -49,7 +103,7 @@
                 </span>
               </v-flex>
             </v-layout>
-          </v-container>
+          </v-container> -->
         </v-card>
       </v-flex>
     </v-layout>
@@ -64,6 +118,13 @@
 <script>
   export default {
     computed: {
+      onLine () {
+        if (navigator.onLine) {
+          console.log('online')
+        } else {
+          console.log('offline')
+        }
+      },
       notifications () {
         if (this.$store.getters.user.notifications) {
           // console.log('[notifications] this.$store.getters.user.notifications', this.$store.getters.user.notifications)
@@ -97,9 +158,6 @@
         return this.$store.getters.user.events.findIndex(event => {
           return event.key === key
         }) >= 0
-      },
-      friendsCount (notification) {
-        notification.friendsCount > 0
       },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
@@ -138,7 +196,7 @@
 }
 .container{
   margin-top: 0;
-  padding: 8px;
+  padding: 4px;
   margin-bottom: 56px;
 }
 .card__title--primary {
@@ -155,7 +213,7 @@
   width: 90px;
   background: url("../img/iwt3.png") center/95% no-repeat;
   position: absolute;
-  right: 0px;
+  right: -4px;
 }
 .clicked{
   filter: opacity(50%);
@@ -173,6 +231,7 @@ span.vuBadge {
 }
 .card__title--primary {
   padding: 0px 0px;
+  margin-top: 8px;
 }
 .card__actions > *, .card__actions .btn {
   margin: 0 -8px;
@@ -188,9 +247,10 @@ p.location {
 }
 @media screen and (max-width: 600px) {
   .iwt{
+    position: absolute;
     height: 60px;
     width: 60px;
-    margin-top: 40px;
+    bottom: 0px;
   }
   .timer{
     right: 24px;
@@ -200,8 +260,8 @@ p.location {
     font-size: 13px;
   }
   span.vuBadge {
-      bottom: 28px;
-      right: 20px;
+      bottom: 22px;
+      right: 12px;
       position: absolute;
   }
 }

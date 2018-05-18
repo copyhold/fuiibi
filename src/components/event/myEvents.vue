@@ -10,10 +10,10 @@
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
-              <v-flex xs3 sm2 md2>
-                <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
+              <v-flex xs4 sm2 md2>
+                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
               </v-flex>
-              <v-flex xs9 sm10 md10 class="ml-3">
+              <v-flex xs8 sm10 md10 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -142,7 +142,7 @@ p {
 }
 .container{
   margin-top: 0;
-  padding: 8px;
+  padding: 4px;
   margin-bottom: 56px;
 }
 .card_actions{

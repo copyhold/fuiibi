@@ -19,7 +19,8 @@
           </v-card-title>
           <v-divider></v-divider>
           <v-card-text>
-            <h3> some more info about the user sdfsdf</h3>
+            <h4>{{ user.firstName }} {{ user.lastName }}</h4>
+            <h4 v-if="userHasLocality">{{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
           </v-card-text>
         </v-card>
 
@@ -80,6 +81,13 @@ export default {
     }
   },
   computed: {
+    userHasLocality () {
+      if (this.user.livingIn) {
+        if (this.user.livingIn.locality) {
+          return true
+        }
+      }
+    },
     user () {
       console.log('[user] id', this.id)
       // console.log('[user] user', user)

@@ -15,7 +15,7 @@
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
             <v-list-tile-content @click="getUserPage(user)">
-              <v-list-tile-title v-html="user.firstName"></v-list-tile-title>
+              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <!-- <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->

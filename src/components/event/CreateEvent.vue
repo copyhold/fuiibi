@@ -6,13 +6,31 @@
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3 class="mt-2">
         <h3 class="mb-2">Create a new event </h3>
-        <v-switch v-bind:label="`Public`" v-model="ex11"></v-switch>
+        <!-- <v-switch v-bind:label="`Public`" v-model="ex11"></v-switch> -->
       </v-flex>
     </v-layout>
     <v-divider></v-divider>
     <v-layout>
       <v-flex xs12>
         <form @submit.prevent="onCreateEvent">
+
+          <v-layout row class="mb-2">
+            <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
+              <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Upload Image </v-btn>
+              <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
+            the accept image is in order to accept image and nothing else-->
+              <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
+            </v-flex>
+          </v-layout>
+
+          <v-layout row>
+            <v-flex xs12 sm6 offset-sm3>
+              <img :src="imageUrl" ref="imageToCanvas" style="display: none">
+              <canvas ref="canvas" v-if="showCanvas"></canvas>
+              <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="pb-5">Change</v-btn>
+              <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
+            </v-flex>
+          </v-layout>
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
@@ -28,28 +46,18 @@
             </v-flex>
           </v-layout>
 
-          <v-layout row class="mb-2">
-            <v-flex xs12 sm6>
-              <!-- In order to load an image to Firebase -->
-              <v-btn raised outline class="primary secondary--text" @click="onPickFile"><v-icon class="mr-2">photo_camera</v-icon>Upload Image </v-btn>
-              <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
-            the accept image is in order to accept image and nothing else-->
-              <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
-            </v-flex>
-          </v-layout>
-
-          <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
-              <img :src="imageUrl" ref="imageToCanvas" style="display: none">
-              <canvas ref="canvas"></canvas>
-            </v-flex>
-          </v-layout>
-
-          <v-divider></v-divider>
+          <!-- <v-divider></v-divider> -->
 
           <v-layout row wrap>
             <v-flex xs12 sm12 offset-sm3>
-              <v-btn xs12 sm12 offset-sm3 v-if="locationInNavigator && showLocationButton" raised outline class="primary secondary--text" @click="getLocation">Use current Location </v-btn>
+              <!-- <v-btn xs12 sm12 offset-sm3 v-if="locationInNavigator && showLocationButton" raised outline class="primary secondary--text" @click="getLocation">Use current Location </v-btn> -->
+              <!-- <v-icon v-if="locationInNavigator && showLocationButton" large @click="getLocation">my_location</v-icon><span>Use my current location</span> -->
+              <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
+                <v-avatar>
+                  <v-icon>my_location</v-icon>
+                </v-avatar>
+                Use my current location
+              </v-chip>
               <v-flex xs12 class="text-xs-center">
                 <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
               </v-flex>
@@ -110,7 +118,7 @@
           <v-layout>
             <v-flex xs12 sm6 offset-sm3>
               <v-flex xs12>
-                <v-select v-bind:items="states" v-model="durationInput" label="Duration" single-line auto prepend-icon="history" hide-details required></v-select>
+                <v-select v-bind:items="states" v-model="durationInput" label="Duration" single-line auto prepend-icon="timelapse" hide-details required></v-select>
               </v-flex>
             </v-flex>
           </v-layout>
@@ -130,6 +138,8 @@
   export default {
     data () {
       return {
+        showUploadImage: true,
+        showCanvas: false,
         where: '',
         fetchedLocation: {lat: 0, lng: 0},
         showLocationButton: true,
@@ -145,6 +155,8 @@
         // description: '',
         /* eslint-disable */
         date: new Date()﻿.toISOString(),
+        date: null,
+
         // eslint-disable-next-line
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
@@ -206,16 +218,10 @@
       * @param {Object} placeResultData PlaceResult object
       * @param {String} id Input container ID
       */
-      // getAddressData: function (addressData, placeResultData, id) {
-      //     this.address = addressData;
-      // },
       getAddressData: (addressData, placeResultData, id) => {
         this.address = addressData;
         console.log('[getAddressData], addressData, placeResultData, id ', addressData, 'placeResultData', placeResultData, 'id:', id);
       },
-      // getAddressData: function (addressData, placeResultData) {
-      //   this.address = addressData;
-      // },
       getLocation () {
         console.log('getLocation')
         if (!navigator.geolocation) {
@@ -228,6 +234,15 @@
         this.searchingForLocation = true;
         this.showLocationButton = false;
         console.log('just before navigator.geolocation.getCurrentPosition');
+        setTimeout( _=> {
+          this.searchingForLocation = false;
+          this.showLocationButton = true
+          if (sawAlert === false && this.fetchedLocation === {lat: 0, lng: 0}) {
+            alert('Couldn\'t load location, please try mannually')
+            sawAlert = true
+          }
+          this.fetchedLocation = {lat: 0, lng: 0}
+        }, 7000);
         navigator.geolocation.getCurrentPosition( position => {
           console.log('in navigator.geolocation.getCurrentPosition');
           this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
@@ -269,7 +284,7 @@
             sawAlert = true
           }
           this.fetchedLocation = {lat: 0, lng: 0}
-        }, {timeout: 7000}
+        }, {setTimeout: 7000}
       },
       showMap () {
         console.log('showMap')
@@ -297,6 +312,10 @@
       onPickFile () {
         // the $refs below give us access to all the ref elements in the template of this component
         this.$refs.fileInput.click()
+      },
+      onPickFile2 () {
+        // the $refs below give us access to all the ref elements in the template of this component
+        this.$refs.fileInput2.click()
       },
       onFilePicked (event) {
         // We get the wanted file
@@ -327,6 +346,8 @@
           })
         })
         fileReader.readAsDataURL(files[0])
+        this.showCanvas = true
+        this.showUploadImage = false
       },
       dataURItoBlob (dataURI) {
         var byteString = atob(dataURI.split(',')[1])
@@ -345,11 +366,25 @@
 
 
 <style scoped>
-  .container{
+  .centered {
+    margin-top: 75px;
+    margin-left: 22vw;
+  }
+  .uploadPicture {
+    border-style: dashed;
+    border-color: grey;
+    border-width: thin;
+    height: 144px;
+    margin: 0 auto;
+  }
+  .container {
     margin-top: 0;
     margin-bottom: 56px;
   }
   @media screen and (max-width: 600px) {
+    .chip {
+      margin-left: 20vw;
+    }
     .container {
       padding: 8px;
       background-color: #fff;
@@ -358,7 +393,7 @@
     .arrowBack {
       position: fixed;
       top: 8px;
-      left: 24px;
+      left: 8px;
       z-index: 3;
     }
   }

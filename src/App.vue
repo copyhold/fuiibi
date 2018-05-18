@@ -123,6 +123,8 @@
     }
   .fuiibi {
     font-family: 'Italianno', cursive;
+    font-family: 'Kaushan Script', cursive;
+    font-family: 'Marck Script', cursive;
     font-size: 33px;
   }
   #app{

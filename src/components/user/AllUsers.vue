@@ -8,7 +8,7 @@
     <v-list subheader>
         <v-subheader>All users</v-subheader>
         <!-- <template v-for="user in users" > -->
-        <template v-for="user in filteredUsers" >
+        <template v-for="user in filteredUsers">
           <v-divider></v-divider>
           <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
             <v-list-tile-avatar class="avatarImg">
@@ -19,7 +19,7 @@
               <!-- <v-list-tile-title v-html="user.lastName"></v-list-tile-title> -->
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                <v-btn small class="greyColors" flat>Pending...</v-btn>
+                <v-btn small class="greyColors" flat left>Pending...</v-btn>
             </v-list-tile-action>
             <v-list-tile-action v-else>
               <v-list-tile-action v-if="!isFriend(user)">
@@ -28,7 +28,7 @@
               </v-list-tile-action>
               <v-list-tile-action v-else>
                 <!-- <v-btn @click="removeFriend(user)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
-                <v-btn @click="removeFriend(user)" flat small class="greyColors">Remove</v-btn>
+                <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
               </v-list-tile-action>
             </v-list-tile-action>
           </v-list-tile>
@@ -58,7 +58,7 @@
       },
       filteredUsers () {
         return this.users.filter((user) => {
-          return user.firstName.match(this.search)
+          return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
         })
       },
       loading () {
@@ -153,16 +153,13 @@
 </script>
 
 <style scoped>
-div.list__tile.list__tile--avatar {
-  padding: 0 0px 0px 8px;
-}
-.theme--light .list .list__tile:not(.list__tile--active), .application .theme--light.list .list__tile:not(.list__tile--active) {
-  padding: 0 0px 0px 8px;
-}
-.btn--bottom:not(.btn--absolute) {
-    bottom: 72px;
-}
-.greyColors{
+  div.tabs {
+    top: 88px !important;
+  }
+  .btn--bottom:not(.btn--absolute) {
+      bottom: 72px;
+  }
+  .greyColors{
     background-color: #f6f7f9;
     border-color: #ced0d4;
     color: #4b4f56;
@@ -188,12 +185,12 @@ div.list__tile.list__tile--avatar {
     overflow: hidden;
     position: absolute;
     width: 100%;
-    top: 120px;
+    top: 88px;
     }
   .container{
     margin-top: 0;
-    padding: 8px;
-    margin-bottom: 56px;
+    /* padding: 8px; */
+    margin-bottom: 96px;
   }
   .card__title--primary {
      padding-top: 0px;

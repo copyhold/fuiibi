@@ -84,6 +84,6 @@
     overflow: hidden;
     position: absolute;
     width: 100%;
-    top: 120px;
+    top: 88px;
     }
 </style>

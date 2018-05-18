@@ -1,5 +1,5 @@
-var CACHE_STATIC_NAME = 'static-v6'
-var CACHE_DYNAMIC_NAME ='dynamic-v4'
+var CACHE_STATIC_NAME = 'static-v9'
+var CACHE_DYNAMIC_NAME ='dynamic-v5'
 var STATIC_FILES = [
   '/',
   '/src/App.vue',
@@ -109,7 +109,7 @@ self.addEventListener('fetch', function (event) {
         .then(function(cache) {
           return fetch(event.request)
             .then(function(res) {
-              trimCache(CACHE_DYNAMIC_NAME, 30)
+              trimCache(CACHE_DYNAMIC_NAME, 100)
               cache.put(event.request, res.clone());
               return res;
             })
@@ -143,7 +143,7 @@ self.addEventListener('fetch', function (event) {
           .then(function (res) {
             return caches.open(CACHE_DYNAMIC_NAME)
             .then(function(cache) {
-              trimCache(CACHE_DYNAMIC_NAME, 30)
+              trimCache(CACHE_DYNAMIC_NAME, 100)
               // we can send res only once that's why we clone it, store it and send back the original res
               cache.put(event.request.url, res.clone())
               return res

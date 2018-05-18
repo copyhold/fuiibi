@@ -34,7 +34,7 @@
             <v-layout row>
               <v-flex xs12 sm6 class="mt-3">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
-                <canvas ref="canvas"></canvas>
+                <canvas ref="canvas" class="fitScreen"></canvas>
               </v-flex>
             </v-layout>
           </v-card>
@@ -121,26 +121,26 @@
         this.$store.commit('addNotification', newNotif)
         this.$store.commit('addEvent', newEvent)
 
-        // var deferredPrompt
-        // window.addEventListener('beforeinstallprompt', function (event) {
-        //   console.log('beforeinstallprompt fired')
-        //   event.preventDefault()
-        //   deferredPrompt = event
-        //   return false
-        // })
-        // if (deferredPrompt) {
-        //   deferredPrompt.prompt()
-        //   deferredPrompt.userChoice.then(function (choiceResult) {
-        //     console.log(choiceResult.outcome)
-        //
-        //     if (choiceResult.outcome === 'dismissed') {
-        //       console.log('User cancelled installation')
-        //     } else {
-        //       console.log('User added to home screen')
-        //     }
-        //   })
-        //   deferredPrompt = null
-        // }
+        var deferredPrompt
+        window.addEventListener('beforeinstallprompt', function (event) {
+          console.log('beforeinstallprompt fired')
+          event.preventDefault()
+          deferredPrompt = event
+          return false
+        })
+        if (deferredPrompt) {
+          deferredPrompt.prompt()
+          deferredPrompt.userChoice.then(function (choiceResult) {
+            console.log(choiceResult.outcome)
+
+            if (choiceResult.outcome === 'dismissed') {
+              console.log('User cancelled installation')
+            } else {
+              console.log('User added to home screen')
+            }
+          })
+          deferredPrompt = null
+        }
       },
       onPickFile () {
         this.$refs.fileInput.click()
@@ -164,7 +164,7 @@
           img.addEventListener('load', _ => {
             let context = this.$refs.canvas.getContext('2d')
             let image = this.$refs.imageToCanvas
-            let imageWidth = window.outerWidth - 16
+            let imageWidth = window.outerWidth * 2
             this.$refs.canvas.width = imageWidth
             this.$refs.canvas.height = imageWidth * image.height / image.width
             // Now I create the image - what?, top, left, width, height
@@ -191,6 +191,9 @@
 </script>
 
 <style scoped>
+  .fitScreen {
+    max-width: calc(100vw - 16px);
+  }
   .container{
     margin-top: 0;
     padding: 8px;

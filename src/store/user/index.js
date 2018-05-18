@@ -23,6 +23,7 @@ export default {
       state.user.notifications.push(payload)
       // console.log('[mutations addNotification] payload', payload);
       state.user.notifications.sort((notificationA, notificationB) => {
+        // console.log('[mutations addNotification] notificationA, notificationB', notificationA, notificationB);
         return notificationA.dateToRank > notificationB.dateToRank
       })
     },
@@ -71,7 +72,8 @@ export default {
       // console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        return eventA.event.date < eventB.event.date
+        // console.log('eventA, eventB', eventA, eventB);
+        return eventA.event.dateToRank > eventB.event.dateToRank
       })
     },
     setLoadedUsers (state, payload) {
@@ -546,6 +548,7 @@ export default {
         return
       }
       // We push the friendID to the user's friend list
+      console.log('**********!!!!!!!!! adding friend to user');
       firebase.database().ref('/users/' + user.id + '/friends').push(friendId)
       .catch(error => {
         console.log(error);
