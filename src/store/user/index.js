@@ -494,7 +494,10 @@ export default {
       firebase.database().ref('users/' + payload.id).update({
         dateOfBirth: payload.dateOfBirth,
         livingIn: payload.livingIn,
-        gender: payload.gender
+        gender: payload.gender,
+        email: payload.email,
+        firstName: payload.firstName,
+        lastName: payload.lastName
       })
       commit('updateUser', payload)
     },

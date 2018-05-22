@@ -16,7 +16,7 @@ import EditMeetupDateDialog from './components/event/Edit/EditMeetupDateDialog.v
 import RegisterDialog from './components/event/Registration/RegisterDialog.vue'
 import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
-// import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
+import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
 import { VueTyper } from 'vue-typer'
@@ -57,10 +57,11 @@ window.addEventListener('beforeinstallprompt', function (event) {
 
 // eslint-disable-next-line
 //***************************************************************************************************************
-// Vue.use(VuetifyGoogleAutocomplete, {
-//   apiKey: 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY' // Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
-//   // version: '...', // Optional
-// })
+Vue.use(VuetifyGoogleAutocomplete, {
+  apiKey: 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY' // Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
+  // apiKey: 'AIzaSyAJS653Q-dx8Qs49NVmnVVmeEuT3hXSIYU'
+  // version: '...', // Optional
+})
 
 Vue.use(Vuetify, { theme: {
   primaryDark: '#F5F5F5',

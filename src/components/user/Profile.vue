@@ -12,12 +12,11 @@
       <v-flex xs12>
 
         <v-card>
-          <v-card-media :src="user.imageUrl" height="300px">
-          </v-card-media>
-          <v-btn color="orange" dark absolute fab small class="camera">
+          <v-card-media :src="user.imageUrl" height="300px"></v-card-media>
+          <!-- <v-btn color="orange" dark absolute fab small class="camera">
             <v-icon>photo_camera</v-icon>
-          </v-btn>
-          <v-card-title class="eventTitle">
+          </v-btn> -->
+          <v-card-title>
               <h2>{{ user.firstName }}</h2>
           </v-card-title>
           <v-divider></v-divider>

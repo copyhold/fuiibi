@@ -20,11 +20,12 @@
                 <p>So for chrome users:</p>
                 <p>Click on the three dots on the right up corner of the browser.</p>
                 <v-divider></v-divider>
-                <v-card-media src="../src/images/screenTop.png" height="72px" class="mt-2 mb-2"></v-card-media>
+                <img src="../../images/screenTop.png" class="mt-2 mb-2 image">
                 <v-divider></v-divider>
                 <p>Once the menu is opened, just click on the "Add to Home screen".</p>
                 <v-divider></v-divider>
-                <v-card-media src="../src/images/menuOpen.png" height="567px" class="mt-2 mb-2"></v-card-media>
+                <img src="../../images/menuOpen.png" class="mt-2 mb-2 image">
+                <!-- <v-card-media src="../src/images/menuOpen.png" height="567px" class="mt-2 mb-2"></v-card-media> -->
                 <v-divider></v-divider>
 
                 <p>That's it, you can now find Fuiibi's icon on your desktop,
@@ -136,7 +137,9 @@
   p {
     margin: 8px 0px;
   }
-
+  .image {
+    width: 100%;
+  }
   .greyColor{
     color: grey;
   }

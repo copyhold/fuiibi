@@ -12,7 +12,7 @@
     <v-divider></v-divider>
     <v-layout>
       <v-flex xs12>
-        <form @submit.prevent="onCreateEvent">
+        <form @submit.prevent="onCreateEvent" v-model="valid">
 
           <v-layout row class="mb-2">
             <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
@@ -34,7 +34,7 @@
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-              <v-text-field name="title" label="Event Name" id="title" v-model="title" required>
+              <v-text-field name="title" label="Event Name" id="title" v-model="title" :rules="nameRules" required>
               </v-text-field>
             </v-flex>
           </v-layout>
@@ -69,16 +69,20 @@
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-                <v-icon class="mr-3">place</v-icon>
-                <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
-                </vue-google-autocomplete>
-                <!-- <vuetify-google-autocomplete
+                <!-- <v-icon class="mr-3">place</v-icon> -->
+                <!-- <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
+                </vue-google-autocomplete> -->
+                <vuetify-google-autocomplete
+                    ref="autoCompleteInput"
                     id="map"
                     prepend-icon="place"
-                    placeholder="Start typing"
+                    placeholder="Location"
                     v-on:placechanged="getAddressData"
+                    v-on:no-results-found="alertNoResultFound"
+                    :rules="[v => !!v || 'Location is required']"
+                    v-model="where"
                 >
-                </vuetify-google-autocomplete> -->
+                </vuetify-google-autocomplete>
             </v-flex>
           </v-layout>
 
@@ -118,7 +122,15 @@
           <v-layout>
             <v-flex xs12 sm6 offset-sm3>
               <v-flex xs12>
-                <v-select v-bind:items="states" v-model="durationInput" label="Duration" single-line auto prepend-icon="timelapse" hide-details required></v-select>
+                <v-select
+                  v-bind:items="states"
+                  v-model="durationInput"
+                  label="Duration"
+                  single-line auto
+                  prepend-icon="timelapse"
+                  required
+                  :rules="[v => !!v || 'Duration is required']"
+                ></v-select>
               </v-flex>
             </v-flex>
           </v-layout>
@@ -138,6 +150,9 @@
   export default {
     data () {
       return {
+        valid: true,
+        nameRules: [
+          v => !!v || 'Name is required'],
         showUploadImage: true,
         showCanvas: false,
         where: '',
@@ -176,11 +191,18 @@
     },
     computed: {
       formIsValid () {
-        if (this.address.country && this.address.locality && this.address.route) {
-
-
-          return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+        if (this.address) {
+          if (this.address.country && this.address.locality && this.address.route) {
+            console.log('[formIsValid] this.address', this.address);
+            console.log('[formIsValid] this.where', this.where);
+            return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+          } else {
+            console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+          }
+        } else {
+          console.log('no address yet');
         }
+
         // console.log('[formIsValid] this.address', this.address);
         // return this.title !== '' && this.address.country !== {} && this.imageUrl !== ''
       },
@@ -190,9 +212,7 @@
           // We dont show this button it there is no access to the geolocation
           return false;
         }
-
           return true;
-
       },
       submittableDateTime () {
         const date = new Date(this.date)
@@ -218,22 +238,39 @@
       * @param {Object} placeResultData PlaceResult object
       * @param {String} id Input container ID
       */
-      getAddressData: (addressData, placeResultData, id) => {
+      // getAddressData (addressData, placeResultData, id) {
+      getAddressData (addressData) {
         this.address = addressData;
-        console.log('[getAddressData], addressData, placeResultData, id ', addressData, 'placeResultData', placeResultData, 'id:', id);
+        console.log('[getAddressData], this.address', this.address);
+        if (this.address) {
+          if (this.address.street_number) {
+            this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
+            console.log('this.were', this.where);
+            // document.getElementById('autoComplete').value = this.where
+            // document.getElementById('map').value = this.where
+          } else {
+            this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
+            console.log('this.were', this.where);
+            // document.getElementById('autoComplete').value = this.where
+            // document.getElementById('map').value = this.where
+          }
+        }
+      },
+      alertNoResultFound () {
+        console.log('[alertNoResultFound], alertNoResultFound');
       },
       getLocation () {
-        console.log('getLocation')
+        // console.log('getLocation')
         if (!navigator.geolocation) {
           console.log('no geolocation in browser');
           return;
         }
-        console.log('after if navigator');
+        // console.log('after if navigator');
         let sawAlert = false
         // We hide the button and show the spinner
         this.searchingForLocation = true;
         this.showLocationButton = false;
-        console.log('just before navigator.geolocation.getCurrentPosition');
+        // console.log('just before navigator.geolocation.getCurrentPosition');
         setTimeout( _=> {
           this.searchingForLocation = false;
           this.showLocationButton = true
@@ -246,7 +283,7 @@
         navigator.geolocation.getCurrentPosition( position => {
           console.log('in navigator.geolocation.getCurrentPosition');
           this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
-          console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
+          // console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
 
           this.lat = position.coords.latitude;
           this.lon = position.coords.longitude;
@@ -255,7 +292,7 @@
           let geopos = `${this.lat},${this.lon}`;
           let latlngStr = geopos.split(',', 2);
           var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
-          console.log(latlng)
+          // console.log(latlng)
           geocoder.geocode({'location': latlng}, (results, status) => {
           console.log('results ', results);
           this.address = {
@@ -270,7 +307,11 @@
           console.log('[this address nvo object]', this.address);
           this.where = results[0].formatted_address
           console.log('this.were', this.where);
-          document.getElementById('autoComplete').value = this.where
+          // document.getElementById('autoComplete').value = this.where
+          // document.getElementById('map').value = this.where
+          // this.$refs.autoCompleteInput.value = this.where
+          // document.getElementById('map').value = this.where
+          console.log('document.getElementById(map).value', document.getElementById('map').value);
           });
           this.searchingForLocation = false;
           this.showLocationButton = true
@@ -397,7 +438,7 @@
       z-index: 3;
     }
   }
-  #autoComplete{
+  /* #autoComplete{
     min-height: 30px;
     margin: 15px 0px;
     width: 85%;
@@ -407,7 +448,7 @@
   }
   #autoComplete:selected {
     border-bottom: solid 1px grey;
-  }
+  } */
   input {
     -moz-appearance: none;
     -webkit-appearance: none;
