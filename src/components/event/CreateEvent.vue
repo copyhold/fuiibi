@@ -27,7 +27,7 @@
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
               <canvas ref="canvas" v-if="showCanvas"></canvas>
-              <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="pb-5">Change</v-btn>
+              <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="pb-5 above">Change</v-btn>
               <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
             </v-flex>
           </v-layout>
@@ -73,7 +73,6 @@
                 <!-- <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
                 </vue-google-autocomplete> -->
                 <vuetify-google-autocomplete
-                    ref="autoCompleteInput"
                     id="map"
                     prepend-icon="place"
                     placeholder="Location"
@@ -137,10 +136,13 @@
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
-              <v-btn class="orange white--text" :disabled="!formIsValid" type="submit" block>Create Event</v-btn>
+              <v-btn class="orange white--text" :disabled="!formIsValid" type="submit" block @click="showAlert">Create Event</v-btn>
             </v-flex>
           </v-layout>
         </form>
+        <v-alert v-model="alert" type="success" class="alertGreen" transition="slide-y-transition">
+          New event created!
+        </v-alert>
       </v-flex>
     </v-layout>
   </v-container>
@@ -150,6 +152,7 @@
   export default {
     data () {
       return {
+        alert: false,
         valid: true,
         nameRules: [
           v => !!v || 'Name is required'],
@@ -229,6 +232,15 @@
       }
     },
     methods: {
+      showAlert () {
+        console.log('showing alert');
+        this.alert = true
+        setTimeout ( _=> {
+          console.log('closing alert');
+
+          this.alert = false
+        }, 2000)
+      },
       back () {
         this.$router.go(-1)
       },
@@ -348,7 +360,9 @@
         }
         this.$store.dispatch('createEvent', eventData)
         // this.$store.dispatch('addNotifications', eventData)
-        this.$router.push('/myEvents')
+        setTimeout( _=> {
+          this.$router.push('/myEvents')
+        }, 2000)
       },
       onPickFile () {
         // the $refs below give us access to all the ref elements in the template of this component
@@ -377,7 +391,8 @@
           img.addEventListener('load', _ => {
             let context = this.$refs.canvas.getContext('2d')
             let image = this.$refs.imageToCanvas
-            let imageWidth = window.outerWidth - 16
+            // let imageWidth = window.outerWidth - 16
+            let imageWidth = 500
             this.$refs.canvas.width = imageWidth
             this.$refs.canvas.height = imageWidth * image.height / image.width
             // Now I create the image - what?, top, left, width, height
@@ -407,6 +422,13 @@
 
 
 <style scoped>
+  .alertGreen {
+    position: absolute;
+    bottom: 60px;
+  }
+  .above {
+    z-index: 50;
+  }
   .centered {
     margin-top: 75px;
     margin-left: 22vw;

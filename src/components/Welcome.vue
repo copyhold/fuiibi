@@ -164,7 +164,8 @@
           img.addEventListener('load', _ => {
             let context = this.$refs.canvas.getContext('2d')
             let image = this.$refs.imageToCanvas
-            let imageWidth = window.outerWidth * 2
+            // let imageWidth = window.outerWidth * 2
+            let imageWidth = 500
             this.$refs.canvas.width = imageWidth
             this.$refs.canvas.height = imageWidth * image.height / image.width
             // Now I create the image - what?, top, left, width, height

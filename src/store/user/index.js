@@ -21,11 +21,11 @@ export default {
     },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
-      // console.log('[mutations addNotification] payload', payload);
-      state.user.notifications.sort((notificationA, notificationB) => {
-        // console.log('[mutations addNotification] notificationA, notificationB', notificationA, notificationB);
-        return notificationA.dateToRank > notificationB.dateToRank
-      })
+      // I REMOVED THE SORT AS I SORT IT ALREADY WITH FIREBASE ORDERBYCHILD()!!!
+      // state.user.notifications.sort((notificationA, notificationB) => {
+      //   // console.log('[mutations addNotification] notificationA, notificationB', notificationA, notificationB);
+      //   return notificationA.dateToRank > notificationB.dateToRank
+      // })
     },
     updateNotification (state, payload) {
       console.log('[updateNotification] check the payload', payload)
@@ -50,7 +50,7 @@ export default {
       console.log('[updateNotification] notification', notification);
     },
     updateUser (state, payload) {
-      console.log('[updateNotification] check the payload', payload)
+      console.log('[updateUser] check the payload', payload)
       const user = state.users.find(user => {
         return user.id === payload.id
       })
@@ -66,13 +66,16 @@ export default {
       if (payload.gender) {
         user.gender = payload.gender
       }
+      if (payload.image) {
+        user.image = payload.image
+      }
       console.log('[updateuser] user', user);
     },
     addEventToMyEvents (state, payload) {
       // console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        // console.log('eventA, eventB', eventA, eventB);
+        // console.log('eventA.event.dateToRank, eventB.event.dateToRank', eventA.event.dateToRank, eventB.event.dateToRank);
         return eventA.event.dateToRank > eventB.event.dateToRank
       })
     },
@@ -401,7 +404,7 @@ export default {
 
     fetchUsersEvents ({commit, getters}) {
       commit('setLoading', true)
-      firebase.database().ref('/users/' + getters.user.id + '/userEvents/').orderByChild("dateToRank").on('child_added', data => {
+      firebase.database().ref('/users/' + getters.user.id + '/userEvents/').on('child_added', data => {
         const key = data.val()
         const fbKey = data.key
         // console.log('[fetchUsersEvents] fbKey - key', fbKey, key);

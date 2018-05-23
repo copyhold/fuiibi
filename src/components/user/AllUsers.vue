@@ -2,7 +2,7 @@
   <v-container class="container">
     <v-layout row>
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-list subheader>

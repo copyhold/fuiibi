@@ -5,19 +5,25 @@
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="primary" :witdh="7":size="40" v-if="loading" class="mt-5"></v-progress-circular>
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-else>
       <v-flex xs12>
 
         <v-card>
-          <v-card-media :src="user.imageUrl" height="300px"></v-card-media>
+          <v-card-media :src="user.imageUrl" height="300px" v-if="!showCanvas"></v-card-media>
+          <img :src="imageUrl" ref="imageToCanvas" style="display: none">
+          <canvas ref="canvas" v-if="showCanvas"></canvas>
+          <v-layout v-if="editMode">
+            <v-btn flat absolute right @click="onPickFile2" class="pb-1 above">Change</v-btn>
+            <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
+          </v-layout>
           <!-- <v-btn color="orange" dark absolute fab small class="camera">
             <v-icon>photo_camera</v-icon>
           </v-btn> -->
           <v-card-title>
-              <h2>{{ user.firstName }}</h2>
+              <h2 v-if="!showCanvas">{{ user.firstName }}</h2>
           </v-card-title>
           <v-divider></v-divider>
           <v-container fluid v-if="!editMode">
@@ -84,20 +90,16 @@
                   </v-layout>
                   <v-layout row>
                     <v-flex xs12>
-                      <v-icon class="mr-3">place</v-icon>
-
-                      <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Living in..." v-on:placechanged="getAddressData" prepend-icon="place">
-                      </vue-google-autocomplete>
-                      <!-- <vuetify-google-autocomplete
+                      <vuetify-google-autocomplete
                           id="map"
-                          append-icon="search"
-                          classname="form-control"
-                          placeholder="Start typing"
+                          prepend-icon="place"
+                          placeholder="LIving in..."
                           v-on:placechanged="getAddressData"
+                          v-on:no-results-found="alertNoResultFound"
+                          :rules="[v => !!v || 'Location is required']"
+                          v-model="where"
                       >
-                      </vuetify-google-autocomplete> -->
-                      <!-- <v-text-field name="livingIn" label="Living in" id="livingIn" v-model="livingIn" type="text" prepend-icon="place">
-                      </v-text-field> -->
+                      </vuetify-google-autocomplete>
                     </v-flex>
                   </v-layout>
 
@@ -137,6 +139,10 @@
   export default {
     data () {
       return {
+        image: null,
+        imageUrl: '',
+        showCanvas: false,
+        where: '',
         address: '',
         date: '',
         modal: false,
@@ -145,7 +151,7 @@
         firstName: this.$store.getters.user.firstName,
         lastName: this.$store.getters.user.lastName,
         dateOfBirth: this.$store.getters.user.dateOfBirth,
-        // livingIn: this.$store.getters.user.livingIn,
+        livingIn: this.$store.getters.user.livingIn,
         email: this.$store.getters.user.email,
         gender: this.$store.getters.user.gender,
         items: [
@@ -154,11 +160,11 @@
       }
     },
     computed: {
-      livingIn () {
-        if (this.$store.getters.user.livingIn) {
-          return this.$store.getters.user.livingIn
-        }
-      },
+      // livingIn () {
+      //   if (this.$store.getters.user.livingIn) {
+      //     return this.$store.getters.user.livingIn
+      //   }
+      // },
       loading () {
         return this.$store.getters.loading
       },
@@ -173,9 +179,69 @@
       }
     },
     methods: {
-      getAddressData (addressData, placeResultData, id) {
-        this.livingIn = addressData
+      onFilePicked (event) {
+        // We get the wanted file
+        const files = event.target.files
+        // As we can choose only one file, we take the first one in the array
+        let filename = files[0].name
+        // Simple chack if the file is valid
+        if (filename.lastIndexOf('.') <= 0) {
+          return alert('Please enter a valid image')
+        }
+        // Turn it into base64
+        const fileReader = new FileReader()
+        fileReader.addEventListener('load', () => {
+          // the result here is a base64 image
+          this.imageUrl = fileReader.result
+          var img = new Image()
+          img.src = this.imageUrl
+          img.addEventListener('load', _ => {
+            let context = this.$refs.canvas.getContext('2d')
+            let image = this.$refs.imageToCanvas
+            // let imageWidth = window.outerWidth - 16
+            let imageWidth = 500
+            this.$refs.canvas.width = imageWidth
+            console.log('[onFilePicked] this.$refs.canvas.width', this.$refs.canvas.width)
+            this.$refs.canvas.height = imageWidth * image.height / image.width
+            // Now I create the image - what?, top, left, width, height
+            context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+            this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+            console.log('this.image', this.image)
+          })
+        })
+        fileReader.readAsDataURL(files[0])
+        this.showCanvas = true
+        // this.showUploadImage = false
       },
+      dataURItoBlob (dataURI) {
+        var byteString = atob(dataURI.split(',')[1])
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+        var ab = new ArrayBuffer(byteString.length)
+        var ia = new Uint8Array(ab)
+        for (var i = 0; i < byteString.length; i++) {
+          ia[i] = byteString.charCodeAt(i)
+        }
+        var blob = new Blob([ab], {type: mimeString})
+        return blob
+      },
+      onPickFile2 () {
+        // the $refs below give us access to all the ref elements in the template of this component
+        this.$refs.fileInput2.click()
+      },
+      alertNoResultFound () {
+        console.log('[alertNoResultFound], alertNoResultFound')
+      },
+      getAddressData (addressData) {
+        this.livingIn = addressData
+        console.log('[getAddressData], this.livingIn', this.livingIn)
+        if (this.livingIn) {
+          this.where = this.livingIn.locality + ', ' + this.livingIn.country
+          console.log('this.were', this.where)
+        }
+      },
+      // getAddressData (addressData, placeResultData, id) {
+      //   this.livingIn = addressData
+      // },
       saveUserDetails () {
         this.editMode = false
         console.log('[saveUserDetails]', this.submittableDate, this.livingIn)
@@ -189,7 +255,8 @@
           dateOfBirth: this.submittableDate,
           livingIn: this.livingIn,
           email: this.email,
-          gender: this.gender
+          gender: this.gender,
+          image: this.image
         }
         console.log('[saveUserDetails] updatedUser', updatedUser)
 
@@ -210,6 +277,9 @@
 </script>
 
 <style scoped>
+  .above {
+    z-index: 50;
+  }
   .btn--bottom:not(.btn--absolute) {
       bottom: 72px;
   }

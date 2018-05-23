@@ -10,25 +10,16 @@ export default {
     addEvent (state, payload) {
       // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
       if (state.events.findIndex(events => events.key === payload.key) < 0) {
-        // console.log('[addEvent] event added', payload.key);
         state.events.push(payload)
       }
       else {
         console.log('[addEvent] event not added as already existing');
       }
-      // console.log('[addEvent] payload', payload);
-      // state.events.push(payload)
     },
     updateEventCounter (state, payload) {
-      // console.log('[updateEventCounter] dans mutation, payload', payload);
       const eventData = state.events.find(event => {
         return event.key === payload.key
       })
-      // console.log('[updateEventCounter] dans mutation, event', eventData);
-      // if (payload.counter) {
-      //   console.log('[updateEventCounter] dans if (payload.counter)');
-      //   eventData.event.counter = payload.counter
-      // }
     },
     updateEvent (state, payload) {
       const eventData = state.events.find(event => {
@@ -41,7 +32,6 @@ export default {
   },
   actions: {
     removeEventFromUser ({commit, getters}, payload) {
-      // console.log('[acceptFriendRequest] payload', payload);
       const eventId = payload.key
       const user = getters.user
       commit('setLoading', true)
@@ -60,18 +50,17 @@ export default {
       console.log('[addpicture] image', payload)
       console.log('[addpicture] image', image)
       console.log('[addpicture] id', id)
-      //Reach out to firebase and store it
       // Below I send an empty imageUrl in order to get the key from FB
       // and then I stock the image in FB storage and then I update it to the event pictures with the real pic.
       firebase.database().ref('events/' + id + '/pictures/').push(imageUrl)
       .then((data) => {
         key = data.key
         console.log('key of the resoponse from firebase when stocking the imagge', key)
-        // console.log('[addPicture] imageUrl', this.imageUrl)
         return key
       }).then(key => {
         // I stock the event's image in FB storage
         const filename = payload.image.name
+        // AS I REDRAW THE IMAGE IN CANVAS, IT WILL ALWAYS BE .PNG SO NO NEED OF THE BELOW LINE
         // const ext = filename.slice(filename.lastIndexOf('.'))
         const ext = 'png'
         return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
@@ -99,7 +88,7 @@ export default {
     listenToNotifications ({commit, getters}) {
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
-      firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_added', data => {
+      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').on('child_added', data => {
         // In order to find the data.ref_.key, I console.log the data and look into the response
         const key = data.ref_.key
         const notifData = data.val()
@@ -255,7 +244,7 @@ export default {
         duration: payload.duration,
         creatorId: getters.user.id,
         creationDate: Date(),
-        dateToRank: - Date.now()
+        dateToRank: - payload.date.getTime()
       }
       console.log('[createEvent] eventData', eventData);
       let imageUrl

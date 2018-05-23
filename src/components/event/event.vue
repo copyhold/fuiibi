@@ -5,7 +5,7 @@
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="primary" :witdh="7":size="70" v-if="loading"></v-progress-circular>
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-else>
@@ -188,8 +188,8 @@ export default {
         img.addEventListener('load', _ => {
           let context = this.$refs.canvas.getContext('2d')
           let image = this.$refs.imageToCanvas
-          // let imageWidth = window.outerWidth
-          let imageWidth = window.outerWidth * 2
+          // let imageWidth = window.outerWidth * 2
+          let imageWidth = 500
           this.$refs.canvas.width = imageWidth
           this.$refs.canvas.height = imageWidth * image.height / image.width
           // Now I create the image - what?, top, left, width, height

@@ -5,7 +5,7 @@
     </div>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7":size="70" v-if="loading"></v-progress-circular>
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
         </v-flex>
     </v-layout>
     <v-layout row wrap v-else>
