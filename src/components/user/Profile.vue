@@ -14,16 +14,13 @@
         <v-card>
           <v-card-media :src="user.imageUrl" height="300px" v-if="!showCanvas"></v-card-media>
           <img :src="imageUrl" ref="imageToCanvas" style="display: none">
-          <canvas ref="canvas" v-if="showCanvas"></canvas>
+          <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
           <v-layout v-if="editMode">
             <v-btn flat absolute right @click="onPickFile2" class="pb-1 above">Change</v-btn>
             <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
           </v-layout>
-          <!-- <v-btn color="orange" dark absolute fab small class="camera">
-            <v-icon>photo_camera</v-icon>
-          </v-btn> -->
           <v-card-title>
-              <h2 v-if="!showCanvas">{{ user.firstName }}</h2>
+              <h2 v-if="!editMode">{{ user.firstName }}</h2>
           </v-card-title>
           <v-divider></v-divider>
           <v-container fluid v-if="!editMode">
@@ -39,9 +36,9 @@
                 <v-flex xs7 sm7 md7>
                   <h4 class="mb-1"> {{ user.firstName }}</h4>
                   <h4 class="mb-1"> {{ user.lastName }}</h4>
-                  <h4 v-if="dateOfBirth" class="mb-1"> {{ user.dateOfBirth | date }}</h4>
+                  <h4 v-if="user.dateOfBirth" class="mb-1"> {{ user.dateOfBirth | date }}</h4>
                   <h4 v-else class="mb-1">unknown</h4>
-                  <h4 v-if="livingIn" class="mb-1"> {{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
+                  <h4 v-if="user.livingIn.locality && user.livingIn.country" class="mb-1"> {{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
                   <h4 v-else class="mb-1">unknown</h4>
                   <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
                   <h4 v-else class="mb-1">unknown</h4>
@@ -84,20 +81,18 @@
                           </template>
                         </v-date-picker>
                       </v-dialog>
-                      <!-- <v-text-field name="dateOfBirth" label="Date of birth" id="dateOfBirth" v-model="dateOfBirth" type="text" >
-                      </v-text-field> -->
                     </v-flex>
                   </v-layout>
                   <v-layout row>
                     <v-flex xs12>
                       <vuetify-google-autocomplete
+                          v-model="where"
                           id="map"
                           prepend-icon="place"
-                          placeholder="LIving in..."
+                          placeholder="Living in..."
                           v-on:placechanged="getAddressData"
                           v-on:no-results-found="alertNoResultFound"
                           :rules="[v => !!v || 'Location is required']"
-                          v-model="where"
                       >
                       </vuetify-google-autocomplete>
                     </v-flex>
@@ -142,9 +137,9 @@
         image: null,
         imageUrl: '',
         showCanvas: false,
-        where: '',
+        where: this.$store.getters.user.livingIn.locality + ', ' + this.$store.getters.user.livingIn.country,
         address: '',
-        date: '',
+        date: this.$store.getters.user.dateOfBirth,
         modal: false,
         key: '',
         editMode: false,
@@ -170,11 +165,15 @@
       },
       user () {
         if (this.$store.getters.user) {
+          // console.log('[user]', this.$store.getters.user)
+          // console.log('[user]', this.$store.getters.users)
           return this.$store.getters.user
         }
       },
       submittableDate () {
-        const date = new Date(this.date).toISOString()
+        // const date = new Date(this.date).toISOString()
+        const date = new Date(this.date)
+
         return date
       }
     },
@@ -233,10 +232,11 @@
       },
       getAddressData (addressData) {
         this.livingIn = addressData
-        console.log('[getAddressData], this.livingIn', this.livingIn)
         if (this.livingIn) {
-          this.where = this.livingIn.locality + ', ' + this.livingIn.country
-          console.log('this.were', this.where)
+          setTimeout(_ => {
+            this.where = this.livingIn.locality + ', ' + this.livingIn.country
+            console.log('this.were', this.where)
+          }, 1)
         }
       },
       // getAddressData (addressData, placeResultData, id) {
@@ -260,25 +260,27 @@
         }
         console.log('[saveUserDetails] updatedUser', updatedUser)
 
-        this.$store.dispatch('updateUser', updatedUser)
-
+        this.$store.dispatch('updateProfile', updatedUser)
         // // this.$store.dispatch('addNotifications', eventData)
         // this.$router.push('/myEvents')
       },
       back () {
         this.$router.go(-1)
-      },
-      sendFriendRequest (userId) {
-        console.log('userID from sendFriendRequest ', userId)
-        this.$store.dispatch('sendFriendRequest', userId)
       }
+      // sendFriendRequest (userId) {
+      //   console.log('userID from sendFriendRequest ', userId)
+      //   this.$store.dispatch('sendFriendRequest', userId)
+      // }
     }
   }
 </script>
 
 <style scoped>
+  .fitScreen {
+    max-width: calc(100vw - 16px);
+  }
   .above {
-    z-index: 50;
+    z-index: 4;
   }
   .btn--bottom:not(.btn--absolute) {
       bottom: 72px;

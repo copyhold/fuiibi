@@ -132,8 +132,10 @@ export default {
       return this.$store.getters.loading
     },
     totalUserCount () {
-      console.log('this.event.event.users.length', this.event.event.users.__ob__.dep.subs.length)
-      return this.event.event.users.__ob__.dep.subs.length
+      if (this.event.event.title !== 'Your subscribtion') {
+        console.log('this.event.event.users.length', this.event.event.users.__ob__.dep.subs.length)
+        return this.event.event.users.__ob__.dep.subs.length
+      }
     },
     userWasThere () {
       console.log('[userWasThere]')

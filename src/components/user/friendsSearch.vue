@@ -8,7 +8,7 @@
     <v-list subheader>
         <v-subheader>My Friends</v-subheader>
         <!-- <template v-for="user in friends" > -->
-        <template v-for="user in friends" >
+        <template v-for="user in filteredFriends" >
           <v-divider></v-divider>
           <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
             <v-list-tile-avatar>
@@ -43,18 +43,18 @@
           }
         }
       },
-      // filteredFriends () {
-      //   if (this.$store.getters.user) {
-      //     if (this.$store.getters.user.friends) {
-      //       if (this.$store.getters.user.friends.length > 0) {
-      //         return this.friends.filter((user) => {
-      //           // return user.firstName.match(this.search)
-      //           return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
-      //         })
-      //       }
-      //     }
-      //   }
-      // },
+      filteredFriends () {
+        if (this.$store.getters.user) {
+          if (this.$store.getters.user.friends) {
+            if (this.$store.getters.user.friends.length > 0) {
+              return this.friends.filter((user) => {
+                // return user.firstName.match(this.search)
+                return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
+              })
+            }
+          }
+        }
+      },
       loading () {
         return this.$store.getters.loading
       },

@@ -32,10 +32,10 @@
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
-              <v-flex xs3 sm2 md2>
-                <v-card-media :src="item.event.imageUrl" height="100px" style="background-color: white"></v-card-media>
+              <v-flex xs4 sm2 md2>
+                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
               </v-flex>
-              <v-flex xs7 sm8 md8 class="ml-3">
+              <v-flex xs8 sm10 md10 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -95,9 +95,6 @@ export default {
       return this.$store.getters.getUser(this.id)
     },
     userEvents () {
-      // console.log('[user] id', this.id)
-      // console.log('[user] user', user)
-      // console.log('[user] this.user.userEvents', this.user.userEvents)
       return this.user.userEvents
     },
     events () {
@@ -143,7 +140,7 @@ export default {
   }
   .container{
     margin-top: 0;
-    padding: 8px;
+    padding: 4px;
     margin-bottom: 56px;
   }
   .application a {
@@ -183,9 +180,6 @@ export default {
   .btn--bottom {
     bottom: 0px;
   }
-  .fullScreen {
-    width: 868px;
-  }
   .profilePic{
     width: 250px;
   }
@@ -209,10 +203,7 @@ export default {
       font-size: 13px;
     }
     .container {
-      padding: 0;
-    }
-    .fullScreen {
-      width: 100vw;
+      padding: 4;
     }
     .arrowBack {
       position: fixed;

@@ -26,7 +26,7 @@
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
-              <canvas ref="canvas" v-if="showCanvas"></canvas>
+              <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
               <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="pb-5 above">Change</v-btn>
               <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
             </v-flex>
@@ -174,7 +174,6 @@
         /* eslint-disable */
         date: new Date()﻿.toISOString(),
         date: null,
-
         // eslint-disable-next-line
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
@@ -256,15 +255,15 @@
         console.log('[getAddressData], this.address', this.address);
         if (this.address) {
           if (this.address.street_number) {
-            this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
-            console.log('this.were', this.where);
-            // document.getElementById('autoComplete').value = this.where
-            // document.getElementById('map').value = this.where
+            setTimeout(_ => {
+              this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
+              console.log('this.were', this.where);
+            }, 1)
           } else {
-            this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
-            console.log('this.were', this.where);
-            // document.getElementById('autoComplete').value = this.where
-            // document.getElementById('map').value = this.where
+            setTimeout(_ => {
+              this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
+              console.log('this.were', this.where);
+            }, 1)
           }
         }
       },
@@ -422,6 +421,9 @@
 
 
 <style scoped>
+  .fitScreen {
+    max-width: 100vw;
+  }
   .alertGreen {
     position: absolute;
     bottom: 60px;

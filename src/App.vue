@@ -45,6 +45,14 @@
             {{ item.title}}
           </v-list-tile-content>
         </v-list-tile>
+        <v-list-tile v-if="userIsAuthenticated" @click="listenToProfileUpdate">
+          <v-list-tile-action>
+            <v-icon>person</v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            My profile
+          </v-list-tile-content>
+        </v-list-tile>
         <v-list-tile  v-if="userIsAuthenticated" flat @click="onLogout">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
@@ -78,10 +86,11 @@
         ]
         if (this.userIsAuthenticated) {
           sideMenu = [
-            {icon: 'person', title: 'My profile', link: '/profile'},
             {icon: 'settings', title: 'Settings', link: '/settings'}
           ]
         }
+        // {icon: 'person', title: 'My profile', link: '/profile', click: 'listenToProfileUpdate'},
+
         return sideMenu
       },
       menuItems () {
@@ -106,6 +115,11 @@
       onLogout () {
         this.$store.dispatch('logout')
         this.$router.push('/')
+      },
+      listenToProfileUpdate () {
+        console.log('[listenToProfileUpdate] triggered')
+        this.$store.dispatch('listenToProfileUpdate')
+        this.$router.push('/profile')
       }
     }
   }

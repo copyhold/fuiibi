@@ -1,4 +1,4 @@
-<template >
+white<template >
   <v-container class="container">
     <v-dialog v-model="welcome" fullscreen>
       <v-stepper v-model="e1">
@@ -11,30 +11,38 @@
       </v-stepper-header>
       <v-stepper-items>
         <v-stepper-content step="1">
-          <v-card color="grey lighten-3" class="mb-5" height="380">
+          <v-card color="white lighten-3" class="mb-5" height="380">
             <v-card-title class="primary--text title">Welcome to Fuiibi!</v-card-title>
             <v-card-text>Store your and your friend's pictures around the events you will create.
               One single place for all the pictures sorted in a time line.
+              <br><br>
+
               Let's try it and enjoy! </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
           <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="2">
-          <v-card color="grey lighten-3" class="mb-5" height="380">
+          <v-card color="white lighten-3" class="mb-5" height="auto">
             <v-card-title class="primary--text title">Add your profile picture</v-card-title>
 
             <v-layout row class="mb-2">
-              <v-flex xs12 sm6>
-                <v-btn raised class="primary primary--text" @click="onPickFile" left outline>Upload</v-btn>
-                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
+              <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
+                <!-- <v-btn raised class="primary primary--text" @click="onPickFile" left outline>Upload</v-btn>
+                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked"> -->
+                <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
+                <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
+              the accept image is in order to accept image and nothing else-->
+                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
 
             <v-layout row>
               <v-flex xs12 sm6 class="mt-3">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
-                <canvas ref="canvas" class="fitScreen"></canvas>
+                <canvas ref="canvas" class="fitScreen" v-if="showCanvas"></canvas>
+                <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="above">Change</v-btn>
+                <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
           </v-card>
@@ -43,7 +51,7 @@
           <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="3">
-          <v-card color="grey lighten-3" class="mb-5" height="300px">
+          <v-card color="white lighten-3" class="mb-5" height="300px">
             <v-card-text>Now that your account has been set up, you are ready to look for your friends using the app!
               We will redicect you to the search page so that you can contact your friends. If you would like to have Fuiibi's icon on your
               mobile, you should accept when it will be proposed to you, otherwise, just go to setting and check how to do it! Enjoy!
@@ -67,7 +75,9 @@
         welcome: true,
         e1: 0,
         imageUrl: '',
-        image: ''
+        image: '',
+        showUploadImage: true,
+        showCanvas: false
       }
     },
     computed: {
@@ -86,8 +96,8 @@
         var event = {
           imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=241c26b9-e086-4f03-ad49-63ead90c87d9',
           title: 'Your subscribtion',
-          description: 'Congratulations for your first event! This event has been created automatically and will be deleted soon. But go and open your fist personal event and it will be automatically shared with all your friends.',
-          counter: 2,
+          description: 'Congratulations for your first event! This event has been created automatically and will be deleted at your next login. But go and open your fist personal event and it will be automatically shared with all your friends.',
+          totalUserCount: 2,
           creationDate: Date(),
           location: {
             administrative_area_level_1: 'My room',
@@ -95,7 +105,8 @@
             latitude: 1,
             longitude: 1,
             locality: 'Home',
-            postal_code: '4747'
+            postal_code: '4747',
+            street_number: '47'
           },
           date: date.toISOString(),
           duration: '2 minutes',
@@ -122,6 +133,7 @@
         this.$store.commit('addEvent', newEvent)
 
         var deferredPrompt
+        console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
         window.addEventListener('beforeinstallprompt', function (event) {
           console.log('beforeinstallprompt fired')
           event.preventDefault()
@@ -144,6 +156,10 @@
       },
       onPickFile () {
         this.$refs.fileInput.click()
+      },
+      onPickFile2 () {
+        // the $refs below give us access to all the ref elements in the template of this component
+        this.$refs.fileInput2.click()
       },
       onFilePicked (event) {
         // We get the wanted file
@@ -175,6 +191,8 @@
           })
         })
         fileReader.readAsDataURL(files[0])
+        this.showCanvas = true
+        this.showUploadImage = false
       },
       dataURItoBlob (dataURI) {
         var byteString = atob(dataURI.split(',')[1])
@@ -192,6 +210,13 @@
 </script>
 
 <style scoped>
+  .uploadPicture {
+    border-style: dashed;
+    border-color: grey;
+    border-width: thin;
+    height: 144px;
+    margin: 0 auto;
+  }
   .fitScreen {
     max-width: calc(100vw - 16px);
   }

@@ -18,7 +18,8 @@
       </v-tabs-bar>
       <v-tabs-items>
         <v-tabs-content :id="'friends'">
-          <friends-only :search="search"></friends-only>
+          <!-- <friends-only :search="search"></friends-only> -->
+          <friends-search :search="search"></friends-search>
         </v-tabs-content>
         <v-tabs-content :id="'allUsers'">
           <all-users :search="search"></all-users>

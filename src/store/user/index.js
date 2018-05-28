@@ -49,6 +49,34 @@ export default {
       })
       console.log('[updateNotification] notification', notification);
     },
+    updateProfile (state, payload) {
+      const user = state.users.find(user => {
+        return user.id === payload.payload.id
+      })
+      const indexOfItem = state.users.findIndex(user => {
+        return user.id === payload.payload.id
+      })
+      if (payload.imageUrl) {
+        user.imageUrl = payload.imageUrl
+        state.user.imageUrl = user.imageUrl
+        // Vue.set(state.users[indexOfItem], 'imageUrl', payload.imageUrl)
+        // state.users[indexOfItem] = Object.assign({}, state.users[indexOfItem], {imageUrl: payload.imageUrl})
+        // state.users[indexOfItem].imageUrl = payload.imageUrl
+      }
+      if (payload.payload.gender) {
+        state.user.gender = payload.payload.gender
+        // state.users[indexOfItem].gender.splice(0, 1, payload.payload.gender)
+      }
+      if (payload.payload.livingIn) {
+        state.user.livingIn = payload.payload.livingIn
+        // state.users[indexOfItem].livingIn.splice(0, 1, payload.payload.livingIn)
+        // console.log('[updateUser] payload.payload.livingIn');
+      }
+      if (payload.payload.dateOfBirth) {
+        state.user.dateOfBirth = payload.payload.dateOfBirth
+        // state.users[indexOfItem].livingIn.splice(0, 1, payload.payload.livingIn)
+      }
+    },
     updateUser (state, payload) {
       console.log('[updateUser] check the payload', payload)
       const user = state.users.find(user => {
@@ -493,16 +521,49 @@ export default {
       })
     },
 
-    updateUser ({commit, getters}, payload) {
-      firebase.database().ref('users/' + payload.id).update({
-        dateOfBirth: payload.dateOfBirth,
-        livingIn: payload.livingIn,
-        gender: payload.gender,
-        email: payload.email,
-        firstName: payload.firstName,
-        lastName: payload.lastName
+    listenToProfileUpdate ({commit, getters}) {
+      firebase.database().ref('users/' + getters.user.id).on('child_changed', data => {
+        console.log('[listenToProfileUpdate] child_changed => data', data)
+
       })
-      commit('updateUser', payload)
+    },
+
+    updateProfile ({commit, getters}, payload) {
+      let imageUrl
+      if (payload.image) {
+        firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
+          .then( fileData => {
+            this.imageUrl = fileData.metadata.downloadURLs[0]
+            firebase.database().ref('users/' + payload.id).update({imageUrl: this.imageUrl})
+            console.log('imageUrl', this.imageUrl);
+          })
+          .then( _=> {
+            firebase.database().ref('users/' + payload.id).update({
+              dateOfBirth: payload.dateOfBirth,
+              livingIn: payload.livingIn,
+              gender: payload.gender,
+              email: payload.email,
+              firstName: payload.firstName,
+              lastName: payload.lastName
+              })
+            .then( _=> {
+              commit('updateProfile', {payload: payload, imageUrl: this.imageUrl})
+            })
+          })
+      } else {
+        firebase.database().ref('users/' + payload.id).update({
+          dateOfBirth: payload.dateOfBirth,
+          livingIn: payload.livingIn,
+          gender: payload.gender,
+          email: payload.email,
+          firstName: payload.firstName,
+          lastName: payload.lastName
+          })
+          .then( _=> {
+            commit('updateProfile', {payload: payload})
+          })
+      }
+
     },
 
     // **************ACTIONS****************

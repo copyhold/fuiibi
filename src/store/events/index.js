@@ -129,7 +129,7 @@ export default {
           }
           // I commit the new event only if it doesn't exist in the userEvents list. Otherwhise, it's done by the fetchEvents and createEvent.
           if (userEvents.findIndex(item => item.key === key) < 0) {
-            console.log('[listenToNotifications] NOT ON THE userEvents', newEvent);
+            // console.log('[listenToNotifications] NOT ON THE userEvents', newEvent);
             commit('addEvent', newEvent)
           }else {
             console.log('[listenToNotifications] ALREADY IN THE userEvents else *******************************');
