@@ -119,28 +119,6 @@
       onDismissed () {
         this.$store.dispatch('clearError')
       }
-      // onPickFile () {
-      //   // the $refs below give us access to all the ref elements in the template of this component
-      //   this.$refs.fileInput.click()
-      // },
-      // onFilePicked (event) {
-      //   // We get the wanted file
-      //   const files = event.target.files
-      //   // As we can choose only one file, we take the first one in the array
-      //   let filename = files[0].name
-      //   // Simple chack if the file is valid
-      //   if (filename.lastIndexOf('.') <= 0) {
-      //     return alert('Please enter a valid image')
-      //   }
-      //   // Turn it into base64
-      //   const fileReader = new FileReader()
-      //   fileReader.addEventListener('load', () => {
-      //     // the result here is a base64 image
-      //     this.imageUrl = fileReader.result
-      //   })
-      //   fileReader.readAsDataURL(files[0])
-      //   this.image = files[0]
-      // }
     }
   }
 </script>

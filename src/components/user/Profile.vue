@@ -37,15 +37,16 @@
                   <h4 class="mb-1"> {{ user.firstName }}</h4>
                   <h4 class="mb-1"> {{ user.lastName }}</h4>
                   <h4 v-if="user.dateOfBirth" class="mb-1"> {{ user.dateOfBirth | date }}</h4>
-                  <h4 v-else class="mb-1">unknown</h4>
-                  <h4 v-if="user.livingIn.locality && user.livingIn.country" class="mb-1"> {{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
-                  <h4 v-else class="mb-1">unknown</h4>
+                  <h4 v-else class="mb-1">To be edited</h4>
+                  <h4 v-if="user.livingIn != null" class="mb-1"> {{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
+                  <h4 v-else class="mb-1">To be edited</h4>
+                  <!-- <h4 class="mb-1">unknown</h4> -->
                   <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
-                  <h4 v-else class="mb-1">unknown</h4>
+                  <h4 v-else class="mb-1">To be edited</h4>
                   <h4 class="mb-1">{{ user.email }}</h4>
                 </v-flex>
                 <v-fab-transition>
-                  <v-btn color="orange" fixed bottom right fab class=" white--text" @click="editMode = true">
+                  <v-btn color="orange" fixed bottom right fab class=" white--text" @click="turnOnEditMode">
                     <v-icon>edit</v-icon>
                   </v-btn>
                 </v-fab-transition>
@@ -101,7 +102,7 @@
                   <v-layout>
                     <v-flex xs12 sm6 offset-sm3>
                       <v-flex xs12>
-                        <v-select label="Gender"v-model="gender" :items="items" prepend-icon="wc"></v-select>
+                        <v-select label="Gender" v-model="gender" :items="items" prepend-icon="wc"></v-select>
                       </v-flex>
                     </v-flex>
                   </v-layout>
@@ -137,7 +138,9 @@
         image: null,
         imageUrl: '',
         showCanvas: false,
-        where: this.$store.getters.user.livingIn.locality + ', ' + this.$store.getters.user.livingIn.country,
+        // where: this.$store.getters.user.livingIn.locality + ', ' + this.$store.getters.user.livingIn.country,
+        // where: this.livingInExist,
+        where: '',
         address: '',
         date: this.$store.getters.user.dateOfBirth,
         modal: false,
@@ -146,26 +149,23 @@
         firstName: this.$store.getters.user.firstName,
         lastName: this.$store.getters.user.lastName,
         dateOfBirth: this.$store.getters.user.dateOfBirth,
-        livingIn: this.$store.getters.user.livingIn,
+        // livingIn: this.$store.getters.user.livingIn,
+        livingIn: '',
         email: this.$store.getters.user.email,
-        gender: this.$store.getters.user.gender,
+        // gender: this.$store.getters.user.gender,
+        gender: '',
         items: [
           'Female', 'Male'
         ]
       }
     },
     computed: {
-      // livingIn () {
-      //   if (this.$store.getters.user.livingIn) {
-      //     return this.$store.getters.user.livingIn
-      //   }
-      // },
       loading () {
         return this.$store.getters.loading
       },
       user () {
         if (this.$store.getters.user) {
-          // console.log('[user]', this.$store.getters.user)
+          console.log('[user]', this.$store.getters.user)
           // console.log('[user]', this.$store.getters.users)
           return this.$store.getters.user
         }
@@ -178,6 +178,23 @@
       }
     },
     methods: {
+      turnOnEditMode () {
+        this.editMode = true
+        console.log('[turnOnEditMode]')
+        if (this.user.livingIn != null) {
+          console.log('[turnOnEditMode] this.user.livingIn != null   => this.where', this.where)
+          this.where = this.user.livingIn.locality + ', ' + this.user.livingIn.country
+          this.livingIn = this.$store.getters.user.livingIn
+          console.log('[turnOnEditMode] this.livingIn', this.livingIn)
+        } else {
+          this.livingIn = ''
+        }
+        if (this.user.gender != null) {
+          this.gender = this.$store.getters.user.gender
+        } else {
+          this.gender = ''
+        }
+      },
       onFilePicked (event) {
         // We get the wanted file
         const files = event.target.files
@@ -235,7 +252,6 @@
         if (this.livingIn) {
           setTimeout(_ => {
             this.where = this.livingIn.locality + ', ' + this.livingIn.country
-            console.log('this.were', this.where)
           }, 1)
         }
       },

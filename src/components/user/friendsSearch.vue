@@ -15,7 +15,7 @@
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
             <v-list-tile-content @click="getUserPage(user)">
-              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+              <v-list-tile-title >{{ user.firstName }} {{ user.lastName }}</v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <!-- <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
@@ -49,7 +49,7 @@
             if (this.$store.getters.user.friends.length > 0) {
               return this.friends.filter((user) => {
                 // return user.firstName.match(this.search)
-                return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
+                return user.firstName.toLowerCase().includes(this.search.toLowerCase()) || user.lastName.toLowerCase().includes(this.search.toLowerCase())
               })
             }
           }

@@ -128,7 +128,10 @@ export default {
           console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
           return
         }
+        console.log('[addPendingInvitations] b4 pushing it => state.user.pendingInvitations', state.user.pendingInvitations);
         state.user.pendingInvitations.push(payload)
+        console.log('[addPendingInvitations] after pushing it => state.user.pendingInvitations', state.user.pendingInvitations);
+
       }
     },
     addPendingFriendToUser(state, payload) {
@@ -392,6 +395,7 @@ export default {
         .then(_=> {
           firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
             // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
+            console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
             const userId = data.val()
             const fbKey = data.key
             firebase.database().ref('/users/' + userId).once('value').then(data =>{
@@ -400,7 +404,9 @@ export default {
                 id: friendData.id,
                 fbKey: fbKey
                 }
-              commit('addPendingInvitations', newFriend)
+              // commit('addPendingInvitations', newFriend)
+              pendingInvitations.push(newFriend)
+
               })
             })
         })
