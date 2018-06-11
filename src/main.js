@@ -33,15 +33,15 @@ if (!window.Promise) {
   window.Promise = Promise
 }
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-  .then(function () {
-    console.log('serviceWorker registered')
-  })
-  .catch(function (err) {
-    console.log(err)
-  })
-}
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js')
+//   .then(function () {
+//     console.log('serviceWorker registered')
+//   })
+//   .catch(function (err) {
+//     console.log(err)
+//   })
+// }
 
 // Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
 // want as well to propose it after the user click the add picture button

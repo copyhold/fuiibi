@@ -138,7 +138,6 @@ export default {
       }
     },
     userWasThere () {
-      console.log('[userWasThere]')
       return this.$store.getters.user.events.findIndex(event => {
         return event.key === this.id
       }) >= 0

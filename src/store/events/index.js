@@ -10,6 +10,7 @@ export default {
     addEvent (state, payload) {
       // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
       if (state.events.findIndex(events => events.key === payload.key) < 0) {
+        // console.log('[mutations] addevent payload', payload)
         state.events.push(payload)
       }
       else {
@@ -88,18 +89,38 @@ export default {
     listenToNotifications ({commit, getters}) {
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
-      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').on('child_added', data => {
+      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20).on('child_added', data => {
+      // firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20).once('value')
+      // .then( data => {
+      //   console.log('[listenToNotifications] data.val()', data.val());
         // In order to find the data.ref_.key, I console.log the data and look into the response
         const key = data.ref_.key
         const notifData = data.val()
         var thisEvent;
         var counter;
         // var eventUserCounter;
-
-        firebase.database().ref('/events/' + key).once('value')
+        // HERE I LIMIT TO 20 !!!!!!!!!!!!!!!!!!!!!!
+        firebase.database().ref('/events/' + key).limitToFirst(20).once('value')
         .then( data => {
           this.thisEvent = data.val()
           // this.eventUserCounter = data.child("users").numChildren()
+        })
+        .then( _=> {
+          firebase.database().ref('/events/' + key + '/pictures').on('child_added', data => {
+            console.log('on child added NEW PICTURE => data.key', data.key)
+            setTimeout( _=> {
+              firebase.database().ref('events/' + key).once('value').then( data => {
+                console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
+                const updateddEvent = data.val()
+                const updateddEventWithAddedPic = {
+                  event: updateddEvent,
+                  key: key
+                }
+                console.log('updateddEventWithAddedPic ', updateddEventWithAddedPic);
+                commit('updateEvent', updateddEventWithAddedPic)
+              })
+            }, 8000)
+          })
         })
         .then( _=> {
           firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
@@ -252,6 +273,7 @@ export default {
       let userEvents = []
       let users = []
       let fbKey
+      let pictures
       //Reach out to firebase and store it
       firebase.database().ref('events/').push(eventData)
       .then((data) => {
@@ -284,11 +306,31 @@ export default {
         })
         .then(fileData => {
           imageUrl = fileData.metadata.downloadURLs[0]
-          dispatch('addPicture', {image:payload.image, key: key})
+          // QUAND ON RECOIT UNE NOUVELLE NOTIFICATION QUI VIENT D'ETRE CREE, ON N E VOIT PAS CETTE PHOTO
+          // IL FAUT RELOADER LA PAGE POUR LA VOIR
+          // dispatch('addPicture', {image:payload.image, key: key})
+
+
           // to reach the specific item with the key in the events array and set the imageUrl stored above:
           // Here we set the picture as the event picture
           return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
-        }).then(() => {
+        })
+        // .then( _=> {
+        //   dispatch('addPicture', {image:payload.image, key: key})
+        // })
+        .then( _=> {
+          return firebase.database().ref('events/' + key + '/pictures/' + key).update({imageUrl: imageUrl})
+        })
+        .then( _ => {
+          return firebase.database().ref('events/' + key + '/pictures/' + key).once('value')
+        })
+        .then( data => {
+          console.log('create Event picture => data.val()', data.val());
+          this.pictures = data.val()
+          console.log('create Event picture => this.pictures', this.pictures);
+        })
+        .then(() => {
+          // console.log('this.picture b4 creataing new eventdata', this.pictures);
         // here we commit that to my local store
         const newEventData = {
           title: payload.title,
@@ -300,9 +342,11 @@ export default {
           creationDate: new Date(),
           imageUrl: imageUrl,
           users: this.users,
-          dateToRank: - Date.now()
+          dateToRank: - Date.now(),
+          pictures: this.pictures
           // counter: 1
           }
+          console.log('newEventData', newEventData);
 
           const newEvent = {
             event: newEventData,
@@ -310,6 +354,7 @@ export default {
             fbKey: this.fbKey
           }
           // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
+          console.log();
           commit('addEvent', newEvent)
           commit('addEventToMyEvents', newEvent)
           // I get the friend's list of the user in order to send them notifications

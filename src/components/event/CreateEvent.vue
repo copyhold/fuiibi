@@ -68,7 +68,7 @@
           </v-layout>
 
           <v-layout row>
-            <v-flex xs12 sm6 offset-sm3>
+            <v-flex xs12 sm12 offset-sm3>
                 <!-- <v-icon class="mr-3">place</v-icon> -->
                 <!-- <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
                 </vue-google-autocomplete> -->
@@ -140,9 +140,11 @@
             </v-flex>
           </v-layout>
         </form>
-        <v-alert v-model="alert" type="success" class="alertGreen" transition="slide-y-transition">
-          New event created!
-        </v-alert>
+        <v-layout row>
+          <v-alert v-model="alert" type="success" class="alertGreen" transition="slide-y-transition">
+            New event created!
+          </v-alert>
+        </v-layout>
       </v-flex>
     </v-layout>
   </v-container>
@@ -298,7 +300,7 @@
 
           this.lat = position.coords.latitude;
           this.lon = position.coords.longitude;
-          var geocoder = new google.maps.Geocoder;
+          var geocoder = new google.maps.Geocoder();
           let myPlace = new google.maps.LatLng(this.lat,this.lon);
           let geopos = `${this.lat},${this.lon}`;
           let latlngStr = geopos.split(',', 2);
@@ -421,12 +423,25 @@
 
 
 <style scoped>
-  .fitScreen {
+  /* i.material-icons.icon.alert__icon {
+    float: left !important;
+  } */
+  /* .alert .alert__icon.icon {
+    float: left !important;
+  } */
+  /* div.alert.alertGreen.sucess{
+    display: inline;
+  } */
+  /* .fitScreen {
     max-width: 100vw;
-  }
+  } */
+  /* .alert > div {
+    display: inline;
+  } */
   .alertGreen {
-    position: absolute;
-    bottom: 60px;
+    position: fixed;
+    bottom: 54px;
+    width: 100vw;
   }
   .above {
     z-index: 50;
@@ -462,17 +477,6 @@
       z-index: 3;
     }
   }
-  /* #autoComplete{
-    min-height: 30px;
-    margin: 15px 0px;
-    width: 85%;
-    font-size: 17px;
-    border-bottom: solid 1px grey;
-    background-color: #fff;
-  }
-  #autoComplete:selected {
-    border-bottom: solid 1px grey;
-  } */
   input {
     -moz-appearance: none;
     -webkit-appearance: none;
