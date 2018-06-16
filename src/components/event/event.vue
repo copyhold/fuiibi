@@ -21,9 +21,13 @@
               {{ event.event.description }}
             </div>
             <v-divider class="mb-2"></v-divider>
-            <p><v-icon class="mr-1">place</v-icon>
+            <p v-if="event.event.location.street_number"><v-icon class="mr-1">place</v-icon>
               {{ event.event.location.route }}
-              {{ event.event.location.street_number }},
+              <!-- {{ event.event.location.street_number }}, -->
+              {{ event.event.location.locality }} - {{ event.event.location.country }}
+            </p>
+            <p v-else><v-icon class="mr-1">place</v-icon>
+              {{ event.event.location.route }}
               {{ event.event.location.locality }} - {{ event.event.location.country }}
             </p>
             <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
@@ -133,8 +137,12 @@ export default {
     },
     totalUserCount () {
       if (this.event.event.title !== 'Your subscribtion') {
-        console.log('this.event.event.users.length', this.event.event.users.__ob__.dep.subs.length)
-        return this.event.event.users.__ob__.dep.subs.length
+        let counter = 0
+        for (let user in this.event.event.users) {
+          console.log(user)
+          counter++
+        }
+        return counter
       }
     },
     userWasThere () {

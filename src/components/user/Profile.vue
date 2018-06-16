@@ -95,6 +95,8 @@
                           v-on:no-results-found="alertNoResultFound"
                           :rules="[v => !!v || 'Location is required']"
                       >
+                      <!-- to be added above to get only the city -->
+                      <!-- types= '(cities)' -->
                       </vuetify-google-autocomplete>
                     </v-flex>
                   </v-layout>
@@ -107,12 +109,12 @@
                     </v-flex>
                   </v-layout>
 
-                  <v-layout row>
+                  <!-- <v-layout row>
                     <v-flex xs12>
                       <v-text-field name="email" label="Email" id="email" v-model="email" type="text" required prepend-icon="email">
                       </v-text-field>
                     </v-flex>
-                  </v-layout>
+                  </v-layout> -->
 
                   <v-fab-transition>
                     <v-btn type="submit" color="green" fixed bottom right fab class=" white--text">

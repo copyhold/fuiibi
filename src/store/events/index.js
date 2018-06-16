@@ -27,8 +27,8 @@ export default {
         return event.key === payload.key
       })
       eventData.event = payload.event
-      console.log('[updateEvent] eventData', eventData);
-      console.log('[updateEvent] mutation payload', payload);
+      // console.log('[updateEvent] eventData', eventData);
+      // console.log('[updateEvent] mutation payload', payload);
     }
   },
   actions: {
@@ -103,20 +103,25 @@ export default {
         firebase.database().ref('/events/' + key).limitToFirst(20).once('value')
         .then( data => {
           this.thisEvent = data.val()
+          // const updateddEvent = {
+          //   event: this.thisEvent,
+          //   key: key
+          // }
+          // commit('updateEvent', this.thisEvent)
           // this.eventUserCounter = data.child("users").numChildren()
         })
         .then( _=> {
           firebase.database().ref('/events/' + key + '/pictures').on('child_added', data => {
-            console.log('on child added NEW PICTURE => data.key', data.key)
+            // console.log('on child added NEW PICTURE => data.key', data.key)
             setTimeout( _=> {
               firebase.database().ref('events/' + key).once('value').then( data => {
-                console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
+                // console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
                 const updateddEvent = data.val()
                 const updateddEventWithAddedPic = {
                   event: updateddEvent,
                   key: key
                 }
-                console.log('updateddEventWithAddedPic ', updateddEventWithAddedPic);
+                // console.log('updateddEventWithAddedPic ', updateddEventWithAddedPic);
                 commit('updateEvent', updateddEventWithAddedPic)
               })
             }, 8000)
@@ -125,10 +130,15 @@ export default {
         .then( _=> {
           firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
           .then( data => {
-            // console.log('[listenToNotifications] users', data.val());
+            console.log('[listenToNotifications] users', data.val());
             this.counter = data.numChildren()
-            // console.log('[listenToNotifications] counter', this.counter);
+            console.log('[listenToNotifications] counter', this.counter);
           })
+          // firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').on('child_added', data => {
+          //   console.log('[listenToNotifications] users', data.val());
+          //   this.counter = data.numChildren()
+          //   console.log('[listenToNotifications] counter', this.counter);
+          // })
         })
         .then( _=> {
           // HERE THE FBKEY AND KEY ARE THE SAME AS IT'S NOT PASSED IN THE NOTIFICATION OBJECT AND WE DONT NEED IT ANYWAY AS WE WONT DELETE NOTIFICATIONS
@@ -180,10 +190,14 @@ export default {
           console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
         })
         .then( _=> {
-          firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
-          .then( data => {
-            this.counter = data.numChildren()
-          })
+          // I add a setTimeout, otherwise, the userFriends has no time to get updated and it keep the same amount of chiuldren
+          setTimeout( _=> {
+            firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
+            .then( data => {
+              this.counter = data.numChildren()
+              console.log('[listenToNotificationsChanges] counter changed!!!!!!', this.counter);
+            })
+          }, 8000)
         })
         .then( _ => {
           firebase.database().ref('/events/' + key).once('value')
@@ -297,7 +311,8 @@ export default {
             })
           })
           return key
-        }).then(key => {
+        })
+        .then(key => {
           // I stock the event's image in FB storage
           const filename = payload.image.name
           // const ext = filename.slice(filename.lastIndexOf('.'))
@@ -322,7 +337,8 @@ export default {
           return firebase.database().ref('events/' + key + '/pictures/' + key).update({imageUrl: imageUrl})
         })
         .then( _ => {
-          return firebase.database().ref('events/' + key + '/pictures/' + key).once('value')
+          // return firebase.database().ref('events/' + key + '/pictures/' + key).once('value')
+          return firebase.database().ref('events/' + key + '/pictures/').once('value')
         })
         .then( data => {
           console.log('create Event picture => data.val()', data.val());
@@ -330,7 +346,6 @@ export default {
           console.log('create Event picture => this.pictures', this.pictures);
         })
         .then(() => {
-          // console.log('this.picture b4 creataing new eventdata', this.pictures);
         // here we commit that to my local store
         const newEventData = {
           title: payload.title,
@@ -344,7 +359,6 @@ export default {
           users: this.users,
           dateToRank: - Date.now(),
           pictures: this.pictures
-          // counter: 1
           }
           console.log('newEventData', newEventData);
 
@@ -354,7 +368,7 @@ export default {
             fbKey: this.fbKey
           }
           // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
-          console.log();
+          console.log('[]');
           commit('addEvent', newEvent)
           commit('addEventToMyEvents', newEvent)
           // I get the friend's list of the user in order to send them notifications
@@ -385,7 +399,7 @@ export default {
   getters: {
     getEventData (state) {
       return (key) => {
-        console.log('[getEventData] key', key);
+        // console.log('[getEventData] key', key);
         return state.events.find((event) => {
           // console.log('[getEventData] event', event);
           return event.key === key

@@ -25,7 +25,7 @@
                     </v-card-actions>
                   </v-card-title>
                 </v-layout>
-                <v-layout>
+                <v-layout @click="eventDetails(item.key)">
                   <div offset-xs3>
                     <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                     <p class="date">{{ item.event.date | date}}</p>

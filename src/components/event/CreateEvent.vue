@@ -80,6 +80,7 @@
                     v-on:no-results-found="alertNoResultFound"
                     :rules="[v => !!v || 'Location is required']"
                     v-model="where"
+                    types= ''
                 >
                 </vuetify-google-autocomplete>
             </v-flex>

@@ -29,7 +29,7 @@
                     </v-card-actions>
                   </v-card-title>
                 </v-layout>
-                <v-layout>
+                <v-layout @click="eventDetails(notification.key)">
                   <div offset-xs3>
                     <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
                     <p class="date">{{ notification.event.date | date}}</p>
@@ -39,8 +39,9 @@
                   <div offset-xs3>
                     <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
                     <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
-                    <p v-if="notification.friendsCount <= 1" @click="getUserPage(notification)"><span class="bold">{{ notification.clickerName }}</span> was there!</p>
-                    <p v-else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount }} friends were there!</p>
+                    <p v-if="notification.friendsCount === 1" @click="getUserPage(notification)"><span class="bold">{{ notification.clickerName }}</span> was there!</p>
+                    <p v-else-if="notification.friendsCount === 2"><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & 1 friend were there!</p>
+                    <p v-else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount - 1}} friends were there!</p>
                   </div>
                 </v-layout>
               </v-flex>

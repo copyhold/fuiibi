@@ -19,10 +19,10 @@
       <v-tabs-items>
         <v-tabs-content :id="'friends'">
           <!-- <friends-only :search="search"></friends-only> -->
-          <friends-search :search="search"></friends-search>
+          <friends-search :search="search.trim()"></friends-search>
         </v-tabs-content>
         <v-tabs-content :id="'allUsers'">
-          <all-users :search="search"></all-users>
+          <all-users :search="search.trim()"></all-users>
         </v-tabs-content>
       </v-tabs-items>
     </v-tabs>
