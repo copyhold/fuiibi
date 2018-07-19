@@ -11,15 +11,13 @@
     <v-layout row wrap v-else>
       <v-flex xs12>
         <v-card>
-          <v-card-media :src="event.event.imageUrl" height="120px">
+          <v-card-media :src="event.event.imageUrl" height="250px">
           </v-card-media>
           <v-card-title class="eventTitle">
               <h2>{{ event.event.title }}</h2>
           </v-card-title>
           <v-card-text>
-            <div class="mb-2">
-              {{ event.event.description }}
-            </div>
+
             <v-divider class="mb-2"></v-divider>
             <p v-if="event.event.location.street_number"><v-icon class="mr-1">place</v-icon>
               {{ event.event.location.route }}
@@ -31,14 +29,14 @@
               {{ event.event.location.locality }} - {{ event.event.location.country }}
             </p>
             <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
-            <v-layout>
+            <v-layout row>
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
                 <div v-if="totalUserCount > 1" class="ml -2">
-                  <b>{{ totalUserCount }}</b> users were there
+                  <v-icon class="mr-2">timelapse</v-icon><b>{{ totalUserCount }}</b> users were there
                 </div>
                 <div v-else class="ml-2">
-                  <b>{{ totalUserCount }}</b> user was there
+                  <v-icon class="mr-2">timelapse</v-icon><b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
               <v-flex xs2 sm2 md2>
@@ -51,6 +49,8 @@
                 </span>
               </v-flex>
             </v-layout>
+              <v-divider class="mb-2"></v-divider>
+              <p>{{ event.event.description }}</p>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -89,6 +89,8 @@
               <v-flex xs12 sm6 class="ml-0">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <!-- <canvas ref="canvas" width="window.innerWidth * 0.9"></canvas> -->
+                <v-icon left @click="rotateLeft">rotate_left</v-icon>
+                <v-icon absolute @click="rotateRight">rotate_right</v-icon>
                 <canvas ref="canvas" class="fitScreen"></canvas>
               </v-flex>
             </v-layout>
@@ -121,7 +123,8 @@ export default {
   data () {
     return {
       imageUrl: '',
-      image: '',
+      // image: '',
+      image: this.$refs.imageToCanvas,
       dialog: false,
       carousel: false,
       cycle: false
@@ -203,12 +206,79 @@ export default {
           this.$refs.canvas.height = imageWidth * image.height / image.width
           // Now I create the image - what?, top, left, width, height
           context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+
           this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
           console.log('this.image', this.image)
         })
       })
       fileReader.readAsDataURL(files[0])
       // this.image = files[0]
+    },
+    rotateRight () {
+      let context = this.$refs.canvas.getContext('2d')
+      let image = this.$refs.imageToCanvas
+      let screenWidth = window.screen.width + 16
+      // console.log('[rotateRight] image.with, image.height', image.width, image.height)
+      if (image.width > image.height) {
+        let imageWidth = 500
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.translate(screenWidth, 0)
+        context.rotate(90 * Math.PI / 180)
+        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        console.log('screenWidth in image.width > image.height', screenWidth)
+      } else {
+        let imageWidth = 500
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.translate(this.$refs.canvas.width, 0)
+        context.rotate(90 * Math.PI / 180)
+        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+
+        // let imageHeight = 500
+        // this.$refs.canvas.height = imageHeight
+        // this.$refs.canvas.width = imageHeight * image.height / image.width
+        // context.translate(this.$refs.canvas.width, 0)
+        // context.rotate(90 * Math.PI / 180)
+        // context.drawImage(image, 0, 0, imageHeight, imageHeight * image.height / image.width)
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        console.log('screenWidth in image.width < image.height', screenWidth)
+      }
+    },
+
+    rotateLeft () {
+      let context = this.$refs.canvas.getContext('2d')
+      let image = this.$refs.imageToCanvas
+      let screenWidth = window.screen.width + 16
+
+      if (image.width > image.height) {
+        let imageWidth = 500
+
+        // this.$refs.canvas.width = imageWidth
+        // this.$refs.canvas.height = imageWidth * image.height / image.width
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.translate(screenWidth / 2, 0)
+        context.rotate(270 * Math.PI / 180)
+        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        console.log('screenWidth in image.width > image.height', screenWidth)
+      } else {
+        let imageHeight = 500
+        this.$refs.canvas.height = imageHeight
+        this.$refs.canvas.width = imageHeight * image.height / image.width
+        context.translate(this.$refs.canvas.width / 2, 0)
+        context.rotate(270 * Math.PI / 180)
+        context.drawImage(image, 0, 0, imageHeight, imageHeight * image.height / image.width)
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        console.log('screenWidth in image.width < image.height', screenWidth)
+      }
     },
 
     addPicture () {
@@ -221,6 +291,10 @@ export default {
 </script>
 
 <style scope>
+  .divider {
+    top: -14px;
+    position: relative;
+  }
   .carousel {
     min-height: 100%;
     max-height: 400px;
@@ -257,14 +331,14 @@ export default {
   }
   .eventTitle{
     width: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    /* background: rgba(0, 0, 0, 0.5); */
     text-align: left;
-    color: white;
-    position: absolute;
+    color: rgba(0,0,0,0.54);
+    position: relative;
     top: 0px;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 200;
-    min-height: 120px;
+    min-height: 70px;
   }
   /* @media screen and (orientation: portrait) {
       #carousel {
@@ -301,17 +375,17 @@ export default {
       height: 72px;
       width: 72px;
       background: url("../img/iwt3.png") center/95% no-repeat;
-      position: absolute;
-      right: 0px;
-      bottom: 8px;
+      position: relative;
+      right: 16px;
+      bottom: 16px;
     }
     .clicked{
       filter: opacity(50%);
     }
     span.vuBadge {
-      bottom: 32px;
-      right: 16px;
-      position: absolute;
+      bottom: 40px;
+      right: -32px;
+      position: relative;
     }
   }
   @media only screen and (max-width: 1200px) {
@@ -325,22 +399,3 @@ export default {
   }
 
 </style>
-
-<!-- // eventLenght () {
-//   console.log(this.event)
-//   console.log('this.event.event.users.__ob__.dep.subs.length', this.event.event.users.__ob__.dep.subs.length)
-//   console.log('this.event.event.users.__ob__.value.__ob__.dep.subs.length', this.event.event.users.__ob__.value.__ob__.dep.subs.length)
-//   return this.event.event.users.__ob__.dep.subs.length
-// },
-// galery () {
-//   return this.$store.getters.getGalery()
-// },
-// userIsAuthenticated () {
-//   return this.$store.getters.user !== null && this.$store.getters.user !== undefined
-// },
-// userIsCreator () {
-//   if (!this.userIsAuthenticated) {
-//     return false
-//   }
-//   return this.$store.getters.user.id === this.meetup.creatorId
-// }, -->

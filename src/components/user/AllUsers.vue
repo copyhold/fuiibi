@@ -155,6 +155,9 @@
 </script>
 
 <style scoped>
+  .theme--light .list .divider, .application .theme--light.list .divider{
+    top: 0px;
+  }
   div.tabs {
     top: 88px !important;
   }

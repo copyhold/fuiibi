@@ -1,4 +1,4 @@
-white<template >
+<template >
   <v-container class="container">
     <v-dialog v-model="welcome" fullscreen>
       <v-stepper v-model="e1">

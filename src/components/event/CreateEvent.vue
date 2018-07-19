@@ -78,7 +78,7 @@
                     placeholder="Location"
                     v-on:placechanged="getAddressData"
                     v-on:no-results-found="alertNoResultFound"
-                    :rules="[v => !!v || 'Location is required']"
+                    :rules="[v => !!v || 'A full address is required']"
                     v-model="where"
                     types= ''
                 >

@@ -1,4 +1,5 @@
 import * as firebase from 'firebase'
+import router from './../../router'
 
 /* eslint-disable */
 export default {
@@ -175,6 +176,114 @@ export default {
   actions: {
 
     // ***************SINGIN********************
+    signInWithGoogle ({commit, getters}) {
+      console.log('[signInWithGoogle]');
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then(function(result) {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        var token = result.credential.accessToken;
+        // The signed-in user info.
+        var user = result.user;
+        console.log('user by google', user);
+
+        // ...
+      }).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        // The email of the user's account used.
+        var email = error.email;
+        // The firebase.auth.AuthCredential type that was used.
+        var credential = error.credential;
+        // ...
+      });
+    },
+
+    signUserIn ({commit}, payload) {
+      commit('setLoading', true)
+      commit('clearError')
+      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+      .then(
+        user => {
+          const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
+          const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
+          const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
+          const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
+          const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
+          const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
+          const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
+          const userData = firebase.database().ref('users/' + user.uid).once('value')
+          console.log('[signUserIn] userData', userData);
+          console.log('[signUserIn] userData.firstName', userData.firstName);
+
+          const newUser = {
+            id: user.uid,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            imageUrl: this.imageUrl,
+            email: this.email,
+            livingIn: this.livingIn,
+            gender: this.gender,
+            dateOfBirth: this.dateOfBirth,
+            friends: [],
+            events: []
+          }
+          console.log('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
+          commit('setUser', newUser)
+          commit('setLoading', false)
+        }
+      )
+      .catch(
+        error => {
+          commit('setLoading', false)
+          commit('setError', error)
+          console.log(error);
+        }
+      )
+    },
+    checkUserFromGoogle ({commit, dispatch}, payload) {
+      console.log('[checkUserFromGoogle] payload', payload)
+      firebase.database().ref('users/' + payload.uid).once('value')
+       .then( user =>{
+         console.log('[checkUserFromGoogle] user', user.val());
+         let userData = user.val()
+         if (userData === null) {
+           console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
+           dispatch('createUserFromGoogle', payload)
+         } else {
+           console.log('[checkUserFromGoogle] this user is NOT new')
+           dispatch('fetchUserData')
+           dispatch('fetchUsersEvents')
+           dispatch('listenToNotifications')
+           dispatch('listenToNotificationsChanges')
+           dispatch('listenToInvitationRemoval')
+           dispatch('listenToFriendRemoval')
+         }
+       })
+    },
+    createUserFromGoogle ({commit}, payload) {
+        console.log('let create a user from google', payload);
+
+        commit('setLoading', true)
+        const newUser = {
+          id: payload.uid,
+          email: payload.email,
+          firstName: payload.displayName,
+          lastName: payload.displayName,
+          notifications: [],
+          events: [],
+          friends: [],
+          //*********************************************************
+          imageUrl: payload.photoURL
+        }
+        console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
+        commit('setUser', newUser)
+        let id = payload.uid
+        commit('setLoading', false)
+        // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
+        firebase.database().ref('users/' + id).set(newUser)
+        router.push('/welcome')
+    },
 
     signUserUp ({commit}, payload) {
       //As we are doing a request to the web, we change the status of loading to true.
@@ -254,49 +363,6 @@ export default {
       }
     },
 
-    signUserIn ({commit}, payload) {
-      commit('setLoading', true)
-      commit('clearError')
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-      .then(
-        user => {
-          commit('setLoading', false)
-          const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
-          const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
-          const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
-          const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
-          const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
-          const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
-          const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
-          const userData = firebase.database().ref('users/' + user.uid).once('value')
-          console.log('[signUserIn] userData', userData);
-          console.log('[signUserIn] userData.firstName', userData.firstName);
-
-          const newUser = {
-            id: user.uid,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            imageUrl: this.imageUrl,
-            email: this.email,
-            livingIn: this.livingIn,
-            gender: this.gender,
-            dateOfBirth: this.dateOfBirth,
-            friends: [],
-            events: []
-          }
-          console.log('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
-          commit('setUser', newUser)
-        }
-      )
-      .catch(
-        error => {
-          commit('setLoading', false)
-          commit('setError', error)
-          console.log(error);
-        }
-      )
-    },
-
     autoSignIn ({commit}, payload) {
       commit('setUser', {
         id: payload.uid,
@@ -310,7 +376,127 @@ export default {
     },
 
     // ***********FETCHUSERDATA************************
-
+    // fetchGoogleUserData ({commit, getters}, userPayload) {
+    //   commit('setLoading', true)
+    //   let events = []
+    //   let friends = []
+    //   let notifications = []
+    //   let firstName = ''
+    //   let email = ''
+    //   let lastName = ''
+    //   let imageUrl = ''
+    //   let dateOfBirth = ''
+    //   let gender = ''
+    //   let livingIn = {}
+    //   let pendingFriends = []
+    //   let pendingInvitations = []
+    //   console.log('[fetchGoogleUserData] getters.user.id', getters.user.id);
+    //   if (userPayload.photoURL) {
+    //     this.imageUrl = userPayload.photoURL
+    //     console.log('user.photoURL', userPayload.photoURL);
+    //   }
+    //   this.firstName = userPayload.displayName
+    //   this.lastName = userPayload.displayName
+    //   this.email = userPayload.email
+    //
+    //   firebase.database().ref('/users/' + getters.user.id).once('value')
+    //   .then(data => {
+    //     const userData = data.val()
+    //     console.log('[fetchGoogleUserData] userData', userData);
+    //     if (!getters.user.livingIn) {
+    //       this.livingIn = userData.livingIn
+    //     }
+    //     if (!getters.user.gender) {
+    //       this.gender = userData.gender
+    //     }
+    //     if (!getters.user.gender) {
+    //       this.dateOfBirth = userData.dateOfBirth
+    //     }
+    //
+    //     console.log('[fetchUserData] this.email', this.email);
+    //   })
+    //   .then( _=>{
+    //     // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
+    //   firebase.database().ref('/users/' + getters.user.id + '/friends/').on('child_added', data => {
+    //     const userId = data.val()
+    //     const fbKey = data.key
+    //     firebase.database().ref('/users/' + userId).once('value').then(data =>{
+    //         const friendData = data.val()
+    //         const newFriend = {
+    //           id: friendData.id,
+    //           imageUrl: friendData.imageUrl,
+    //           firstName: friendData.firstName,
+    //           lastName: friendData.lastName,
+    //           fbKey: fbKey
+    //         }
+    //         friends.push(newFriend)
+    //       })
+    //     })
+    //   })
+    //   .then( _ => {
+    //     // Fetch the user's ****PENDINGFRIENDS**** from Firebase and store it in the local store
+    //     firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').on('child_added', data => {
+    //       const userId = data.val()
+    //       const fbKey = data.key
+    //       // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
+    //       // I should check if it's updated when there is a change in the value of one of the friends data.
+    //       firebase.database().ref('/users/' + userId).once('value').then(data =>{
+    //         // console.log('[fetchUserData] PENDINGFRIENDS data.val() ', data.val())
+    //         const friendData = data.val()
+    //         const newFriend = {
+    //           id: friendData.id,
+    //           imageUrl: friendData.imageUrl,
+    //           firstName: friendData.firstName,
+    //           lastName: friendData.lastName,
+    //           fbKey: fbKey
+    //           }
+    //         pendingFriends.push(newFriend)
+    //         })
+    //       })
+    //     })
+    //     .then(_=> {
+    //       firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
+    //         // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
+    //         console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
+    //         const userId = data.val()
+    //         const fbKey = data.key
+    //         firebase.database().ref('/users/' + userId).once('value').then(data =>{
+    //           const friendData = data.val()
+    //           const newFriend = {
+    //             id: friendData.id,
+    //             fbKey: fbKey
+    //             }
+    //           // commit('addPendingInvitations', newFriend)
+    //           pendingInvitations.push(newFriend)
+    //
+    //           })
+    //         })
+    //     })
+    //     .then( _=> {
+    //       const updatedUser = {
+    //         id: getters.user.id,
+    //         imageUrl: this.imageUrl,
+    //         firstName: this.firstName,
+    //         email: this.email,
+    //         dateOfBirth: this.dateOfBirth,
+    //         gender: this.gender,
+    //         livingIn: this.livingIn,
+    //         lastName: this.lastName,
+    //         events: events,
+    //         friends: friends,
+    //         notifications: notifications,
+    //         pendingFriends: pendingFriends,
+    //         pendingInvitations: pendingInvitations
+    //       }
+    //       console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
+    //       commit('setUser', updatedUser)
+    //       commit('setLoading', false)
+    //     })
+    //     .catch(error => {
+    //       console.log(error)
+    //       commit('setLoading', false)
+    //     })
+    // },
     fetchUserData ({commit, getters}) {
       commit('setLoading', true)
       let events = []
@@ -325,6 +511,7 @@ export default {
       let livingIn = {}
       let pendingFriends = []
       let pendingInvitations = []
+
       // Here below we use promise to get the info one after the other and send everything to the local storage once everything has been received
       // Fetch the firstName and userImage
       firebase.database().ref('/users/' + getters.user.id).once('value')

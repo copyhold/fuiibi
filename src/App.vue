@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-toolbar class="primaryWhite" fixed app>
+    <v-toolbar class="primaryWhite" fixed app v-if="userIsAuthenticated">
       <!-- <v-toolbar-side-icon @click="sideNav = !sideNav" class="hidden-xs-only">
       </v-toolbar-side-icon> -->
       <v-toolbar-title absolute class="center">
@@ -22,11 +22,13 @@
       </v-toolbar-items> -->
     </v-toolbar>
 
-    <v-bottom-nav fixed class="bottomAtTop primaryWhite hidden-sm-and-up">
+    <!-- I DONT NEED THE BELOW FIST BOTTOM NAV -->
+
+    <!-- <v-bottom-nav fixed class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated">
       <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
         <span>{{ item.title }}</span>
       </v-btn>
-    </v-bottom-nav>
+    </v-bottom-nav> -->
 
     <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
       <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
@@ -63,7 +65,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <main class="marginTop">
+    <main :class="marginTop">
       <router-view>
 
       </router-view>
@@ -75,7 +77,8 @@
   export default {
     data () {
       return {
-        sideNav: false
+        sideNav: false,
+        marginTop: false
       }
     },
     computed: {
@@ -88,6 +91,7 @@
           sideMenu = [
             {icon: 'settings', title: 'Settings', link: '/settings'}
           ]
+          this.marginTop = true
         }
         // {icon: 'person', title: 'My profile', link: '/profile', click: 'listenToProfileUpdate'},
 
