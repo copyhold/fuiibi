@@ -3,10 +3,8 @@
   <!-- <v-container class="container "> -->
   <v-container class="fullscreen-bg">
 
-    <video playsinline loop muted autoplay class="fullscreen-bg__video">
-      <!-- <source src="../../videos/mainPageVideo.mpeg" type="video/mpeg"> -->
-      <source src="../../videos/mainPageVideo.mp4" type="video/mp4">
-      <!-- <source src="../../videos/lacCalme.ogv" type="video/ogg"> -->
+    <video playsinline loop muted autoplay>
+      <source src="../../videos/Media3.mp4" type="video/mp4">
      </video>
      <v-layout row class="fuiibiHomePage white--text">
        <v-flex>
@@ -19,103 +17,127 @@
          <p class="alive">ALIVE</p>
        </v-flex>
      </v-layout>
-     <v-layout row class="signInGoogle">
-       <v-flex xs12>
+
+     <v-card class="transparency" :class="{ shown: SignInIsHidden }">
+       <v-card-text>
+         <v-container>
+           <form @submit.prevent="onSignin">
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                   Sign In
+                   <span slot="loader" class="custom-loader">
+                     <v-icon light>cached</v-icon>
+                   </span>
+                 </v-btn>
+               </v-flex>
+             </v-layout>
+
+           </form>
+         </v-container>
+       </v-card-text>
+     </v-card>
+
+     <v-card class="transparencySignUp" :class="{ hideSignUp: SignUpIsHidden }">
+       <v-card-text>
+           <form @submit.prevent="onSignup">
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="firstName" label="First name" id="firstNameSignUp" v-model="firstName" type="text" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="lastName" label="Last name" id="lastNameSignUp" v-model="lastName" type="text" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="email" label="Mail" id="emailSignUp" v-model="email" type="email" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="password" label="Password" id="passwordSignUp" v-model="password" type="password" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="confirmPassword" label="Confirm password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]">
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
+
+             <v-layout row>
+               <v-flex xs12>
+                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                   Sign up
+                   <span slot="loader" class="custom-loader">
+                     <v-icon light>cached</v-icon>
+                   </span>
+                 </v-btn>
+               </v-flex>
+             </v-layout>
+
+           </form>
+       </v-card-text>
+     </v-card>
+
+
+
+     <v-layout row>
+       <v-flex xs4 class="signInGoogle">
          <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="blue white--text">
-           Sign In With Google
+           Google Sign In
+           <span slot="loader" class="custom-loader">
+             <v-icon light>cached</v-icon>
+           </span>
+         </v-btn>
+       </v-flex>
+       <v-flex xs4 class="simpleSignIn">
+         <!-- <v-btn outline flat @click="showSignInForm = true" :disabled="loading" :loading="loading" class="white--text"> -->
+         <v-btn outline flat @click="SignInIsHidden = !SignInIsHidden, SignUpIsHidden = true " :disabled="loading" :loading="loading" class="white--text">
+           {{ SignInIsHidden ? 'SIGN IN' : 'CANCEL'}}
+           <span slot="loader" class="custom-loader">
+             <v-icon light>cached</v-icon>
+           </span>
+         </v-btn>
+       </v-flex>
+       <v-flex xs4 class="simpleSignUp">
+         <!-- <v-btn outline flat @click="showSignInForm = true" :disabled="loading" :loading="loading" class="white--text"> -->
+         <v-btn outline flat @click="SignUpIsHidden = !SignUpIsHidden, SignInIsHidden = true" :disabled="loading" :loading="loading" class="white--text">
+           {{ SignUpIsHidden ? 'SIGN UP' : 'CANCEL'}}
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
          </v-btn>
        </v-flex>
      </v-layout>
-    <!-- <v-layout row v-if="error">
-      <v-flex sx12 sm6 offset-sm3>
-        <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
-      </v-flex>
-    </v-layout> -->
 
-      <!-- <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
-
-        <v-card class="tranparency">
-
-
-
-
-
-        <v-card-title primary-title>
-            <h2>Signin</h2>
-          </v-card-title>
-          <v-card-text>
-            <v-container>
-              <form @submit.prevent="onSignin">
-
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
-
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
-                      Sign In
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                    </v-btn>
-                  </v-flex>
-                </v-layout>
-
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="blue white--text">
-                      Sign In With Google
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                    </v-btn>
-                  </v-flex>
-                </v-layout>
-
-              </form>
-            </v-container>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </v-layout>
-  </v-container>-->
-  <!-- <v-layout justify-center>
-    <vue-typer text='Keep your events '
-    class="slogan"
-    :repeat='0'
-    :re-type-delay='1000'
-    :pre-type-delay='200'
-    :type-delay='100'
-    caret-animation='blink'
-    ></vue-typer>
-    <vue-typer :text='["active", "all live", "alive !!"]'
-    class="slogan"
-    :repeat='0'
-    :re-type-delay='100'
-    :pre-type-delay='1960'
-    :type-delay='100'
-    :erase-delay='200'
-    :pre-erase-delay='500'
-    caret-animation='blink'
-    erase-style='backspace'
-    :erase-on-complete='false'
-    ></vue-typer>
-  </v-layout> -->
 </v-container>
 </template>
 
@@ -125,15 +147,27 @@
     data () {
       return {
         email: '',
-        password: ''
+        password: '',
+        showSignInForm: true,
+        SignInIsHidden: true,
+        SignUpIsHidden: true,
+        confirmPassword: '',
+        imageUrl: '',
+        image: '',
+        firstName: '',
+        lastName: ''
       }
     },
     computed: {
-      user () {
-        return this.$store.getters.user
+      comparePasswords () {
+        return this.password !== this.confirmPassword ? 'Password do not match' : ''
       },
       error () {
         return this.$store.getters.error
+      },
+      user () {
+        console.log('SignInIsHidden', this.SignInIsHidden)
+        return this.$store.getters.user
       },
       loading () {
         return this.$store.getters.loading
@@ -153,10 +187,16 @@
       },
       onSignin () {
         // Vuex
+
         this.$store.dispatch('signUserIn', {email: this.email, password: this.password})
       },
       onDismissed () {
         this.$store.dispatch('clearError')
+      },
+      onSignup () {
+        // Vuex
+        // this.$store.dispatch('signUserUp', {firstName: this.firstName, email: this.email, password: this.password, image: this.image})
+        this.$store.dispatch('signUserUp', {firstName: this.firstName, lastName: this.lastName, email: this.email, password: this.password})
       }
     }
   }
@@ -167,6 +207,16 @@
       position: absolute;
       bottom: 3vh;
       left: 2vw;
+    }
+    .simpleSignIn {
+      position: absolute;
+      bottom: 3vh;
+      right: 2vw;
+    }
+    .simpleSignUp {
+      position: absolute;
+      bottom: 3vh;
+      right: 29vw;
     }
     .slogan {
       position: absolute;
@@ -194,10 +244,10 @@
       font-family: 'Raleway', sans-serif;
     }
     .fullscreen-bg {
-      position:absolute;
+      position:fixed;
       height:100%;
       width:100%;
-      overflow: hidden;
+      /* overflow: hidden; */
     }
     .fullscreen-bg video {
       min-width: 100%;
@@ -223,13 +273,29 @@
     .container{
       margin-top: 0px;
       background-color: rgba(255, 255, 255, 0);
-
-
-
       padding: 0px;
     }
-    .tranparency {
-      background-color: rgba(255, 255, 255, 0.7);
+    .shown {
+      bottom: -100vw !important;
+    }
+    .hideSignUp {
+      bottom: -120vw !important;
+    }
+    .transparency {
+      position: relative;
+      bottom: 133vw;
+      width: 100%;
+      -webkit-transition: 2000ms; /* Safari */
+      transition: 1000ms;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .transparencySignUp {
+      position: relative;
+      bottom: 225vw;
+      width: 100%;
+      -webkit-transition: 2000ms; /* Safari */
+      transition: 1000ms;
+      background-color: rgba(255, 255, 255, 0.9);
     }
 /*This is the code to make the spinner spin*/
       .custom-loader {
@@ -274,6 +340,92 @@
           margin-top: 0px !important;
         }
       }
-
-
 </style>
+
+<!-- <v-layout row v-if="error">
+  <v-flex sx12 sm6 offset-sm3>
+    <app-alert @dismissed="onDismissed" :text="error.message"></app-alert>
+  </v-flex>
+</v-layout> -->
+
+  <!-- <v-layout row>
+  <v-flex xs12 sm6 offset-sm3>
+
+    <v-card class="transparency">
+
+
+
+
+
+    <v-card-title primary-title>
+        <h2>Signin</h2>
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <form @submit.prevent="onSignin">
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
+                </v-text-field>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
+                </v-text-field>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                  Sign In
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+
+            <v-layout row>
+              <v-flex xs12>
+                <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="blue white--text">
+                  Sign In With Google
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                </v-btn>
+              </v-flex>
+            </v-layout>
+
+          </form>
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </v-flex>
+</v-layout>
+</v-container>-->
+<!-- <v-layout justify-center>
+<vue-typer text='Keep your events '
+class="slogan"
+:repeat='0'
+:re-type-delay='1000'
+:pre-type-delay='200'
+:type-delay='100'
+caret-animation='blink'
+></vue-typer>
+<vue-typer :text='["active", "all live", "alive !!"]'
+class="slogan"
+:repeat='0'
+:re-type-delay='100'
+:pre-type-delay='1960'
+:type-delay='100'
+:erase-delay='200'
+:pre-erase-delay='500'
+caret-animation='blink'
+erase-style='backspace'
+:erase-on-complete='false'
+></vue-typer>
+</v-layout> -->
