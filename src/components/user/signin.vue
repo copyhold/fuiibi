@@ -4,7 +4,7 @@
   <v-container class="fullscreen-bg">
 
     <video playsinline loop muted autoplay>
-      <source src="../../videos/Media3.mp4" type="video/mp4">
+      <source src="../../videos/Media4.mp4" type="video/mp4">
      </video>
      <v-layout row class="fuiibiHomePage white--text">
        <v-flex>
@@ -106,36 +106,49 @@
            </form>
        </v-card-text>
      </v-card>
-
-
-
+     <!-- <v-layout class="textAboveButtons" xs12>
+       <p class="getStarted">Get started</p>
+     </v-layout>-->
+     <v-layout class="textAboveButtons" xs12>
+       <p class="oneClick">Get started with just one click</p>
+     </v-layout>
      <v-layout row>
-       <v-flex xs4 class="signInGoogle">
-         <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="blue white--text">
+       <v-flex xs12 class="signInGoogle">
+         <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="red white--text" block>
+           <v-icon dark class="leftIcon">google_glass</v-icon>
            Google Sign In
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
          </v-btn>
        </v-flex>
-       <v-flex xs4 class="simpleSignIn">
+      </v-layout>
+      <v-layout row class="continueEmail">
+        <p class="withEmail">Or continue with email</p>
+      </v-layout>
+      <v-layout row>
+       <v-flex xs5 class="simpleSignUp">
          <!-- <v-btn outline flat @click="showSignInForm = true" :disabled="loading" :loading="loading" class="white--text"> -->
-         <v-btn outline flat @click="SignInIsHidden = !SignInIsHidden, SignUpIsHidden = true " :disabled="loading" :loading="loading" class="white--text">
-           {{ SignInIsHidden ? 'SIGN IN' : 'CANCEL'}}
+         <v-btn flat @click="SignUpIsHidden = !SignUpIsHidden, SignInIsHidden = true" :disabled="loading" :loading="loading" class="white--text">
+           {{ SignUpIsHidden ? 'Sign Up' : 'Cancel'}}
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
          </v-btn>
        </v-flex>
-       <v-flex xs4 class="simpleSignUp">
+       <v-flex xs2 class="separation">
+         <p>|</p>
+       </v-flex>
+       <v-flex xs5 class="simpleSignIn">
          <!-- <v-btn outline flat @click="showSignInForm = true" :disabled="loading" :loading="loading" class="white--text"> -->
-         <v-btn outline flat @click="SignUpIsHidden = !SignUpIsHidden, SignInIsHidden = true" :disabled="loading" :loading="loading" class="white--text">
-           {{ SignUpIsHidden ? 'SIGN UP' : 'CANCEL'}}
+         <v-btn flat @click="SignInIsHidden = !SignInIsHidden, SignUpIsHidden = true " :disabled="loading" :loading="loading" class="white--text">
+           {{ SignInIsHidden ? 'Login' : 'Cancel'}}
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
          </v-btn>
        </v-flex>
+
      </v-layout>
 
 </v-container>
@@ -203,20 +216,67 @@
 </script>
 
 <style scoped>
+    .leftIcon{
+      position: absolute;
+      left: 30px !important;
+    }
+    .continueEmail{
+      position: absolute;
+      bottom: 10vh;
+      left: 2vw;
+      color: #fff;
+      text-align: center;
+      width: 100vw;
+    }
+    .textAboveButtons{
+      position: absolute;
+      bottom: 22vh;
+      left: 2vw;
+      color: #fff;
+      text-align: center;
+      width: 100vw;
+    }
+    .getStarted{
+      font-size: 8vw;
+      margin-bottom: 14vw;
+      text-align: center;
+      width: 100%;
+    }
+    .oneClick{
+      font-size: 4vw;
+      margin-bottom: 9vw;
+      text-align: center;
+      width: 100%;
+    }
+    .withEmail{
+      font-size: 4vw;
+      margin-bottom: 5vw;
+      text-align: center;
+      width: 100%;
+    }
     .signInGoogle {
       position: absolute;
-      bottom: 3vh;
-      left: 2vw;
+      bottom: 18vh;
+      left: 10vw;
+      width: 80%;
     }
     .simpleSignIn {
       position: absolute;
       bottom: 3vh;
-      right: 2vw;
+      left: 10vw;
+    }
+    .separation{
+      position: absolute;
+      bottom: 1vh;
+      font-size: 9vw;
+      font-weight: 100;
+      left: 50vw;
+      color: #fff;
     }
     .simpleSignUp {
       position: absolute;
       bottom: 3vh;
-      right: 29vw;
+      right: 10vw;
     }
     .slogan {
       position: absolute;
@@ -282,6 +342,7 @@
       bottom: -120vw !important;
     }
     .transparency {
+      z-index: 5;
       position: relative;
       bottom: 133vw;
       width: 100%;
@@ -290,6 +351,7 @@
       background-color: rgba(255, 255, 255, 0.9);
     }
     .transparencySignUp {
+      z-index: 5;
       position: relative;
       bottom: 225vw;
       width: 100%;

@@ -130,9 +130,9 @@ export default {
         .then( _=> {
           firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
           .then( data => {
-            console.log('[listenToNotifications] users', data.val());
+            // console.log('[listenToNotifications] users', data.val());
             this.counter = data.numChildren()
-            console.log('[listenToNotifications] counter', this.counter);
+            // console.log('[listenToNotifications] counter', this.counter);
           })
           // firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').on('child_added', data => {
           //   console.log('[listenToNotifications] users', data.val());

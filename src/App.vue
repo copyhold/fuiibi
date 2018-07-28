@@ -65,7 +65,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <main :class="marginTop">
+    <main :class="{ marginTop: userLoggedIn }">
       <router-view>
 
       </router-view>
@@ -78,7 +78,7 @@
     data () {
       return {
         sideNav: false,
-        marginTop: false
+        userLoggedIn: false
       }
     },
     computed: {
@@ -91,7 +91,8 @@
           sideMenu = [
             {icon: 'settings', title: 'Settings', link: '/settings'}
           ]
-          this.marginTop = true
+          this.userLoggedIn = true
+          console.log('[this.userIsAuthenticated] this.marginTop', this.userLoggedIn)
         }
         // {icon: 'person', title: 'My profile', link: '/profile', click: 'listenToProfileUpdate'},
 
@@ -104,9 +105,9 @@
         ]
         if (this.userIsAuthenticated) {
           menuItems = [
-            {icon: 'home', title: 'Home', link: '/notifications'},
-            {icon: 'supervisor_account', title: 'My friends', link: '/friends'},
-            {icon: 'list', title: 'My events', link: '/myEvents'}
+            {icon: 'home', title: 'Notifications', link: '/notifications'},
+            {icon: 'list', title: 'My events', link: '/myEvents'},
+            {icon: 'supervisor_account', title: 'My friends', link: '/friends'}
           ]
         }
         return menuItems

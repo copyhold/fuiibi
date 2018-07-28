@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-container class="container">
     <v-layout row>
         <v-flex xs12 class="text-xs-center">
@@ -118,6 +118,11 @@
 
 <script>
   export default {
+    data () {
+      return {
+        marginTop: true
+      }
+    },
     computed: {
       onLine () {
         if (navigator.onLine) {

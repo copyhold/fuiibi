@@ -46,12 +46,8 @@
             </v-flex>
           </v-layout>
 
-          <!-- <v-divider></v-divider> -->
-
           <v-layout row wrap>
             <v-flex xs12 sm12 offset-sm3>
-              <!-- <v-btn xs12 sm12 offset-sm3 v-if="locationInNavigator && showLocationButton" raised outline class="primary secondary--text" @click="getLocation">Use current Location </v-btn> -->
-              <!-- <v-icon v-if="locationInNavigator && showLocationButton" large @click="getLocation">my_location</v-icon><span>Use my current location</span> -->
               <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
                 <v-avatar>
                   <v-icon>my_location</v-icon>
@@ -76,12 +72,13 @@
                     id="map"
                     prepend-icon="place"
                     placeholder="Location"
+                    :rules="locationRules"
                     v-on:placechanged="getAddressData"
                     v-on:no-results-found="alertNoResultFound"
-                    :rules="[v => !!v || 'A full address is required']"
                     v-model="where"
                     types= ''
                 >
+                <!-- :rules="[v => !!v || 'A full address is required']" -->
                 </vuetify-google-autocomplete>
             </v-flex>
           </v-layout>
@@ -157,6 +154,11 @@
       return {
         alert: false,
         valid: true,
+        locationRules: [
+          v => !!v || 'A full address is required'
+          // v => !!v.country || 'Country is missing, a full address is required',
+          // v => !!v.route || 'Route is missing, a full address is required'
+        ],
         nameRules: [
           v => !!v || 'Name is required'],
         showUploadImage: true,
@@ -181,6 +183,16 @@
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
         address: '',
+        address: {
+          country: '',
+          locality: '',
+          route: 'Unnamed road',
+          administrative_area_level_1: '',
+          latitude: null,
+          longitude: null,
+          postal_code: '',
+          street_number: '-'
+        },
         items: [
           { text: 'State 1' },
           { text: 'State 2' },
@@ -195,9 +207,29 @@
       }
     },
     computed: {
+      // formIsValid () {
+      //   if (this.address) {
+      //     if (this.address.country && this.address.locality && this.address.route) {
+      //       console.log('[formIsValid] this.address', this.address);
+      //       console.log('[formIsValid] this.where', this.where);
+      //       return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+      //     } else {
+      //       console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+      //     }
+      //   } else {
+      //     console.log('no address yet');
+      //   }
+      // },
       formIsValid () {
         if (this.address) {
-          if (this.address.country && this.address.locality && this.address.route) {
+          // if (this.address.country && this.address.locality && this.address.route) {
+          //   console.log('[formIsValid] this.address', this.address);
+          //   console.log('[formIsValid] this.where', this.where);
+          //   return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+          // } else {
+          //   console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+          // }
+          if (this.address.longitude && this.address.latitude) {
             console.log('[formIsValid] this.address', this.address);
             console.log('[formIsValid] this.where', this.where);
             return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
@@ -207,9 +239,6 @@
         } else {
           console.log('no address yet');
         }
-
-        // console.log('[formIsValid] this.address', this.address);
-        // return this.title !== '' && this.address.country !== {} && this.imageUrl !== ''
       },
       locationInNavigator() {
         if (!navigator.geolocation && !this.showLocationButton) {
@@ -254,17 +283,40 @@
       */
       // getAddressData (addressData, placeResultData, id) {
       getAddressData (addressData) {
-        this.address = addressData;
+        console.log('[getAddressData] => addressData', addressData);
+        if (addressData) {
+          if (addressData.route) {
+            this.address = addressData;
+          } else {
+            this.address = {
+              country: addressData.country,
+              locality: addressData.locality,
+              route: 'Unnamed road',
+              administrative_area_level_1: addressData.administrative_area_level_1,
+              latitude: addressData.latitude,
+              longitude: addressData.longitude,
+              postal_code: addressData.postal_code,
+              street_number: addressData.street_number
+            }
+          }
+        }
+
+
         console.log('[getAddressData], this.address', this.address);
-        if (this.address) {
-          if (this.address.street_number) {
+        if (addressData) {
+          if (this.address.street_number && this.address.route && this.address.route != 'Unnamed road') {
             setTimeout(_ => {
               this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
-              console.log('this.were', this.where);
+              console.log('this.were this.address.street_number && this.address.route', this.where);
+            }, 1)
+          } else if (this.address.route && this.address.route != 'Unnamed road') {
+            setTimeout(_ => {
+              this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
+              console.log('this.were this.address.route', this.where);
             }, 1)
           } else {
             setTimeout(_ => {
-              this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
+              this.where = this.address.locality + ', ' + this.address.country
               console.log('this.were', this.where);
             }, 1)
           }

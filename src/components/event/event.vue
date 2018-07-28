@@ -16,9 +16,8 @@
           <v-card-title class="eventTitle">
               <h2>{{ event.event.title }}</h2>
           </v-card-title>
+          <v-divider class="mb-2"></v-divider>
           <v-card-text>
-
-            <v-divider class="mb-2"></v-divider>
             <p v-if="event.event.location.street_number"><v-icon class="mr-1">place</v-icon>
               {{ event.event.location.route }}
               <!-- {{ event.event.location.street_number }}, -->
@@ -33,10 +32,10 @@
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
                 <div v-if="totalUserCount > 1" class="ml -2">
-                  <v-icon class="mr-2">timelapse</v-icon><b>{{ totalUserCount }}</b> users were there
+                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
                 </div>
                 <div v-else class="ml-2">
-                  <v-icon class="mr-2">timelapse</v-icon><b>{{ totalUserCount }}</b> user was there
+                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
               <v-flex xs2 sm2 md2>
@@ -132,7 +131,7 @@ export default {
   },
   computed: {
     event () {
-      console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
+      // console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
       return this.$store.getters.getEventData(this.id)
     },
     loading () {
@@ -292,7 +291,7 @@ export default {
 
 <style scope>
   .divider {
-    top: -14px;
+    top: 0px;
     position: relative;
   }
   .carousel {
@@ -383,8 +382,8 @@ export default {
       filter: opacity(50%);
     }
     span.vuBadge {
-      bottom: 40px;
-      right: -32px;
+      bottom: 56px;
+      right: -48px;
       position: relative;
     }
   }
