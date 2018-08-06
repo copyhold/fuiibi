@@ -7,7 +7,6 @@
     </v-layout> -->
     <v-list subheader>
         <v-subheader>My Friends</v-subheader>
-        <!-- <template v-for="user in friends" > -->
         <template v-for="user in friends" >
           <v-divider></v-divider>
           <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
@@ -18,11 +17,25 @@
               <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <!-- <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
               <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </template>
+        <!-- <v-layout>
+          <p>
+            My friends
+          </p>
+        </v-layout>
+        <template v-for="user in friends" >
+          <v-card>
+            <v-card-media :src="user.imageUrl" class="squaredVCard">
+              <v-btn flat small class="greyColors" @click="removeFriend(user)" absolute><v-icon class="mr-1">close</v-icon></v-btn>
+              <v-card-title class="white--text">
+                {{ user.firstName }} {{ user.lastName }}
+              </v-card-title>
+            </v-card-media>
+          </v-card>
+        </template>-->
     </v-list>
   </div>
 </template>
@@ -81,6 +94,10 @@
 </script>
 
 <style scoped>
+  .squaredVCard{
+    height: 50vw !important;
+    width: 50vw;
+  }
   .greyColors{
     background-color: #f6f7f9;
     border-color: #ced0d4;

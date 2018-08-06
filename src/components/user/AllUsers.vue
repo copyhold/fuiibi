@@ -58,7 +58,7 @@
       },
       filteredUsers () {
         return this.users.filter((user) => {
-          return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
+          return user.firstName.toLowerCase().concat(user.lastName.toLowerCase()).trim().replace(' ', '').includes(this.search.toLowerCase().trim().replace(' ', '')) || user.lastName.toLowerCase().concat(user.firstName.toLowerCase()).trim().replace(' ', '').includes(this.search.toLowerCase().trim().replace(' ', ''))
         })
       },
       loading () {
@@ -71,6 +71,7 @@
       }
     },
     methods: {
+
       // **********************************FIND CONTACTS IN MOBILE*******************************************
       // JavaScript
       // function readContacts() {

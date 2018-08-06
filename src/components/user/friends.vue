@@ -9,7 +9,7 @@
           <v-subheader>Friends invitations</v-subheader>
           <template v-for="user in pendingFriends">
             <v-divider></v-divider>
-            <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2">
+            <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2 mb-2">
               <v-flex xs2 >
                 <v-list-tile-avatar>
                   <img :src="user.imageUrl"/>

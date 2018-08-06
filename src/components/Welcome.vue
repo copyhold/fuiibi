@@ -97,10 +97,10 @@
           imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=241c26b9-e086-4f03-ad49-63ead90c87d9',
           title: 'Your subscribtion',
           description: 'Congratulations for your first event! This event has been created automatically and will be deleted at your next login. But go and open your fist personal event and it will be automatically shared with all your friends.',
-          totalUserCount: 2,
+          friendsCount: 1,
           creationDate: Date(),
           location: {
-            administrative_area_level_1: 'My room',
+            administrative_area_level_1: 'Somewhere',
             country: 'Planet earth',
             latitude: 1,
             longitude: 1,
@@ -120,7 +120,7 @@
           key: key,
           clickerName: clickerName,
           dateToRank: event.dateToRank,
-          friendsCount: this.counter
+          friendsCount: 1
         }
         const newEvent = {
           event: event,

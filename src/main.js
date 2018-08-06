@@ -21,6 +21,8 @@ import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
 import { VueTyper } from 'vue-typer'
 import FriendsSearch from './components/user/friendsSearch.vue'
+// import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import '@mdi/font/css/materialdesignicons.css'
 // import Typewriter from 'vue-typewriter'
 
 // import Router from 'vue-router'
@@ -131,6 +133,7 @@ new Vue({
         // GOOGLE
         if (user.photoURL) {
           this.$store.dispatch('checkUserFromGoogle', user)
+          // this.$store.dispatch('getUserContacts')
         } else {
           this.$store.dispatch('fetchUserData')
           this.$store.dispatch('fetchUsersEvents')

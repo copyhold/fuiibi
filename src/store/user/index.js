@@ -101,10 +101,8 @@ export default {
       console.log('[updateuser] user', user);
     },
     addEventToMyEvents (state, payload) {
-      // console.log('[addEventToMyEvents] mutation => payload', payload);
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        // console.log('eventA.event.dateToRank, eventB.event.dateToRank', eventA.event.dateToRank, eventB.event.dateToRank);
         return eventA.event.dateToRank > eventB.event.dateToRank
       })
     },
@@ -112,7 +110,6 @@ export default {
       state.users = payload
     },
     addUser (state, payload) {
-      // console.log('[addUser] payload', payload);
       if (state.users.findIndex(user => user.id === payload.id) < 0) {
         state.users.push(payload)
       }
@@ -184,9 +181,7 @@ export default {
         var token = result.credential.accessToken;
         // The signed-in user info.
         var user = result.user;
-        console.log('user by google', user);
-
-        // ...
+        console.log('[signInWithGoogle] user by google', user);
       }).catch(function(error) {
         // Handle Errors here.
         var errorCode = error.code;
@@ -195,7 +190,6 @@ export default {
         var email = error.email;
         // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
-        // ...
       });
     },
 
@@ -263,16 +257,19 @@ export default {
     },
     createUserFromGoogle ({commit}, payload) {
         console.log('let create a user from google', payload);
-
+        let firstName = payload.displayName.substr(0,payload.displayName.indexOf(' '));
+        let lastName = payload.displayName.substr(payload.displayName.indexOf(' ')+1);
         commit('setLoading', true)
         const newUser = {
           id: payload.uid,
           email: payload.email,
-          firstName: payload.displayName,
-          lastName: payload.displayName,
+          firstName: firstName,
+          lastName: lastName,
           notifications: [],
           events: [],
           friends: [],
+          pendingFriends: [],
+
           //*********************************************************
           imageUrl: payload.photoURL
         }
@@ -284,7 +281,32 @@ export default {
         firebase.database().ref('users/' + id).set(newUser)
         router.push('/welcome')
     },
-
+    // getUserContacts () {
+    //   gapi.load('client', this.start());
+    // },
+    // start () {
+    //   var client = payload.user
+    //   console.log('gapi.client', gapi.client);
+    //   // 2. Initialize the JavaScript client library.
+    //   gapi.client.init({
+    //     'apiKey': 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY',
+    //     // Your API key will be automatically added to the Discovery Document URLs.
+    //     'discoveryDocs': ['https://people.googleapis.com/$discovery/rest'],
+    //     // clientId and scope are optional if auth is not required.
+    //     'clientId':'1059834656960-8573une98ud5of3cb66iolj2c7gtuvbc.apps.googleusercontent.com',
+    //     'scope': 'profile',
+    //   }).then(function() {
+    //     // 3. Initialize and make the API request.
+    //     return gapi.client.people.people.get({
+    //       'resourceName': 'people/me',
+    //       'requestMask.includeField': 'person.names'
+    //     });
+    //   }).then(function(response) {
+    //     console.log(response.result);
+    //   }, function(reason) {
+    //     console.log('Error: ' + reason.result.error.message);
+    //   });
+    // },
     signUserUp ({commit}, payload) {
       //As we are doing a request to the web, we change the status of loading to true.
       commit('setLoading', true)
@@ -376,127 +398,7 @@ export default {
     },
 
     // ***********FETCHUSERDATA************************
-    // fetchGoogleUserData ({commit, getters}, userPayload) {
-    //   commit('setLoading', true)
-    //   let events = []
-    //   let friends = []
-    //   let notifications = []
-    //   let firstName = ''
-    //   let email = ''
-    //   let lastName = ''
-    //   let imageUrl = ''
-    //   let dateOfBirth = ''
-    //   let gender = ''
-    //   let livingIn = {}
-    //   let pendingFriends = []
-    //   let pendingInvitations = []
-    //   console.log('[fetchGoogleUserData] getters.user.id', getters.user.id);
-    //   if (userPayload.photoURL) {
-    //     this.imageUrl = userPayload.photoURL
-    //     console.log('user.photoURL', userPayload.photoURL);
-    //   }
-    //   this.firstName = userPayload.displayName
-    //   this.lastName = userPayload.displayName
-    //   this.email = userPayload.email
-    //
-    //   firebase.database().ref('/users/' + getters.user.id).once('value')
-    //   .then(data => {
-    //     const userData = data.val()
-    //     console.log('[fetchGoogleUserData] userData', userData);
-    //     if (!getters.user.livingIn) {
-    //       this.livingIn = userData.livingIn
-    //     }
-    //     if (!getters.user.gender) {
-    //       this.gender = userData.gender
-    //     }
-    //     if (!getters.user.gender) {
-    //       this.dateOfBirth = userData.dateOfBirth
-    //     }
-    //
-    //     console.log('[fetchUserData] this.email', this.email);
-    //   })
-    //   .then( _=>{
-    //     // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
-    //   firebase.database().ref('/users/' + getters.user.id + '/friends/').on('child_added', data => {
-    //     const userId = data.val()
-    //     const fbKey = data.key
-    //     firebase.database().ref('/users/' + userId).once('value').then(data =>{
-    //         const friendData = data.val()
-    //         const newFriend = {
-    //           id: friendData.id,
-    //           imageUrl: friendData.imageUrl,
-    //           firstName: friendData.firstName,
-    //           lastName: friendData.lastName,
-    //           fbKey: fbKey
-    //         }
-    //         friends.push(newFriend)
-    //       })
-    //     })
-    //   })
-    //   .then( _ => {
-    //     // Fetch the user's ****PENDINGFRIENDS**** from Firebase and store it in the local store
-    //     firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').on('child_added', data => {
-    //       const userId = data.val()
-    //       const fbKey = data.key
-    //       // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
-    //       // I should check if it's updated when there is a change in the value of one of the friends data.
-    //       firebase.database().ref('/users/' + userId).once('value').then(data =>{
-    //         // console.log('[fetchUserData] PENDINGFRIENDS data.val() ', data.val())
-    //         const friendData = data.val()
-    //         const newFriend = {
-    //           id: friendData.id,
-    //           imageUrl: friendData.imageUrl,
-    //           firstName: friendData.firstName,
-    //           lastName: friendData.lastName,
-    //           fbKey: fbKey
-    //           }
-    //         pendingFriends.push(newFriend)
-    //         })
-    //       })
-    //     })
-    //     .then(_=> {
-    //       firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
-    //         // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
-    //         console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
-    //         const userId = data.val()
-    //         const fbKey = data.key
-    //         firebase.database().ref('/users/' + userId).once('value').then(data =>{
-    //           const friendData = data.val()
-    //           const newFriend = {
-    //             id: friendData.id,
-    //             fbKey: fbKey
-    //             }
-    //           // commit('addPendingInvitations', newFriend)
-    //           pendingInvitations.push(newFriend)
-    //
-    //           })
-    //         })
-    //     })
-    //     .then( _=> {
-    //       const updatedUser = {
-    //         id: getters.user.id,
-    //         imageUrl: this.imageUrl,
-    //         firstName: this.firstName,
-    //         email: this.email,
-    //         dateOfBirth: this.dateOfBirth,
-    //         gender: this.gender,
-    //         livingIn: this.livingIn,
-    //         lastName: this.lastName,
-    //         events: events,
-    //         friends: friends,
-    //         notifications: notifications,
-    //         pendingFriends: pendingFriends,
-    //         pendingInvitations: pendingInvitations
-    //       }
-    //       console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
-    //       commit('setUser', updatedUser)
-    //       commit('setLoading', false)
-    //     })
-    //     .catch(error => {
-    //       console.log(error)
-    //       commit('setLoading', false)
-    //     })
-    // },
+
     fetchUserData ({commit, getters}) {
       commit('setLoading', true)
       let events = []
@@ -582,7 +484,7 @@ export default {
         .then(_=> {
           firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
             // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
-            console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
+            // console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
             const userId = data.val()
             const fbKey = data.key
             firebase.database().ref('/users/' + userId).once('value').then(data =>{
@@ -857,16 +759,16 @@ export default {
 
     listenToInvitationRemoval ({commit, getters}) {
       const userId = getters.user.id
-      console.log('[listenToInvitationRemoval] avant d ecouter le child_removed');
+      // console.log('[listenToInvitationRemoval] avant d ecouter le child_removed');
       firebase.database().ref('/users/' + userId + '/pendingInvitations').on('child_removed', data => {
         const friendId = data.val()
-        console.log('[listenToInvitationRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())
+        // console.log('[listenToInvitationRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())
         commit('removePendingInvitationFromUser', friendId)
       })
     },
     listenToFriendRemoval ({commit, getters}) {
       const userId = getters.user.id
-      console.log('[listenToFriendRemoval] avant d ecouter le child_removed');
+      // console.log('[listenToFriendRemoval] avant d ecouter le child_removed');
       firebase.database().ref('/users/' + userId + '/friends').on('child_removed', data => {
         const friendId = data.val()
         console.log('[listenToFriendRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())

@@ -9,6 +9,7 @@
     <!-- Below these are what we need to add to a normal web app to allow it to become a progressive
     As Safari does not support the manifest, we add the meta below that will help to have a native feeling -->
     <link rel="manifest" href="/manifest.json">
+    <script src="https://apis.google.com/js/api.js"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="Fuiibi">
@@ -18,16 +19,18 @@
     <meta name="msapplication-TileImage" content="/src/images/icons/app-icon-144x144.png">
     <meta name="msapplication-TileColor" content="#fff">
     <meta name="theme-color" content="#3F51B5">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
     <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY&libraries=places'></script>
     <title>Fuiibi</title>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Italianno" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Marck+Script" rel="stylesheet">
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app" :class="{ greyBackground: userLoggedIn }"></div>
     <!-- built files will be auto injected -->
   </body>
 </html>

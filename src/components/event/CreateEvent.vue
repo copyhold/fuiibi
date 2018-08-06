@@ -50,7 +50,7 @@
             <v-flex xs12 sm12 offset-sm3>
               <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
                 <v-avatar>
-                  <v-icon>my_location</v-icon>
+                  <v-icon >my_location</v-icon>
                 </v-avatar>
                 Use my current location
               </v-chip>
@@ -476,6 +476,13 @@
 
 
 <style scoped>
+.arrowBack {
+  position: fixed;
+  top: 16px;
+  left: 8px;
+  z-index: 3;
+  cursor: pointer;
+}
   /* i.material-icons.icon.alert__icon {
     float: left !important;
   } */
@@ -512,6 +519,7 @@
   }
   .container {
     margin-top: 0;
+    background-color: #fff;
     margin-bottom: 56px;
   }
   @media screen and (max-width: 600px) {
@@ -522,12 +530,14 @@
       padding: 8px;
       background-color: #fff;
       margin-bottom: 56px;
+      max-width: 1900px;
     }
     .arrowBack {
       position: fixed;
       top: 8px;
       left: 8px;
       z-index: 3;
+      cursor: pointer;
     }
   }
   input {

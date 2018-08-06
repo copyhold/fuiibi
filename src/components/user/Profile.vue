@@ -294,6 +294,12 @@
 </script>
 
 <style scoped>
+  .arrowBack {
+      position: fixed;
+      top: 19px;
+      left: 8px;
+      z-index: 3;
+  }
   .fitScreen {
     max-width: calc(100vw - 16px);
   }

@@ -145,6 +145,8 @@ export default {
           counter++
         }
         return counter
+      } else {
+        return 2
       }
     },
     userWasThere () {
@@ -290,6 +292,29 @@ export default {
 </script>
 
 <style scope>
+  .arrowBack {
+      position: fixed;
+      top: 19px;
+      left: 8px;
+      z-index: 3;
+  }
+  .badge--overlap .badge__badge {
+    top: 47px;
+    right: 63px;
+  }
+  span.vuBadge {
+    bottom: 56px;
+    right: -48px;
+    position: relative;
+  }
+  .iwt{
+    height: 72px;
+    width: 72px;
+    background: url("../img/iwt3.png") center/95% no-repeat;
+    position: relative;
+    right: 0px;
+    bottom: 16px;
+  }
   .divider {
     top: 0px;
     position: relative;
@@ -351,6 +376,11 @@ export default {
       }
     } */
   @media only screen and (max-width: 599px) {
+    .badge--overlap .badge__badge{
+      top: 8px;
+      right: 8px;
+      position: relative;
+    }
     .container {
       padding: 0;
     }
@@ -388,6 +418,11 @@ export default {
     }
   }
   @media only screen and (max-width: 1200px) {
+    span.vuBadge {
+      bottom: 56px;
+      right: -48px;
+      position: relative;
+    }
     .carousel {
       min-height: 100%;
       width: 100vw;

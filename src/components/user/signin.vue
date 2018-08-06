@@ -5,6 +5,9 @@
 
     <video playsinline loop muted autoplay>
       <source src="../../videos/Media4.mp4" type="video/mp4">
+      <source src="../../videos/Media4.webm" type="video/webm">
+      <!-- <source src="../../videos/Media4.ogv" type="video/ogg"> -->
+
      </video>
      <v-layout row class="fuiibiHomePage white--text">
        <v-flex>
@@ -39,7 +42,7 @@
 
              <v-layout row>
                <v-flex xs12>
-                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text"  block>
                    Sign In
                    <span slot="loader" class="custom-loader">
                      <v-icon light>cached</v-icon>
@@ -94,7 +97,7 @@
 
              <v-layout row>
                <v-flex xs12>
-                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text">
+                 <v-btn type="submit" :disabled="loading" :loading="loading" class="orange white--text" block>
                    Sign up
                    <span slot="loader" class="custom-loader">
                      <v-icon light>cached</v-icon>
@@ -115,8 +118,8 @@
      <v-layout row>
        <v-flex xs12 class="signInGoogle">
          <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="red white--text" block>
-           <v-icon dark class="leftIcon">google_glass</v-icon>
-           Google Sign In
+           <v-icon dark class="leftIcon" small>mdi-google</v-icon>
+           S<span class="lowercase pr-1">ign in with</span>G<span class="lowercase">oogle</span>
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
@@ -130,7 +133,7 @@
        <v-flex xs5 class="simpleSignUp">
          <!-- <v-btn outline flat @click="showSignInForm = true" :disabled="loading" :loading="loading" class="white--text"> -->
          <v-btn flat @click="SignUpIsHidden = !SignUpIsHidden, SignInIsHidden = true" :disabled="loading" :loading="loading" class="white--text">
-           {{ SignUpIsHidden ? 'Sign Up' : 'Cancel'}}
+           {{ SignUpIsHidden ? 'Sign Up' : 'Cancel' }}
            <span slot="loader" class="custom-loader">
              <v-icon light>cached</v-icon>
            </span>
@@ -150,7 +153,6 @@
        </v-flex>
 
      </v-layout>
-
 </v-container>
 </template>
 
@@ -200,7 +202,6 @@
       },
       onSignin () {
         // Vuex
-
         this.$store.dispatch('signUserIn', {email: this.email, password: this.password})
       },
       onDismissed () {
@@ -216,12 +217,22 @@
 </script>
 
 <style scoped>
+    .lowercase {
+      text-transform: lowercase;
+    }
+/* CA NE MARCHE PAS LES DEUX SUIVANTS, JE NE SAIS PAS POURQUOI */
+    #email:-webkit-autofill {
+      background-color: rgb(255, 255, 255) !important;
+    }
+    input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 30px white inset;
+    }
     .leftIcon{
-      position: absolute;
-      left: 30px !important;
+      left: -49px;
+      position: relative;
     }
     .continueEmail{
-      position: absolute;
+      position: fixed;
       bottom: 10vh;
       left: 2vw;
       color: #fff;
@@ -280,8 +291,9 @@
     }
     .slogan {
       position: absolute;
-      top: 35vh;
-      left: 2vw;
+      top: 24vh;
+      left: 14vw;
+      font-family: 'Nunito', sans-serif;
     }
     .fuiibiHomePage {
       position: absolute;
@@ -296,12 +308,14 @@
     .keep {
       font-size: 8vw;
       font-family: 'Raleway', sans-serif;
+      font-family: 'Nunito', sans-serif;
     }
     .alive {
       font-size: 27vw;
       top: -12vw;
       position: relative;
       font-family: 'Raleway', sans-serif;
+      font-family: 'Nunito', sans-serif;
     }
     .fullscreen-bg {
       position:fixed;
@@ -344,8 +358,9 @@
     .transparency {
       z-index: 5;
       position: relative;
-      bottom: 133vw;
-      width: 100%;
+      bottom: 86vw;
+      width: 94%;
+      margin: 0 3%;
       -webkit-transition: 2000ms; /* Safari */
       transition: 1000ms;
       background-color: rgba(255, 255, 255, 0.9);
@@ -353,8 +368,9 @@
     .transparencySignUp {
       z-index: 5;
       position: relative;
-      bottom: 225vw;
-      width: 100%;
+      bottom: 211vw;
+      margin: 0 3%;
+      width: 94%;
       -webkit-transition: 2000ms; /* Safari */
       transition: 1000ms;
       background-color: rgba(255, 255, 255, 0.9);

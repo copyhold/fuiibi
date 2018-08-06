@@ -48,9 +48,7 @@
           if (this.$store.getters.user.friends) {
             if (this.$store.getters.user.friends.length > 0) {
               return this.friends.filter((user) => {
-                // return user.fullName.toLowerCase().match(this.search.toLowerCase())
-                // return this.search.toLowerCase().match(user.firstName.toLowerCase() || user.lastName.toLowerCase()) && (user.firstName.toLowerCase().includes(this.search.toLowerCase()) || user.firstName.toLowerCase().includes(this.search.toLowerCase()))
-                return user.firstName.toLowerCase().includes(this.search.toLowerCase()) || user.lastName.toLowerCase().includes(this.search.toLowerCase()) || (user.firstName.toLowerCase().includes(this.search.toLowerCase()) && user.lastName.toLowerCase().includes(this.search.toLowerCase()))
+                return user.firstName.toLowerCase().concat(user.lastName.toLowerCase()).includes(this.search.toLowerCase().trim().replace(' ', '')) || user.lastName.toLowerCase().concat(user.firstName.toLowerCase()).includes(this.search.toLowerCase().trim().replace(' ', ''))
               })
             }
           }
