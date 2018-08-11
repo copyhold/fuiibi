@@ -82,8 +82,11 @@ export default {
   },
   computed: {
     userHasLocality () {
+      console.log('[userHasLocality] this.user', this.user)
       if (this.user.livingIn) {
+        console.log('[userHasLocality] this.user.livingIn', this.user.livingIn)
         if (this.user.livingIn.locality) {
+          console.log('[userHasLocality] this.user.livingIn.locality', this.user.livingIn.locality)
           return true
         }
       }

@@ -9,6 +9,7 @@
     props: ['text'],
     methods: {
       onClose () {
+        console.log('[v-alert] alert closed')
         this.$emit('dismissed')
       }
     }

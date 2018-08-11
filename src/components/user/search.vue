@@ -58,12 +58,13 @@
   }
   #inputSearch {
     position: fixed;
-    top: 42px;
+    top: 56px;
     right: 0px;
     width: 100%;
     height: 42px;
     padding: 0px;
     z-index: 2;
+    border: solid 1px;
     /* background: #0E1E51;
     background: #fff; */
     font-size: 20px;
@@ -80,11 +81,21 @@
   .container {
     padding: 0px;
     margin-bottom: 56px;
+    /* margin: 0 auto; */
   }
   .tabs {
     overflow: hidden;
     position: absolute;
     width: 100%;
-    top: 88px;
+    top: 106px;
     }
+  @media screen and (max-width: 599px) {
+    #inputSearch {
+      top: 42px;
+      border: 0px;
+    }
+    .tabs {
+      top: 88px;
+    }
+  }
 </style>

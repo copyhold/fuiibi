@@ -5,15 +5,17 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-layout row wrap v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
-      <v-flex xs12 sm12 md12>
+    <v-container grid-list-sm fluid>
+
+    <v-layout row wrap >
+      <v-flex xs12 sm6 md6 v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
-              <v-flex xs4 sm2 md2>
-                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
+              <v-flex xs4 sm4 md4>
+                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable"></v-card-media>
               </v-flex>
-              <v-flex xs8 sm10 md10 class="ml-3">
+              <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout>
                   <v-card-title primary-title >
                     <v-card-actions wrap>
@@ -52,6 +54,7 @@
       </v-btn>
     </v-fab-transition>
   </v-container>
+</v-container>
 
 </template>
 

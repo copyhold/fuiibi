@@ -23,7 +23,6 @@
             </v-list-tile-action>
             <v-list-tile-action v-else>
               <v-list-tile-action v-if="!isFriend(user)">
-                <!-- <v-btn @click="sendFriendRequest(user.id)" outline small class="primary--text"><v-icon class="mr-1">person_add</v-icon>Add friend</v-btn> -->
                 <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
               </v-list-tile-action>
               <v-list-tile-action v-else>
@@ -197,6 +196,7 @@
     margin-top: 0;
     /* padding: 8px; */
     margin-bottom: 96px;
+    margin: 0 auto;
   }
   .card__title--primary {
      padding-top: 0px;

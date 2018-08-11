@@ -9,7 +9,6 @@
         <!-- <v-switch v-bind:label="`Public`" v-model="ex11"></v-switch> -->
       </v-flex>
     </v-layout>
-    <v-divider></v-divider>
     <v-layout>
       <v-flex xs12>
         <form @submit.prevent="onCreateEvent" v-model="valid">
@@ -47,7 +46,7 @@
           </v-layout>
 
           <v-layout row wrap>
-            <v-flex xs12 sm12 offset-sm3>
+            <v-flex xs12 sm6 offset-sm3>
               <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
                 <v-avatar>
                   <v-icon >my_location</v-icon>

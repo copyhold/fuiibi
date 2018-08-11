@@ -94,6 +94,7 @@
                           v-on:placechanged="getAddressData"
                           v-on:no-results-found="alertNoResultFound"
                           :rules="[v => !!v || 'Location is required']"
+                          types= ''
                       >
                       <!-- to be added above to get only the city -->
                       <!-- types= '(cities)' -->
@@ -250,8 +251,10 @@
         console.log('[alertNoResultFound], alertNoResultFound')
       },
       getAddressData (addressData) {
+        console.log('[getAddressData] addressData', addressData)
         this.livingIn = addressData
         if (this.livingIn) {
+          console.log('[getAddressData   if (this.livingIn)] this.livingIn.locality + ', ' + this.livingIn.country', this.livingIn.locality + ', ' + this.livingIn.country)
           setTimeout(_ => {
             this.where = this.livingIn.locality + ', ' + this.livingIn.country
           }, 1)
@@ -262,7 +265,7 @@
       // },
       saveUserDetails () {
         this.editMode = false
-        console.log('[saveUserDetails]', this.submittableDate, this.livingIn)
+        console.log('[saveUserDetails] this.submittableDate, this.livingIn.country', this.submittableDate, this.livingIn.country)
         // if (!this.formIsValid) {
         //   return
         // }
@@ -271,7 +274,10 @@
           firstName: this.firstName,
           lastName: this.lastName,
           dateOfBirth: this.submittableDate,
-          livingIn: this.livingIn,
+          livingIn: {
+            country: this.livingIn.country,
+            locality: this.livingIn.locality
+          },
           email: this.email,
           gender: this.gender,
           image: this.image
@@ -299,6 +305,7 @@
       top: 19px;
       left: 8px;
       z-index: 3;
+      cursor: pointer;
   }
   .fitScreen {
     max-width: calc(100vw - 16px);

@@ -1,6 +1,6 @@
 <template lang="html">
   <v-container class="container">
-    <div @click="back" class="arrowBack">
+    <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap v-if="loading">
@@ -60,7 +60,7 @@
             <v-layout row wrap>
               <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
                 <v-card flat tile class="picInGallery">
-                  <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" >
+                  <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable">
                   </v-card-media>
                 </v-card>
               </v-flex>
@@ -292,20 +292,19 @@ export default {
 </script>
 
 <style scope>
+  .clickable {
+    cursor: pointer;
+  }
   .arrowBack {
       position: fixed;
       top: 19px;
       left: 8px;
       z-index: 3;
   }
-  .badge--overlap .badge__badge {
-    top: 47px;
-    right: 63px;
-  }
   span.vuBadge {
-    bottom: 56px;
-    right: -48px;
-    position: relative;
+    bottom: 100px;
+    right: 130px;
+    position: absolute;
   }
   .iwt{
     height: 72px;
@@ -375,12 +374,28 @@ export default {
         height: 100%;
       }
     } */
-  @media only screen and (max-width: 599px) {
-    .badge--overlap .badge__badge{
-      top: 8px;
-      right: 8px;
-      position: relative;
+    @media screen and (max-width: 1263px) {
+      span.vuBadge {
+        bottom: 100px;
+        right: 82px;
+        position: absolute;
+      }
+      .carousel {
+        min-height: 100%;
+        width: 100vw;
+      }
+      .carousel__item {
+        background-size: contain;
+      }
     }
+    @media screen and (max-width: 960px) {
+      span.vuBadge {
+        bottom: 100px;
+        right: 82px;
+        position: absolute;
+      }
+    }
+  @media screen and (max-width: 599px) {
     .container {
       padding: 0;
     }
@@ -417,19 +432,6 @@ export default {
       position: relative;
     }
   }
-  @media only screen and (max-width: 1200px) {
-    span.vuBadge {
-      bottom: 56px;
-      right: -48px;
-      position: relative;
-    }
-    .carousel {
-      min-height: 100%;
-      width: 100vw;
-    }
-    .carousel__item {
-      background-size: contain;
-    }
-  }
+
 
 </style>

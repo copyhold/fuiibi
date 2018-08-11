@@ -9,14 +9,32 @@
       <v-spacer></v-spacer>
 
 
-      <v-toolbar-items class="hidden-xs-only">
+      <!-- <v-toolbar-items class="hidden-xs-only">
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
           <v-icon left>{{ item.icon }}</v-icon>
           <span>{{ item.title }}</span>
         </v-btn>
+      </v-toolbar-items> -->
+
+      <v-toolbar-items class="hidden-xs-only">
+        <v-btn flat :key="'Notifications'" :to="'/notifications'">
+          <v-icon left>home</v-icon>
+          <span>Notifications</span>
+        </v-btn>
+        <v-btn flat :key="'My events'" :to="'/myEvents'">
+          <v-icon left>list</v-icon>
+          <span>My events</span>
+        </v-btn>
+        <v-btn flat :key="'My friends'" :to="'/friends'">
+          <v-badge color="red" id="redBadge" v-if="user.pendingFriends != ''">
+            <span slot="badge"></span>
+          </v-badge>
+          <v-icon left>supervisor_account</v-icon>
+          <span>My friends</span>
+        </v-btn>
       </v-toolbar-items>
 
-      <v-btn icon right @click="sideNav = !sideNav" >
+      <v-btn icon right @click="sideNav = !sideNav">
         <v-icon class="pl-4">more_vert</v-icon>
       </v-btn>
 
@@ -44,12 +62,11 @@
         <v-badge color="red" id="redBadge" v-if="user.pendingFriends != ''">
           <span slot="badge"></span>
         </v-badge>
-
         <v-icon left>supervisor_account</v-icon>
       </v-btn>
     </v-bottom-nav>
 
-    <v-navigation-drawer v-model="sideNav" fixed clipped right >
+    <v-navigation-drawer v-model="sideNav" fixed clipped right mobile-break-point='1920'>
       <v-list>
         <v-list-tile v-for="item in sideMenu" :key="item.title" :to="item.link">
           <v-list-tile-action>
@@ -95,12 +112,11 @@
     computed: {
       user () {
         if (this.$store.getters.user) {
-          console.log('[user]', this.$store.getters.user)
-          // console.log('[user]', this.$store.getters.users)
           return this.$store.getters.user
         }
       },
       sideMenu () {
+        console.log('this.sideNav', this.sideNav)
         let sideMenu = [
           {icon: 'face', title: 'Sign Up', link: '/signup'},
           {icon: 'lock_open', title: 'Sign In', link: '/'}
@@ -110,7 +126,7 @@
             {icon: 'settings', title: 'Settings', link: '/settings'}
           ]
           this.userLoggedIn = true
-          console.log('[this.userIsAuthenticated] this.marginTop', this.userLoggedIn)
+          // console.log('[this.userIsAuthenticated] this.marginTop', this.userLoggedIn)
         } else {
           this.userLoggedIn = false
         }

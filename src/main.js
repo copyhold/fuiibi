@@ -29,7 +29,7 @@ import '@mdi/font/css/materialdesignicons.css'
 // import { routerHistory, writeHistory } from 'vue-router-back-button'
 
 // eslint-disable-next-line
-//************************ SERVICE WORKER *****************************
+//************************ SERVICE WORKER ***************************
 
 if (!window.Promise) {
   window.Promise = Promise

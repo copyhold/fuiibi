@@ -1,11 +1,9 @@
 <template>
   <v-container class="container">
-    <v-container class="hidden-sm-and-up">
-      <!-- <v-layout row> -->
+    <!-- <v-container class="hidden-sm-and-up">
           <v-flex xs12 class="text-xs-center">
             <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
           </v-flex>
-      <!-- </v-layout> -->
       <v-layout row wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
         <v-flex xs12 sm12 md12>
           <v-card height="216px">
@@ -36,8 +34,6 @@
                   </v-layout>
                   <v-layout>
                     <div offset-xs3>
-                      <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
-                      <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
                       <p v-if="notification.friendsCount === 1" @click="getUserPage(notification)" ><span class="bold clickable">{{ notification.clickerName }}</span> was there!</p>
                       <p v-else-if="notification.friendsCount === 2"><span class="bold clickable" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & 1 friend were there!</p>
                       <p v-else><span class="bold clickable" @click="getUserPage(notification)" >{{ notification.clickerName }}</span> & {{ notification.friendsCount - 1}} friends were there!</p>
@@ -63,23 +59,25 @@
           <v-icon>add</v-icon>
         </v-btn>
       </v-fab-transition>
-    </v-container>
+    </v-container> -->
 
-    <v-container class="hidden-xs-only">
+    <!-- <v-container class="hidden-xs-only"> -->
+    <v-container>
+
       <v-flex xs12 class="text-xs-center">
         <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
       </v-flex>
       <v-container grid-list-sm fluid>
         <v-layout row wrap>
-            <v-flex sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
+            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
               <v-card height="216px">
                 <v-container fluid>
-                  <v-layout col xs6 class="clickable">
-                    <v-flex xs12 sm12 md12 @click="eventDetails(notification.key)">
+                  <v-layout col class="clickable">
+                    <v-flex @click="eventDetails(notification.key)">
                       <v-card-media :src="notification.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
                     </v-flex>
                   </v-layout>
-                  <v-layout col xs6>
+                  <v-layout col >
                     <v-flex xs10 sm10 md10 class="ml-3">
                       <v-layout>
                         <v-card-title primary-title >
@@ -204,10 +202,10 @@
 </script>
 
 <style scoped>
-.badge--overlap .badge__badge {
-  top: 12px;
-  right: -8px;
-  position: relative;
+span.vuBadge {
+  bottom: 22px;
+  right: 12px;
+  position: absolute;
 }
 .clickable {
   cursor: pointer;
@@ -228,7 +226,7 @@
 }
 .container{
   margin-top: 0;
-  padding: 4px;
+  padding: 0px;
   margin-bottom: 56px;
 }
 .card__title--primary {
@@ -250,11 +248,6 @@
 }
 .clicked{
   filter: opacity(50%);
-}
-span.vuBadge {
-  bottom: 77px;
-  right: -57px;
-  position: absolute;
 }
 .btn__content {
   padding: 0px !important;
@@ -278,12 +271,8 @@ p {
 p.location {
       margin-bottom: 0px;
 }
+
 @media screen and (max-width: 600px) {
-  .badge--overlap .badge__badge {
-    top: 8px;
-    right: 8px;
-    position: relative;
-  }
   .iwt{
     position: absolute;
     height: 60px;
@@ -299,8 +288,8 @@ p.location {
     font-size: 13px;
   }
   span.vuBadge {
-      bottom: 16px;
-      right: 0px;
+      bottom: 22px;
+      right: 12px;
       position: absolute;
   }
 }
