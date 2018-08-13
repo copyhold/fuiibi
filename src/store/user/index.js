@@ -570,7 +570,6 @@ export default {
           fbKey: fbKey,
           userEvents: userData.userEvents
         }
-        // users.push(newFriend)
         commit('addUser', newUser)
         commit('setLoading', false)
         })
@@ -787,6 +786,15 @@ export default {
     getUser (state) {
       return (userId) => {
         return state.users.find((user) => {
+          console.log('[getUser] user', user);
+          return user.id === userId
+        })
+      }
+    },
+    getUserData (state) {
+      return (userId) => {
+        return state.users.find((user) => {
+          // console.log('[getUser] user', user);
           return user.id === userId
         })
       }

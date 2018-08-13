@@ -6,6 +6,7 @@
           indeterminate
           color="red"
           :witdh="7"
+
           :size="70"
           v-if="loading"
           ></v-progress-circular>

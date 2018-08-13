@@ -31,10 +31,10 @@
             <v-layout row>
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
-                <div v-if="totalUserCount > 1" class="ml -2">
+                <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
                   <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
                 </div>
-                <div v-else class="ml-2">
+                <div v-else class="ml-2" @click="showUsers = true">
                   <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
@@ -85,11 +85,15 @@
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <v-flex xs12 sm6 class="ml-0">
+              <v-icon left @click="rotateLeft">rotate_left</v-icon>
+              <v-icon absolute @click="rotateRight" class="rightIconx">rotate_right</v-icon>
+            </v-layout>
+            <v-layout row>
+              <v-flex xs12 sm6 md4 mg4 class="ml-0">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <!-- <canvas ref="canvas" width="window.innerWidth * 0.9"></canvas> -->
-                <v-icon left @click="rotateLeft">rotate_left</v-icon>
-                <v-icon absolute @click="rotateRight">rotate_right</v-icon>
+                <!-- <v-icon left @click="rotateLeft">rotate_left</v-icon>
+                <v-icon absolute @click="rotateRight">rotate_right</v-icon> -->
                 <canvas ref="canvas" class="fitScreen"></canvas>
               </v-flex>
             </v-layout>
@@ -114,6 +118,35 @@
         </v-carousel>
       </v-dialog>
     </v-layout>
+
+
+
+    <v-dialog v-model="showUsers" max-width="96%">
+      <v-list subheader>
+          <template v-for="user in eventUsers">
+            <v-divider></v-divider>
+            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+              <v-list-tile-avatar class="avatarImg">
+                <img :src="user.imageUrl"/>
+              </v-list-tile-avatar>
+              <v-list-tile-content  @click="getUserPage(user)" >
+                <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                  <v-btn small class="greyColors" flat left>Pending...</v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action v-else>
+                <v-list-tile-action v-if="!isFriend(user)">
+                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
+                </v-list-tile-action>
+                <v-list-tile-action v-else>
+                  <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
+                </v-list-tile-action>
+              </v-list-tile-action>
+            </v-list-tile>
+          </template>
+        </v-list>
+      </v-dialog>
   </v-container>
 </template>
 <script>
@@ -121,6 +154,7 @@ export default {
   props: ['id'],
   data () {
     return {
+      showUsers: false,
       imageUrl: '',
       // image: '',
       image: this.$refs.imageToCanvas,
@@ -130,12 +164,34 @@ export default {
     }
   },
   computed: {
+    loggedInUserId () {
+      if (this.$store.getters.user) {
+        return this.$store.getters.user.id
+      }
+    },
     event () {
       // console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
       return this.$store.getters.getEventData(this.id)
     },
     loading () {
       return this.$store.getters.loading
+    },
+    eventUsers () {
+      if (this.event.event.users) {
+        let eventUsers = []
+        let userData = ''
+        const users = this.event.event.users
+        console.log('[eventUsers] users', users)
+        for (let user in users) {
+          let userId = users[user]
+          console.log('[eventUsers] userId', userId)
+          userData = this.$store.getters.getUserData(userId)
+          console.log('[eventUsers] userData', userData)
+          // console.log('[eventUsers] userData', userData)
+          eventUsers.push(userData)
+        }
+        return eventUsers
+      }
     },
     totalUserCount () {
       if (this.event.event.title !== 'Your subscribtion') {
@@ -156,7 +212,46 @@ export default {
     }
   },
   methods: {
-
+    removeFriend (user) {
+      console.log('removeFriend', user)
+      this.$store.dispatch('removeFriend', user)
+    },
+    sendFriendRequest (userId) {
+      this.$store.dispatch('sendFriendRequest', userId)
+    },
+    isFriend (user) {
+      if (this.$store.getters.user) {
+        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
+        return this.$store.getters.user.friends.findIndex(friend => {
+          return friend.id === user.id
+        }) >= 0
+      }
+    },
+    getUserPage (key) {
+      console.log('[getUserPage] clicked key', key)
+      this.$store.dispatch('getUserData', {userId: key.id})
+      this.$router.push('/users/' + key.id)
+    },
+    hasPendingInvitation (user) {
+      if (this.$store.getters.user) {
+        // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
+        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
+        if (this.$store.getters.user.pendingInvitations) {
+          return this.$store.getters.user.pendingInvitations.findIndex(friend => {
+            return friend.id === user.id
+          }) >= 0
+        }
+      }
+    },
+    isPendingFriend (user) {
+      if (this.$store.getters.user) {
+        // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
+        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
+        return this.$store.getters.user.pendingFriends.findIndex(friend => {
+          return friend.id === user.id
+        }) >= 0
+      }
+    },
     closeDialog () {
       this.carousel = false
     },
@@ -238,13 +333,6 @@ export default {
         context.translate(this.$refs.canvas.width, 0)
         context.rotate(90 * Math.PI / 180)
         context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
-
-        // let imageHeight = 500
-        // this.$refs.canvas.height = imageHeight
-        // this.$refs.canvas.width = imageHeight * image.height / image.width
-        // context.translate(this.$refs.canvas.width, 0)
-        // context.rotate(90 * Math.PI / 180)
-        // context.drawImage(image, 0, 0, imageHeight, imageHeight * image.height / image.width)
         this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
         image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
         console.log('screenWidth in image.width < image.height', screenWidth)
@@ -258,12 +346,9 @@ export default {
 
       if (image.width > image.height) {
         let imageWidth = 500
-
-        // this.$refs.canvas.width = imageWidth
-        // this.$refs.canvas.height = imageWidth * image.height / image.width
         this.$refs.canvas.height = imageWidth
         this.$refs.canvas.width = imageWidth * image.height / image.width
-        context.translate(screenWidth / 2, 0)
+        context.translate(-screenWidth / 2, 0)
         context.rotate(270 * Math.PI / 180)
         context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
         this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -273,12 +358,12 @@ export default {
         let imageHeight = 500
         this.$refs.canvas.height = imageHeight
         this.$refs.canvas.width = imageHeight * image.height / image.width
-        context.translate(this.$refs.canvas.width / 2, 0)
+        context.translate(-this.$refs.canvas.width / 2, 0)
         context.rotate(270 * Math.PI / 180)
         context.drawImage(image, 0, 0, imageHeight, imageHeight * image.height / image.width)
         this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
         image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        console.log('screenWidth in image.width < image.height', screenWidth)
+        console.log('screenWidth in image.width < image.height ', screenWidth)
       }
     },
 
@@ -292,6 +377,10 @@ export default {
 </script>
 
 <style scope>
+  .rightIconx {
+    right: 0px;
+    position: absolute;
+  }
   .clickable {
     cursor: pointer;
   }

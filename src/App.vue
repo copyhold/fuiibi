@@ -5,7 +5,6 @@
       <v-toolbar-title absolute class="center">
         <router-link to="/notifications" tag="span" style="cursor: pointer" class="fuiibi">Fuiibi</router-link>
       </v-toolbar-title>
-
       <v-spacer></v-spacer>
 
 
