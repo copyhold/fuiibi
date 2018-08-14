@@ -54,6 +54,7 @@
         </v-card>
       </v-flex>
     </v-layout>
+
     <v-layout class="mt-2">
       <v-flex xs12 sm12>
           <v-container fluid>
@@ -85,8 +86,8 @@
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <v-icon left @click="rotateLeft">rotate_left</v-icon>
-              <v-icon absolute @click="rotateRight" class="rightIconx">rotate_right</v-icon>
+              <v-icon left @click="rotateLeft" class="clickable">rotate_left</v-icon>
+              <v-icon absolute @click="rotateRight" class="rightIconx clickable">rotate_right</v-icon>
             </v-layout>
             <v-layout row>
               <v-flex xs12 sm6 md4 mg4 class="ml-0">
@@ -99,13 +100,14 @@
             </v-layout>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn class="primary--text" flat="flat" @click.native="dialog = false">Cancel</v-btn>
+              <v-btn class="primary--text" flat="flat" @click.native="dialog = false ">Cancel</v-btn>
               <v-btn raised class="primary" @click="addPicture">Add</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-flex>
     </v-layout>
+
     <v-layout>
       <v-dialog v-model="carousel" fullscreen id="carousel">
         <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
@@ -118,8 +120,6 @@
         </v-carousel>
       </v-dialog>
     </v-layout>
-
-
 
     <v-dialog v-model="showUsers" max-width="96%">
       <v-list subheader>
@@ -147,6 +147,7 @@
           </template>
         </v-list>
       </v-dialog>
+
   </v-container>
 </template>
 <script>
@@ -278,6 +279,7 @@ export default {
     },
     onFilePicked (event) {
       this.dialog = true
+      console.log('[onFilePicked] this dialog true?', this.dialog)
       // We get the wanted file
       const files = event.target.files
       // As we can choose only one file, we take the first one in the array
@@ -297,7 +299,7 @@ export default {
           let context = this.$refs.canvas.getContext('2d')
           let image = this.$refs.imageToCanvas
           // let imageWidth = window.outerWidth * 2
-          let imageWidth = 500
+          let imageWidth = 700
           this.$refs.canvas.width = imageWidth
           this.$refs.canvas.height = imageWidth * image.height / image.width
           // Now I create the image - what?, top, left, width, height
@@ -310,65 +312,92 @@ export default {
       fileReader.readAsDataURL(files[0])
       // this.image = files[0]
     },
+    // let context = this.$refs.canvas.getContext('2d')
+    // let image = this.$refs.imageToCanvas
+    // let screenWidth = window.screen.width + 16
+    // // console.log('[rotateRight] image.with, image.height', image.width, image.height)
+    // if (image.width > image.height) {
+    //   let imageWidth = 700
+    //   this.$refs.canvas.height = imageWidth
+    //   this.$refs.canvas.width = imageWidth * image.height / image.width
+    //   context.translate(screenWidth, 0)
+    //   context.rotate(90 * Math.PI / 180)
+    //   context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+    //
+    //   this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+    //   image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+    //   console.log('screenWidth in image.width > image.height', screenWidth)
+    // } else {
+    //   let imageWidth = 700
+    //   this.$refs.canvas.height = imageWidth
+    //   this.$refs.canvas.width = imageWidth * image.height / image.width
+    //   context.translate(this.$refs.canvas.width, 0)
+    //   context.rotate(90 * Math.PI / 180)
+    //   context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+    //   this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+    //   image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+    //   console.log('screenWidth in image.width < image.height', screenWidth)
+    // }
     rotateRight () {
       let context = this.$refs.canvas.getContext('2d')
       let image = this.$refs.imageToCanvas
-      let screenWidth = window.screen.width + 16
-      // console.log('[rotateRight] image.with, image.height', image.width, image.height)
-      if (image.width > image.height) {
-        let imageWidth = 500
-        this.$refs.canvas.height = imageWidth
-        this.$refs.canvas.width = imageWidth * image.height / image.width
-        context.translate(screenWidth, 0)
-        context.rotate(90 * Math.PI / 180)
-        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
+      let screenWidth = window.screen.width
+      console.log('screenWidth', screenWidth)
+      // if (image.width > image.height) {
+      let imageWidth = 700
+      this.$refs.canvas.height = imageWidth
+      this.$refs.canvas.width = imageWidth * image.height / image.width
+      console.log('this.$refs.canvas.width', this.$refs.canvas.width)
 
-        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        console.log('screenWidth in image.width > image.height', screenWidth)
+      // this.$refs.canvas.width = imageWidth
+      // this.$refs.canvas.height = imageWidth * image.width / image.height
+      context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+      context.save()
+      // context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+      if (screenWidth < 700) {
+        if (this.$refs.canvas.width > this.$refs.canvas.height) {
+          context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
+        } else {
+          context.translate((screenWidth / 2) - 6, screenWidth)
+        }
       } else {
-        let imageWidth = 500
-        this.$refs.canvas.height = imageWidth
-        this.$refs.canvas.width = imageWidth * image.height / image.width
-        context.translate(this.$refs.canvas.width, 0)
-        context.rotate(90 * Math.PI / 180)
-        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
-        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        console.log('screenWidth in image.width < image.height', screenWidth)
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.width / 2)
       }
+
+      context.rotate(90 * Math.PI / 180)
+      context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      context.restore()
+      this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
     },
 
     rotateLeft () {
       let context = this.$refs.canvas.getContext('2d')
       let image = this.$refs.imageToCanvas
-      let screenWidth = window.screen.width + 16
-
-      if (image.width > image.height) {
-        let imageWidth = 500
-        this.$refs.canvas.height = imageWidth
-        this.$refs.canvas.width = imageWidth * image.height / image.width
-        context.translate(-screenWidth / 2, 0)
-        context.rotate(270 * Math.PI / 180)
-        context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
-        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        console.log('screenWidth in image.width > image.height', screenWidth)
+      let screenWidth = window.screen.width
+      // if (image.width > image.height) {
+      let imageWidth = 700
+      this.$refs.canvas.height = imageWidth
+      this.$refs.canvas.width = imageWidth * image.height / image.width
+      context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+      context.save()
+      // context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+      if (screenWidth < 700) {
+        context.translate(this.$refs.canvas.height / 2, screenWidth)
       } else {
-        let imageHeight = 500
-        this.$refs.canvas.height = imageHeight
-        this.$refs.canvas.width = imageHeight * image.height / image.width
-        context.translate(-this.$refs.canvas.width / 2, 0)
-        context.rotate(270 * Math.PI / 180)
-        context.drawImage(image, 0, 0, imageHeight, imageHeight * image.height / image.width)
-        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-        console.log('screenWidth in image.width < image.height ', screenWidth)
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.width / 2)
       }
+
+      context.rotate(270 * Math.PI / 180)
+      context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      context.restore()
+      this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
     },
 
     addPicture () {
       this.dialog = false
+      console.log('[onFilePicked] this dialog true?', this.dialog)
       // Vuex
       this.$store.dispatch('addPicture', {key: this.id, image: this.image})
     }

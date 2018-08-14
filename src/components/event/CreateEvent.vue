@@ -64,9 +64,6 @@
 
           <v-layout row>
             <v-flex xs12 sm12 offset-sm3>
-                <!-- <v-icon class="mr-3">place</v-icon> -->
-                <!-- <vue-google-autocomplete id="autoComplete" classname="form-control" placeholder="Location*" v-on:placechanged="getAddressData" required>
-                </vue-google-autocomplete> -->
                 <vuetify-google-autocomplete
                     id="map"
                     prepend-icon="place"
@@ -166,19 +163,15 @@
         fetchedLocation: {lat: 0, lng: 0},
         showLocationButton: true,
         searchingForLocation: false,
-        durationInput: '',
+        durationInput: '2 Hours',
         ex11: true,
         modal2: false,
         modal: false,
         title: '',
         description: '',
-        // location: '',
         imageUrl: '',
-        // description: '',
         /* eslint-disable */
-        date: new Date()﻿.toISOString(),
-        date: null,
-        // eslint-disable-next-line
+        date: new Date().toLocaleDateString(),
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
         address: '',
@@ -206,19 +199,6 @@
       }
     },
     computed: {
-      // formIsValid () {
-      //   if (this.address) {
-      //     if (this.address.country && this.address.locality && this.address.route) {
-      //       console.log('[formIsValid] this.address', this.address);
-      //       console.log('[formIsValid] this.where', this.where);
-      //       return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
-      //     } else {
-      //       console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
-      //     }
-      //   } else {
-      //     console.log('no address yet');
-      //   }
-      // },
       formIsValid () {
         if (this.address) {
           // if (this.address.country && this.address.locality && this.address.route) {

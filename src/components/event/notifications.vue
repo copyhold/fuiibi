@@ -202,6 +202,9 @@
 </script>
 
 <style scoped>
+.container.grid-list-sm .layout .flex {
+  padding: 2px;
+}
 span.vuBadge {
   bottom: 22px;
   right: 12px;
