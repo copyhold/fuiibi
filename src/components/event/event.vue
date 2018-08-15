@@ -38,6 +38,7 @@
                   <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
+              <a href="whatsapp://send" data-text="Take a look at this awesome website:" data-href="" class="wa_btn wa_btn_s" style="display:none">Share</a>
               <v-flex xs2 sm2 md2>
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
                 <span v-else>
@@ -86,8 +87,10 @@
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <v-icon left @click="rotateLeft" class="clickable">rotate_left</v-icon>
-              <v-icon absolute @click="rotateRight" class="rightIconx clickable">rotate_right</v-icon>
+              <!-- <v-icon left @click="rotateLeft" class="clickable">rotate_left</v-icon>
+              <v-icon absolute @click="rotateRight" class="rightIconx clickable">rotate_right</v-icon> -->
+              <v-btn @click="rotateLeft" ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
+              <v-btn @click="rotateRight">rotate right<v-icon right>rotate_right</v-icon></v-btn>
             </v-layout>
             <v-layout row>
               <v-flex xs12 sm6 md4 mg4 class="ml-0">
@@ -312,32 +315,6 @@ export default {
       fileReader.readAsDataURL(files[0])
       // this.image = files[0]
     },
-    // let context = this.$refs.canvas.getContext('2d')
-    // let image = this.$refs.imageToCanvas
-    // let screenWidth = window.screen.width + 16
-    // // console.log('[rotateRight] image.with, image.height', image.width, image.height)
-    // if (image.width > image.height) {
-    //   let imageWidth = 700
-    //   this.$refs.canvas.height = imageWidth
-    //   this.$refs.canvas.width = imageWidth * image.height / image.width
-    //   context.translate(screenWidth, 0)
-    //   context.rotate(90 * Math.PI / 180)
-    //   context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
-    //
-    //   this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-    //   image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-    //   console.log('screenWidth in image.width > image.height', screenWidth)
-    // } else {
-    //   let imageWidth = 700
-    //   this.$refs.canvas.height = imageWidth
-    //   this.$refs.canvas.width = imageWidth * image.height / image.width
-    //   context.translate(this.$refs.canvas.width, 0)
-    //   context.rotate(90 * Math.PI / 180)
-    //   context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
-    //   this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-    //   image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-    //   console.log('screenWidth in image.width < image.height', screenWidth)
-    // }
     rotateRight () {
       let context = this.$refs.canvas.getContext('2d')
       let image = this.$refs.imageToCanvas
@@ -348,7 +325,6 @@ export default {
       this.$refs.canvas.height = imageWidth
       this.$refs.canvas.width = imageWidth * image.height / image.width
       console.log('this.$refs.canvas.width', this.$refs.canvas.width)
-
       // this.$refs.canvas.width = imageWidth
       // this.$refs.canvas.height = imageWidth * image.width / image.height
       context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
@@ -356,16 +332,34 @@ export default {
       // context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       if (screenWidth < 700) {
         if (this.$refs.canvas.width > this.$refs.canvas.height) {
-          context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
+          console.log('this.$refs.canvas.width > this.$refs.canvas.height')
+          // context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
+          // context.translate(screenWidth, screenWidth - 6)
+          context.translate(0, screenWidth * 2)
         } else {
-          context.translate((screenWidth / 2) - 6, screenWidth)
+          if (this.$refs.canvas.height / this.$refs.canvas.width < 1.34) {
+            console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height  < 1.34 ', this.$refs.canvas.height / this.$refs.canvas.width)
+            // context.translate((screenWidth / 2) - 6, screenWidth)
+            context.translate(0, screenWidth * 2)
+          } else {
+            console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height', this.$refs.canvas.height / this.$refs.canvas.width)
+            // context.translate((screenWidth / 2) + (screenWidth - this.$refs.canvas.width - (screenWidth / 10)) / 2, screenWidth)
+            context.translate(0, screenWidth * 2)
+          }
         }
       } else {
-        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.width / 2)
+        context.translate(0, this.$refs.canvas.height)
+        // context.translate(0, 700 * 2)
       }
 
       context.rotate(90 * Math.PI / 180)
-      context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+      if (screenWidth < 700) {
+        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+      } else {
+        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+      }
       context.restore()
       this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -385,11 +379,16 @@ export default {
       if (screenWidth < 700) {
         context.translate(this.$refs.canvas.height / 2, screenWidth)
       } else {
-        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.width / 2)
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       }
 
       context.rotate(270 * Math.PI / 180)
-      context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      if (screenWidth < 700) {
+        context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+      } else {
+        context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
+      }
+      // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
       context.restore()
       this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -406,6 +405,9 @@ export default {
 </script>
 
 <style scope>
+  .rotateLeftIcon {
+    margin-top: 0 !important;
+  }
   .rightIconx {
     right: 0px;
     position: absolute;
