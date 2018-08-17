@@ -335,7 +335,8 @@ export default {
       context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
       context.save()
       if (screenWidth < 700) {
-        context.translate(0, screenWidth * 2 + ((screenWidth - this.$refs.canvas.width) / 4))
+        // context.translate(0, screenWidth * 2 + ((screenWidth - this.$refs.canvas.width) / 4))
+        context.translate(0, this.$refs.canvas.height)
       } else {
         context.translate(0, this.$refs.canvas.height)
       }
@@ -356,13 +357,16 @@ export default {
       context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
       context.save()
       if (screenWidth < 700) {
-        context.translate(this.$refs.canvas.height, screenWidth / 2 + ((this.$refs.canvas.width - screenWidth) / 2))
+        // context.translate(this.$refs.canvas.height, screenWidth  + ((this.$refs.canvas.width - screenWidth) / 2))
+        // context.translate(this.$refs.canvas.height, screenWidth / 2)
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       } else {
         context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       }
       context.rotate(270 * Math.PI / 180)
       if (screenWidth < 700) {
-        context.drawImage(image, -this.$refs.canvas.width, -imageWidth, imageWidth, imageWidth * image.height / image.width)
+        // context.drawImage(image, -this.$refs.canvas.width, -imageWidth, imageWidth, imageWidth * image.height / image.width)
+        context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
       } else {
         context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
       }
