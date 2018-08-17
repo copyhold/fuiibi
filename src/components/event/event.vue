@@ -62,7 +62,8 @@
             <v-layout row wrap>
               <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
                 <v-card flat tile class="picInGallery">
-                  <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable">
+                  <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
+                  <v-card-media :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable">
                   </v-card-media>
                 </v-card>
               </v-flex>
@@ -87,17 +88,12 @@
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <!-- <v-icon left @click="rotateLeft" class="clickable">rotate_left</v-icon>
-              <v-icon absolute @click="rotateRight" class="rightIconx clickable">rotate_right</v-icon> -->
               <v-btn @click="rotateLeft" ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
               <v-btn @click="rotateRight">rotate right<v-icon right>rotate_right</v-icon></v-btn>
             </v-layout>
             <v-layout row>
               <v-flex xs12 sm6 md4 mg4 class="ml-0">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
-                <!-- <canvas ref="canvas" width="window.innerWidth * 0.9"></canvas> -->
-                <!-- <v-icon left @click="rotateLeft">rotate_left</v-icon>
-                <v-icon absolute @click="rotateRight">rotate_right</v-icon> -->
                 <canvas ref="canvas" class="fitScreen"></canvas>
               </v-flex>
             </v-layout>
@@ -114,12 +110,16 @@
     <v-layout>
       <v-dialog v-model="carousel" fullscreen id="carousel">
         <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
-          <v-icon class="mr-1" dark large @click="closeDialog">close</v-icon>
-          <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
+          <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
+          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item> -->
+          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="justClicked ? picToOpen : picture.imageUrl" :key="i">{{ i }}</v-carousel-item> -->
+          <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <!-- <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="openTheRightPic(index, picture)" :key="index">{{ index }}</v-carousel-item> -->
         </v-carousel>
         <v-carousel  hide-delimiters :cycle="cycle" class="hidden-xs-only">
-          <v-icon class="mr-1" dark large @click="closeDialog">close</v-icon>
-          <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item>
+          <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
+          <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i">{{ index }}</v-carousel-item> -->
         </v-carousel>
       </v-dialog>
     </v-layout>
@@ -160,11 +160,13 @@ export default {
     return {
       showUsers: false,
       imageUrl: '',
+      // justClicked: true,
       // image: '',
       image: this.$refs.imageToCanvas,
       dialog: false,
       carousel: false,
-      cycle: false
+      cycle: false,
+      picToOpen: ''
     }
   },
   computed: {
@@ -174,7 +176,6 @@ export default {
       }
     },
     event () {
-      // console.log('[event] this.$store.getters.getEventData(this.id)', this.$store.getters.getEventData(this.id))
       return this.$store.getters.getEventData(this.id)
     },
     loading () {
@@ -185,13 +186,9 @@ export default {
         let eventUsers = []
         let userData = ''
         const users = this.event.event.users
-        console.log('[eventUsers] users', users)
         for (let user in users) {
           let userId = users[user]
-          console.log('[eventUsers] userId', userId)
           userData = this.$store.getters.getUserData(userId)
-          console.log('[eventUsers] userData', userData)
-          // console.log('[eventUsers] userData', userData)
           eventUsers.push(userData)
         }
         return eventUsers
@@ -216,8 +213,19 @@ export default {
     }
   },
   methods: {
+    openTheRightPic (index, picture) {
+      console.log('[openTheRightPic] index, picture', index, picture)
+    },
+    checkPicSrc (imgUrl) {
+      this.carousel = true
+      console.log('imgUrl', imgUrl)
+      this.picToOpen = imgUrl
+
+      // setTimeout(_ => {
+      //   this.justClicked = false
+      // }, 2000)
+    },
     removeFriend (user) {
-      console.log('removeFriend', user)
       this.$store.dispatch('removeFriend', user)
     },
     sendFriendRequest (userId) {
@@ -258,6 +266,8 @@ export default {
     },
     closeDialog () {
       this.carousel = false
+      // this.justClicked = true
+      this.picToOpen = ''
     },
     back () {
       this.$router.go(-1)
@@ -319,47 +329,18 @@ export default {
       let context = this.$refs.canvas.getContext('2d')
       let image = this.$refs.imageToCanvas
       let screenWidth = window.screen.width
-      console.log('screenWidth', screenWidth)
-      // if (image.width > image.height) {
       let imageWidth = 700
       this.$refs.canvas.height = imageWidth
       this.$refs.canvas.width = imageWidth * image.height / image.width
-      console.log('this.$refs.canvas.width', this.$refs.canvas.width)
-      // this.$refs.canvas.width = imageWidth
-      // this.$refs.canvas.height = imageWidth * image.width / image.height
       context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
       context.save()
-      // context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       if (screenWidth < 700) {
-        if (this.$refs.canvas.width > this.$refs.canvas.height) {
-          console.log('this.$refs.canvas.width > this.$refs.canvas.height')
-          // context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
-          // context.translate(screenWidth, screenWidth - 6)
-          context.translate(0, screenWidth * 2)
-        } else {
-          if (this.$refs.canvas.height / this.$refs.canvas.width < 1.34) {
-            console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height  < 1.34 ', this.$refs.canvas.height / this.$refs.canvas.width)
-            // context.translate((screenWidth / 2) - 6, screenWidth)
-            context.translate(0, screenWidth * 2)
-          } else {
-            console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height', this.$refs.canvas.height / this.$refs.canvas.width)
-            // context.translate((screenWidth / 2) + (screenWidth - this.$refs.canvas.width - (screenWidth / 10)) / 2, screenWidth)
-            context.translate(0, screenWidth * 2)
-          }
-        }
+        context.translate(0, screenWidth * 2 + ((screenWidth - this.$refs.canvas.width) / 4))
       } else {
         context.translate(0, this.$refs.canvas.height)
-        // context.translate(0, 700 * 2)
       }
-
       context.rotate(90 * Math.PI / 180)
-      // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
       context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-      if (screenWidth < 700) {
-        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-      } else {
-        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-      }
       context.restore()
       this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -369,26 +350,22 @@ export default {
       let context = this.$refs.canvas.getContext('2d')
       let image = this.$refs.imageToCanvas
       let screenWidth = window.screen.width
-      // if (image.width > image.height) {
       let imageWidth = 700
       this.$refs.canvas.height = imageWidth
       this.$refs.canvas.width = imageWidth * image.height / image.width
       context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
       context.save()
-      // context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       if (screenWidth < 700) {
-        context.translate(this.$refs.canvas.height / 2, screenWidth)
+        context.translate(this.$refs.canvas.height, screenWidth / 2 + ((this.$refs.canvas.width - screenWidth) / 2))
       } else {
         context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
       }
-
       context.rotate(270 * Math.PI / 180)
       if (screenWidth < 700) {
-        context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+        context.drawImage(image, -this.$refs.canvas.width, -imageWidth, imageWidth, imageWidth * image.height / image.width)
       } else {
         context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
       }
-      // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
       context.restore()
       this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -483,17 +460,6 @@ export default {
     font-weight: 200;
     min-height: 70px;
   }
-  /* @media screen and (orientation: portrait) {
-      #carousel {
-        width: 100%;
-      }
-    }
-
-    @media screen and (orientation: landscape) {
-      #carousel {
-        height: 100%;
-      }
-    } */
     @media screen and (max-width: 1263px) {
       span.vuBadge {
         bottom: 100px;
@@ -552,6 +518,46 @@ export default {
       position: relative;
     }
   }
-
-
 </style>
+// if (screenWidth < 700) {
+//   context.translate(this.$refs.canvas.height / 2, screenWidth)
+// } else {
+//   context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+// }
+// context.rotate(270 * Math.PI / 180)
+// if (screenWidth < 700) {
+//   // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+//   context.drawImage(image, -this.$refs.canvas.height / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+// } else {
+//   context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
+// }
+// if (image.width > image.height) {
+// if (screenWidth < 700) {
+//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+// } else {
+//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+// }
+// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+// if (image.width > image.height) {
+// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+// if (this.$refs.canvas.width > this.$refs.canvas.height) {
+//   console.log('this.$refs.canvas.width > this.$refs.canvas.height')
+//   // context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
+//   // context.translate(screenWidth, screenWidth - 6)
+//   context.translate(0, screenWidth * 2)
+// } else {
+//   // if (this.$refs.canvas.height / this.$refs.canvas.width < 1.34) {
+//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height  < 1.34 ', this.$refs.canvas.height / this.$refs.canvas.width)
+//     // context.translate((screenWidth / 2) - 6, screenWidth)
+//   context.translate(0, screenWidth * 2)
+//   // } else {
+//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height', this.$refs.canvas.height / this.$refs.canvas.width)
+//     // context.translate((screenWidth / 2) + (screenWidth - this.$refs.canvas.width - (screenWidth / 10)) / 2, screenWidth)
+//   //   context.translate(0, screenWidth * 2)
+//   // }
+// }
+// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
+// context.translate(0, 700 * 2)
+// this.$refs.canvas.width = imageWidth
+// this.$refs.canvas.height = imageWidth * image.width / image.height
+// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)

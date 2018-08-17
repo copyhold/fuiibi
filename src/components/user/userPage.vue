@@ -5,7 +5,7 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <div @click="back" class="arrowBack">
+    <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
     <v-layout row wrap>
@@ -138,6 +138,9 @@ export default {
 </script>
 
 <style scoped>
+  .clickable {
+    cursor: pointer;
+  }
   .bold{
     font-weight: 500;
   }

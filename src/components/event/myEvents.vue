@@ -11,8 +11,8 @@
       <v-flex xs12 sm6 md6 v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
         <v-card height="120px">
           <v-container fluid>
-            <v-layout col xs12>
-              <v-flex xs4 sm4 md4>
+            <v-layout col xs12 @click="eventDetails(item.key)">
+              <v-flex xs4 sm4 md4 >
                 <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable"></v-card-media>
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
@@ -20,14 +20,14 @@
                   <v-card-title primary-title >
                     <v-card-actions wrap>
                       <div>
-                        <div @click="eventDetails(item.key)">
+                        <div >
                           <h4 class="pl-2 secondaryDark--text bold"> {{ item.event.title }}</h4>
                         </div>
                       </div>
                     </v-card-actions>
                   </v-card-title>
                 </v-layout>
-                <v-layout @click="eventDetails(item.key)">
+                <v-layout >
                   <div offset-xs3>
                     <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                     <p class="date">{{ item.event.date | date}}</p>
@@ -170,5 +170,9 @@ p {
     position: absolute;
     bottom: 5px;
 }
-
+@media screen and (max-width: 600px) {
+  .container.grid-list-sm .layout .flex {
+    padding: 0;
+  }
+}
 </style>

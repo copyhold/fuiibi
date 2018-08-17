@@ -22,6 +22,11 @@
             </v-flex>
           </v-layout>
 
+          <v-layout row v-if="imageUrl != ''">
+            <v-btn @click="rotateLeft" ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
+            <v-btn @click="rotateRight">rotate right<v-icon right>rotate_right</v-icon></v-btn>
+          </v-layout>
+
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
@@ -242,6 +247,51 @@
       }
     },
     methods: {
+      rotateRight () {
+        let context = this.$refs.canvas.getContext('2d')
+        let image = this.$refs.imageToCanvas
+        let screenWidth = window.screen.width
+        let imageWidth = 700
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+        context.save()
+        if (screenWidth < 700) {
+          context.translate(0, screenWidth * 2 + ((screenWidth - this.$refs.canvas.width) / 4))
+        } else {
+          context.translate(0, this.$refs.canvas.height)
+        }
+        context.rotate(90 * Math.PI / 180)
+        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+        context.restore()
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      },
+
+      rotateLeft () {
+        let context = this.$refs.canvas.getContext('2d')
+        let image = this.$refs.imageToCanvas
+        let screenWidth = window.screen.width
+        let imageWidth = 700
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+        context.save()
+        if (screenWidth < 700) {
+          context.translate(this.$refs.canvas.height, screenWidth / 2 + ((this.$refs.canvas.width - screenWidth) / 2))
+        } else {
+          context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+        }
+        context.rotate(270 * Math.PI / 180)
+        if (screenWidth < 700) {
+          context.drawImage(image, -this.$refs.canvas.width, -imageWidth, imageWidth, imageWidth * image.height / image.width)
+        } else {
+          context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
+        }
+        context.restore()
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      },
       showAlert () {
         console.log('showing alert');
         this.alert = true

@@ -12,7 +12,6 @@ export default {
       const events = state.user.events
       events.splice(events.findIndex(event => event.key === payload), 1)
       Reflect.deleteProperty(state.user.events, payload)
-      // console.log('[removeEventFromUser] mutation payload', payload);
     },
     addProfilePicture (state, payload) {
       const user = payload.user
@@ -23,10 +22,10 @@ export default {
     addNotification (state, payload) {
       state.user.notifications.push(payload)
       // I REMOVED THE SORT AS I SORT IT ALREADY WITH FIREBASE ORDERBYCHILD()!!!
-      // state.user.notifications.sort((notificationA, notificationB) => {
-      //   // console.log('[mutations addNotification] notificationA, notificationB', notificationA, notificationB);
-      //   return notificationA.dateToRank > notificationB.dateToRank
-      // })
+      state.user.notifications.sort((notificationA, notificationB) => {
+        // console.log('[mutations addNotification] notificationA, notificationB', notificationA, notificationB);
+        return notificationA.dateToRank - notificationB.dateToRank
+      })
     },
     updateNotification (state, payload) {
       console.log('[updateNotification] check the payload', payload)
@@ -46,7 +45,7 @@ export default {
         notification.friendsCount = payload.friendsCount
       }
       state.user.notifications.sort((notificationA, notificationB) => {
-        return notificationA.dateToRank > notificationB.dateToRank
+        return notificationA.dateToRank - notificationB.dateToRank
       })
       console.log('[updateNotification] notification', notification);
     },
@@ -103,7 +102,7 @@ export default {
     addEventToMyEvents (state, payload) {
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
-        return eventA.event.dateToRank > eventB.event.dateToRank
+        return eventA.event.dateToRank - eventB.event.dateToRank
       })
     },
     setLoadedUsers (state, payload) {
