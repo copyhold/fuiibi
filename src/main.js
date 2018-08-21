@@ -23,6 +23,7 @@ import { VueTyper } from 'vue-typer'
 import FriendsSearch from './components/user/friendsSearch.vue'
 // import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@mdi/font/css/materialdesignicons.css'
+import VueResource from 'vue-resource'
 // import Typewriter from 'vue-typewriter'
 
 // import Router from 'vue-router'
@@ -66,14 +67,12 @@ Vue.use(VuetifyGoogleAutocomplete, {
   // version: '...', // Optional
 })
 
+Vue.use(VueResource)
+
 Vue.use(Vuetify, { theme: {
   primaryDark: '#F5F5F5',
   primary: '#0E1E51',
   primaryWhite: '#fff',
-  // primaryDark: '#01021E',
-  // primary: '#0E1E51',
-  // primary: '#00695c',
-  // primaryDark: '#003d33',
   primaryLight: '#439889',
   secondary: '#0E1E51',
   secondaryDark: '#01021E',
@@ -142,14 +141,6 @@ new Vue({
           this.$store.dispatch('listenToInvitationRemoval')
           this.$store.dispatch('listenToFriendRemoval')
         }
-        // this.$store.dispatch('fetchUserData')
-        // this.$store.dispatch('fetchUsersEvents')
-        // this.$store.dispatch('listenToNotifications')
-        // this.$store.dispatch('listenToNotificationsChanges')
-        // this.$store.dispatch('listenToInvitationRemoval')
-        // this.$store.dispatch('listenToFriendRemoval')
-        // this.$store.dispatch('loadUsers')
-        // // this.$store.dispatch('onEventChanged')
       }
     })
     // Here we load all the users of the app for TEST only, so that I can test friends requests

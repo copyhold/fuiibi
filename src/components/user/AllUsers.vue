@@ -6,6 +6,9 @@
         </v-flex>
     </v-layout>
     <v-list subheader>
+      <v-layout class="getContactButton">
+        <v-btn @click="gapiLoad" flat class="blue--text">google contacts</v-btn>
+      </v-layout>
         <v-subheader>All users</v-subheader>
         <!-- <template v-for="user in users" > -->
         <template v-for="user in filteredUsers">
@@ -44,6 +47,7 @@
 </template>
 
 <script>
+/* eslint-disable */
   export default {
     props: ['search'],
     data () {
@@ -70,43 +74,35 @@
       }
     },
     methods: {
-
-      // **********************************FIND CONTACTS IN MOBILE*******************************************
-      // JavaScript
-      // function readContacts() {
-      //   var api = navigator.contacts || navigator.mozContacts;
-      //
-      //   if (api) {
-      //     var criteria = {
-      //       sortBy: 'familyName',
-      //       sortOrder: 'ascending'
-      //     };
-      //
-      //     var finder = api.find(criteria);
-      //     if (finder && finder.then) {
-      //       finder.then(function (contacts) {
-      //           consoleLog('Found ' + contacts.length + ' contacts.');
-      //           if (contacts.length) {
-      //             consoleLog('First contact: ' + contacts[0].givenName[0] + ' ' + contacts[0].familyName[0]);
-      //           }
-      //         })
-      //         .catch(function (err) {
-      //           consoleLog('Fetching contacts failed: ' + err.name);
-      //         });
-      //     } else {
-      //       consoleLog('Only obsolete Contacts API accessible.');
-      //     }
-      //   } else {
-      //     consoleLog('Contacts API not supported.');
-      //   }
-      // }
-      //
-      // function consoleLog(data) {
-      //   var logElement = document.getElementById('log');
-      //   logElement.innerHTML += data + '\n';
-      // }
-      // ***********************************************************************************************************************
-
+    gapiLoad () {
+        var clientId = '24686685442-e8ookfdde4dbc6fqqmjo3iajo9rc71ai.apps.googleusercontent.com'
+        var apiKey = 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
+        var scopes = 'https://www.googleapis.com/auth/contacts.readonly'
+        console.log('in gapiLoad')
+        gapi.client.setApiKey(apiKey)
+        window.setTimeout(this.authorize(clientId, scopes))
+      },
+      authorize(clientId, scopes) {
+        console.log('in autorize')
+        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, this.handleAuthorization)
+      },
+      handleAuthorization(authorizationResult) {
+        console.log('in handleAuthorization => authorizationResult', authorizationResult)
+        if (authorizationResult && !authorizationResult.error) {
+          console.log('if (authorizationResult && !authorizationResult.error)')
+          this.$http.get("https://www.google.com/m8/feeds/contacts/default/thin?alt=json&access_token=" + authorizationResult.access_token + "&max-results=500&v=3.0")
+            .then(response => {
+              console.log(response.body.feed.entry)
+              let emailList = response.body.feed.entry
+              for (let email in emailList) {
+                let googleEmail = emailList[email].gd$email[0].address
+                console.log('emailList[email].gd$email', emailList[email].gd$email[0].address);
+              }
+            })
+        } else {
+          console.log('ERROR IN GETTING PERMISSION');
+        }
+      },
       getUserPage (key) {
         console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})
@@ -132,7 +128,6 @@
       },
       hasPendingInvitation (user) {
         if (this.$store.getters.user) {
-          // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
           // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
           if (this.$store.getters.user.pendingInvitations) {
             return this.$store.getters.user.pendingInvitations.findIndex(friend => {
@@ -143,7 +138,6 @@
       },
       isPendingFriend (user) {
         if (this.$store.getters.user) {
-          // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
           // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
           return this.$store.getters.user.pendingFriends.findIndex(friend => {
             return friend.id === user.id
@@ -155,6 +149,11 @@
 </script>
 
 <style scoped>
+  .getContactButton {
+    position: absolute;
+    top: 2px;
+    right: -10px;
+  }
   .theme--light .list .divider, .application .theme--light.list .divider{
     top: 0px;
   }
@@ -193,10 +192,7 @@
     top: 88px;
     }
   .container{
-    margin-top: 0;
-    /* padding: 8px; */
-    margin-bottom: 96px;
-    margin: 0 auto;
+    margin: 0px auto 56px auto;
   }
   .card__title--primary {
      padding-top: 0px;

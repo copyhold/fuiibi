@@ -1,5 +1,5 @@
 <template >
-  <div class="mt-2">
+  <div class="container">
     <!-- <v-layout row>
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
@@ -87,8 +87,7 @@
     left: 16px;
   }
   .container{
-    margin-top: 0;
-    padding: 8px;
+    margin: 0px auto 56px auto;
   }
   .card_actions{
     padding: 0px;

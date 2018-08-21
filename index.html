@@ -28,6 +28,7 @@
     <meta name="msapplication-TileImage" content="/src/images/icons/app-icon-144x144.png">
     <meta name="msapplication-TileColor" content="#fff">
     <meta name="theme-color" content="#3F51B5">
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
     <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
     <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY&libraries=places'></script>
     <title>Fuiibi</title>
@@ -37,9 +38,11 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Marck+Script" rel="stylesheet">
+    <!-- <script src="https://apis.google.com/js/client.js?onload=gapiLoad"></script> -->
   </head>
   <body>
     <div id="app" :class="{ greyBackground: userLoggedIn }"></div>
     <!-- built files will be auto injected -->
+     <script src="https://apis.google.com/js/client.js"></script>
   </body>
 </html>

@@ -94,6 +94,9 @@
 </script>
 
 <style scoped>
+  .tabs__items {
+    margin-bottom: 56px;
+  }
   .squaredVCard{
     height: 50vw !important;
     width: 50vw;

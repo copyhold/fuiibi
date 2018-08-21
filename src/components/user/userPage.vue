@@ -126,10 +126,6 @@ export default {
     back () {
       this.$router.go(-1)
     },
-    // iwtClicked () {
-    //   console.log('[iwtClicked]')
-    //   this.$store.dispatch('iwtClicked', {key: this.id})
-    // }
     iwtClicked (notification) {
       this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
     }

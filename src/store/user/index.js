@@ -59,22 +59,15 @@ export default {
       if (payload.imageUrl) {
         user.imageUrl = payload.imageUrl
         state.user.imageUrl = user.imageUrl
-        // Vue.set(state.users[indexOfItem], 'imageUrl', payload.imageUrl)
-        // state.users[indexOfItem] = Object.assign({}, state.users[indexOfItem], {imageUrl: payload.imageUrl})
-        // state.users[indexOfItem].imageUrl = payload.imageUrl
       }
       if (payload.payload.gender) {
         state.user.gender = payload.payload.gender
-        // state.users[indexOfItem].gender.splice(0, 1, payload.payload.gender)
       }
       if (payload.payload.livingIn) {
         state.user.livingIn = payload.payload.livingIn
-        // state.users[indexOfItem].livingIn.splice(0, 1, payload.payload.livingIn)
-        // console.log('[updateUser] payload.payload.livingIn');
       }
       if (payload.payload.dateOfBirth) {
         state.user.dateOfBirth = payload.payload.dateOfBirth
-        // state.users[indexOfItem].livingIn.splice(0, 1, payload.payload.livingIn)
       }
     },
     updateUser (state, payload) {
@@ -107,6 +100,7 @@ export default {
     },
     setLoadedUsers (state, payload) {
       state.users = payload
+      console.log('[setLoadedUsers] state.users', state.users);
     },
     addUser (state, payload) {
       if (state.users.findIndex(user => user.id === payload.id) < 0) {
@@ -155,7 +149,6 @@ export default {
     },
     removePendingInvitationFromUser(state, payload) {
       const pendingInvitations = state.user.pendingInvitations
-      console.log('[removePendingInvitationFromUser] ', payload);
       pendingInvitations.splice(pendingInvitations.findIndex(friend => friend.id === payload), 1)
       Reflect.deleteProperty(state.user.pendingInvitations, payload)
     },
@@ -166,6 +159,8 @@ export default {
     },
     setUser (state, payload) {
       state.user = payload
+      state.email = payload.email
+      console.log('state.email', state.email);
       console.log('payload of the state.user in the setUser', payload);
     }
   },
@@ -280,32 +275,6 @@ export default {
         firebase.database().ref('users/' + id).set(newUser)
         router.push('/welcome')
     },
-    // getUserContacts () {
-    //   gapi.load('client', this.start());
-    // },
-    // start () {
-    //   var client = payload.user
-    //   console.log('gapi.client', gapi.client);
-    //   // 2. Initialize the JavaScript client library.
-    //   gapi.client.init({
-    //     'apiKey': 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY',
-    //     // Your API key will be automatically added to the Discovery Document URLs.
-    //     'discoveryDocs': ['https://people.googleapis.com/$discovery/rest'],
-    //     // clientId and scope are optional if auth is not required.
-    //     'clientId':'1059834656960-8573une98ud5of3cb66iolj2c7gtuvbc.apps.googleusercontent.com',
-    //     'scope': 'profile',
-    //   }).then(function() {
-    //     // 3. Initialize and make the API request.
-    //     return gapi.client.people.people.get({
-    //       'resourceName': 'people/me',
-    //       'requestMask.includeField': 'person.names'
-    //     });
-    //   }).then(function(response) {
-    //     console.log(response.result);
-    //   }, function(reason) {
-    //     console.log('Error: ' + reason.result.error.message);
-    //   });
-    // },
     signUserUp ({commit}, payload) {
       //As we are doing a request to the web, we change the status of loading to true.
       commit('setLoading', true)

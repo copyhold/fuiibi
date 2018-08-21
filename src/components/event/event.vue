@@ -38,7 +38,7 @@
                   <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
                 </div>
               </v-flex>
-              <a href="whatsapp://send" data-text="Take a look at this awesome website:" data-href="" class="wa_btn wa_btn_s" style="display:none">Share</a>
+              <!-- <a href="whatsapp://send" data-text="Take a look at this awesome website:" data-href="" class="wa_btn wa_btn_s" style="display:block">Share</a> -->
               <v-flex xs2 sm2 md2>
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
                 <span v-else>
