@@ -160,8 +160,6 @@ export default {
     return {
       showUsers: false,
       imageUrl: '',
-      // justClicked: true,
-      // image: '',
       image: this.$refs.imageToCanvas,
       dialog: false,
       carousel: false,

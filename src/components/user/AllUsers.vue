@@ -5,11 +5,11 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
-    <v-list subheader>
-      <v-layout class="getContactButton">
+    <v-list subheader v-if="!loading">
+      <v-layout class="getContactButton" v-if="!loading">
         <v-btn @click="gapiLoad" flat class="blue--text">google contacts</v-btn>
       </v-layout>
-        <v-subheader>All users</v-subheader>
+        <v-subheader v-if="!loading">All users</v-subheader>
         <!-- <template v-for="user in users" > -->
         <template v-for="user in filteredUsers">
           <v-divider></v-divider>
@@ -19,7 +19,6 @@
             </v-list-tile-avatar>
             <v-list-tile-content  @click="getUserPage(user)" >
               <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-              <!-- <v-list-tile-title v-html="user.lastName"></v-list-tile-title> -->
             </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
                 <v-btn small class="greyColors" flat left>Pending...</v-btn>
@@ -43,6 +42,34 @@
         </v-btn>
       </v-fab-transition>
     </v-layout>
+
+    <v-dialog v-model="showGoogleContact" max-width="96%">
+      <v-list subheader>
+          <template v-for="user in googleContact">
+            <v-divider></v-divider>
+            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+              <v-list-tile-avatar class="avatarImg">
+                <img :src="user.imageUrl"/>
+              </v-list-tile-avatar>
+              <v-list-tile-content  @click="getUserPage(user)" >
+                <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                  <v-btn small class="greyColors" flat left>Pending...</v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action v-else>
+                <v-list-tile-action v-if="!isFriend(user)">
+                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
+                </v-list-tile-action>
+                <v-list-tile-action v-else>
+                  <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
+                </v-list-tile-action>
+              </v-list-tile-action>
+            </v-list-tile>
+          </template>
+        </v-list>
+      </v-dialog>
+
   </v-container>
 </template>
 
@@ -52,10 +79,26 @@
     props: ['search'],
     data () {
       return {
-        key: ''
+        key: '',
+        googleContactInFuiibi: [],
+        showGoogleContact: false
       }
     },
     computed: {
+      googleContact () {
+        if (this.googleContactInFuiibi != '') {
+          let eventUsers = []
+          let userData = ''
+          const users = this.googleContactInFuiibi
+          for (let user in users) {
+            let userId = users[user]
+            userData = this.$store.getters.getUserData(userId)
+            eventUsers.push(userData)
+          }
+          console.log('[googleContact] eventUsers', eventUsers);
+          return eventUsers
+        }
+      },
       users () {
         return this.$store.getters.users
       },
@@ -87,17 +130,26 @@
         gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, this.handleAuthorization)
       },
       handleAuthorization(authorizationResult) {
-        console.log('in handleAuthorization => authorizationResult', authorizationResult)
         if (authorizationResult && !authorizationResult.error) {
-          console.log('if (authorizationResult && !authorizationResult.error)')
           this.$http.get("https://www.google.com/m8/feeds/contacts/default/thin?alt=json&access_token=" + authorizationResult.access_token + "&max-results=500&v=3.0")
             .then(response => {
-              console.log(response.body.feed.entry)
-              let emailList = response.body.feed.entry
-              for (let email in emailList) {
-                let googleEmail = emailList[email].gd$email[0].address
-                console.log('emailList[email].gd$email', emailList[email].gd$email[0].address);
+              // let googleContactInFuiibi = []
+              let allEmailList = this.$store.getters.emails
+              let userEmailList = response.body.feed.entry
+              for (let email in userEmailList) {
+                let googleEmail = userEmailList[email].gd$email[0].address
+                // console.log('userEmailList[email].gd$email', userEmailList[email].gd$email[0].address);
+                allEmailList.find((user) => {
+                  if (user.email === googleEmail) {
+                    this.googleContactInFuiibi.push(user.id)
+                    console.log('THIS ON IS THERE!!!', user.id);
+                  } else {
+                    console.log('NOT FOUND....');
+                  }
+                })
               }
+              console.log('[handleAuthorization] this.googleContactInFuiibi', this.googleContactInFuiibi);
+              this.showGoogleContact = true
             })
         } else {
           console.log('ERROR IN GETTING PERMISSION');

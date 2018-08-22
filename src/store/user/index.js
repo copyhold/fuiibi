@@ -5,7 +5,8 @@ import router from './../../router'
 export default {
   state: {
     user: null,
-    users: []
+    users: [],
+    emails: []
   },
   mutations: {
     removeEventFromUser(state, payload) {
@@ -105,6 +106,13 @@ export default {
     addUser (state, payload) {
       if (state.users.findIndex(user => user.id === payload.id) < 0) {
         state.users.push(payload)
+      }
+    },
+    addEmail (state, payload) {
+      // console.log('[addEmail]');
+      if (state.emails.findIndex(user => user.id === payload.id) < 0) {
+        state.emails.push(payload)
+        // console.log('[addEmail] state.emails', state.emails);
       }
     },
     createUser (state, payload) {
@@ -540,6 +548,7 @@ export default {
         }
         commit('addUser', newUser)
         commit('setLoading', false)
+        commit('addEmail', {email: userData.email, id: userData.id})
         })
     },
 
@@ -751,6 +760,9 @@ export default {
     users (state) {
       return state.users
     },
+    emails (state) {
+      return state.emails
+    },
     getUser (state) {
       return (userId) => {
         return state.users.find((user) => {
@@ -762,7 +774,6 @@ export default {
     getUserData (state) {
       return (userId) => {
         return state.users.find((user) => {
-          // console.log('[getUser] user', user);
           return user.id === userId
         })
       }
