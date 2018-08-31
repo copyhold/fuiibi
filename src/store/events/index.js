@@ -409,7 +409,7 @@ export default {
     loadedNotifications (state) {
       return state.loadedNotifications.sort((notificationA, notificationB) => {
         console.log('notificationA, notificationB', notificationA, notificationB);
-        return notificationA.date < notificationB.date
+        return notificationA.date - notificationB.date
       })
     }
   }

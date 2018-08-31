@@ -110,6 +110,7 @@
   .container{
     margin-top: 0;
     padding: 8px;
+    margin: 0px auto 56px auto;
   }
   .card_actions{
     padding: 0px;

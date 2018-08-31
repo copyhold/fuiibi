@@ -15,7 +15,7 @@
 
           <v-layout row class="mb-2">
             <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
-              <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Upload Image </v-btn>
+              <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Upload Image</v-btn>
               <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
             the accept image is in order to accept image and nothing else-->
               <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
@@ -67,22 +67,67 @@
             </v-flex>
           </v-layout>
 
-          <v-layout row>
-            <v-flex xs12 sm12 offset-sm3>
-                <vuetify-google-autocomplete
-                    id="map"
-                    prepend-icon="place"
-                    placeholder="Location"
-                    :rules="locationRules"
-                    v-on:placechanged="getAddressData"
-                    v-on:no-results-found="alertNoResultFound"
-                    v-model="where"
-                    types= ''
-                >
-                <!-- :rules="[v => !!v || 'A full address is required']" -->
-                </vuetify-google-autocomplete>
+          <v-layout row wrap>
+            <v-flex xs12 sm6 offset-sm3>
+              <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="showChangeButton">
+                <v-avatar>
+                  <v-icon >my_location</v-icon>
+                </v-avatar>
+                Change location
+              </v-chip>
+              <!-- <v-flex xs12 class="text-xs-center">
+                <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
+              </v-flex> -->
+              <div class="mdl-spinner mdl-js-spinner is-active" id="location-loader"></div>
+              </div>
+              <!-- <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn> -->
             </v-flex>
           </v-layout>
+
+          <v-layout row v-if="showVueAutoComplete">
+              <v-flex xs1>
+                <v-icon >place</v-icon>
+              </v-flex>
+              <v-flex xs11>
+                <vue-google-autocomplete
+                    id="map"
+                    placeholder="Location*"
+                    v-on:no-results-found="alertNoResultFound"
+                    v-on:placechanged="getAddressData"
+                    v-model="where"
+                    types= ''
+                    v-on:where="where"
+                    class="vueGoogleInput"
+                    :rules="locationRules"
+                >
+                </vue-google-autocomplete>
+              </v-flex>
+          </v-layout>
+
+          <v-flex xs12 sm12 offset-sm3 v-else>
+            <!-- <vuetify-google-autocomplete
+                id="map"
+                prepend-icon="place"
+                placeholder="Location"
+                v-on:no-results-found="alertNoResultFound"
+                v-on:placechanged="getAddressData"
+                v-model="where"
+                types= ''
+                :rules="locationRules"
+                :required="true"
+            >
+            </vuetify-google-autocomplete> -->
+            <v-flex xs12>
+              <v-text-field
+                prepend-icon="place"
+                placeholder="Location"
+                v-model="where"
+                :rules="locationRules"
+                :required="true"
+                :readonly="true"
+              ></v-text-field>
+            </v-flex>
+          </v-flex>
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
@@ -153,11 +198,12 @@
   export default {
     data () {
       return {
+        showVueAutoComplete: true,
         alert: false,
         valid: true,
         locationRules: [
           v => !!v || 'A full address is required'
-          // v => !!v.country || 'Country is missing, a full address is required',
+          // v => !!v.locality || 'Locality is missing, a full address is required'
           // v => !!v.route || 'Route is missing, a full address is required'
         ],
         nameRules: [
@@ -176,10 +222,11 @@
         description: '',
         imageUrl: '',
         /* eslint-disable */
-        date: new Date().toLocaleDateString(),
+        // date: new Date().toLocaleDateString(),
+        // date: new Date().toISOString(),
+        date: new Date().toISOString().substring(0, 10),
         time: new Date()﻿.toLocaleTimeString(),
         image: null,
-        address: '',
         address: {
           country: '',
           locality: '',
@@ -204,6 +251,31 @@
       }
     },
     computed: {
+      // submittableDate () {
+      //   if (this.modal === false) {
+      //     console.log('[submittableDate] this.modal === false');
+      //     return new Date().toLocaleDateString()
+      //   } else {
+      //     return new Date().toISOString()
+      //   }
+      // },
+      // submittableDate () {
+      //   const date = new Date(this.date)
+      //   console.log('[submittableDate] date', date);
+      //   if (typeof this.date === 'string') {
+      //     const day = this.time.match(/^(\d+)/)[1]
+      //     const month = this.time.match(/:(\d+)/)[1]
+      //     const year = this.time.match(/:(\d+)/)[1]
+      //     date.setYear(hours)
+      //     date.setMonth(month)
+      //     date.setDate(day)
+      //   } else {
+      //     date.setYear(this.date.getYear())
+      //     date.setMonth(this.date.getMonth())
+      //     date.setDate(this.date.getDate())
+      //   }
+      //   return date
+      // }
       formIsValid () {
         if (this.address) {
           // if (this.address.country && this.address.locality && this.address.route) {
@@ -213,7 +285,7 @@
           // } else {
           //   console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
           // }
-          if (this.address.longitude && this.address.latitude) {
+          if (this.address.country && this.address.locality && this.address.route && this.address.longitude && this.address.latitude) {
             console.log('[formIsValid] this.address', this.address);
             console.log('[formIsValid] this.where', this.where);
             return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
@@ -234,6 +306,7 @@
       },
       submittableDateTime () {
         const date = new Date(this.date)
+        console.log('[submittableDateTime] date', date);
         if (typeof this.time === 'string') {
           const hours = this.time.match(/^(\d+)/)[1]
           const minutes = this.time.match(/:(\d+)/)[1]
@@ -247,6 +320,17 @@
       }
     },
     methods: {
+      showChangeButton () {
+        this.showVueAutoComplete = true
+        this.showLocationButton = true
+        console.log('[showchangeButton] clicked');
+      },
+      // gotFocused () {
+      //   // setTimeout( _ => {
+      //     this.showVueAutoComplete = false
+      //     console.log('[gotFocused] this.showVueAutoComplete', this.showVueAutoComplete);
+      //   // }, 10000)
+      // },
       rotateRight () {
         let context = this.$refs.canvas.getContext('2d')
         let image = this.$refs.imageToCanvas
@@ -256,18 +340,13 @@
         this.$refs.canvas.width = imageWidth * image.height / image.width
         context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
         context.save()
-        if (screenWidth < 700) {
-          context.translate(0, screenWidth * 2 + ((screenWidth - this.$refs.canvas.width) / 4))
-        } else {
-          context.translate(0, this.$refs.canvas.height)
-        }
+        context.translate(0, this.$refs.canvas.height)
         context.rotate(90 * Math.PI / 180)
         context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
         context.restore()
         this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
         image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       },
-
       rotateLeft () {
         let context = this.$refs.canvas.getContext('2d')
         let image = this.$refs.imageToCanvas
@@ -277,17 +356,9 @@
         this.$refs.canvas.width = imageWidth * image.height / image.width
         context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
         context.save()
-        if (screenWidth < 700) {
-          context.translate(this.$refs.canvas.height, screenWidth / 2 + ((this.$refs.canvas.width - screenWidth) / 2))
-        } else {
-          context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
-        }
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
         context.rotate(270 * Math.PI / 180)
-        if (screenWidth < 700) {
-          context.drawImage(image, -this.$refs.canvas.width, -imageWidth, imageWidth, imageWidth * image.height / image.width)
-        } else {
-          context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
-        }
+        context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
         context.restore()
         this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
         image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
@@ -297,7 +368,6 @@
         this.alert = true
         setTimeout ( _=> {
           console.log('closing alert');
-
           this.alert = false
         }, 2000)
       },
@@ -315,7 +385,17 @@
         console.log('[getAddressData] => addressData', addressData);
         if (addressData) {
           if (addressData.route) {
-            this.address = addressData;
+            this.address = {
+              country: addressData.country,
+              locality: addressData.locality,
+              route: addressData.route,
+              administrative_area_level_1: addressData.administrative_area_level_1,
+              latitude: addressData.latitude,
+              longitude: addressData.longitude,
+              // postal_code: addressData.postal_code,
+              street_number: addressData.street_number
+            }
+            // this.address = addressData;
           } else {
             this.address = {
               country: addressData.country,
@@ -324,13 +404,11 @@
               administrative_area_level_1: addressData.administrative_area_level_1,
               latitude: addressData.latitude,
               longitude: addressData.longitude,
-              postal_code: addressData.postal_code,
+              // postal_code: addressData.postal_code,
               street_number: addressData.street_number
             }
           }
         }
-
-
         console.log('[getAddressData], this.address', this.address);
         if (addressData) {
           if (this.address.street_number && this.address.route && this.address.route != 'Unnamed road') {
@@ -355,12 +433,14 @@
         console.log('[alertNoResultFound], alertNoResultFound');
       },
       getLocation () {
-        // console.log('getLocation')
+        console.log('[getLocation] this.showVueAutoComplete', this.showVueAutoComplete);
+        console.log('getLocation')
         if (!navigator.geolocation) {
           console.log('no geolocation in browser');
           return;
         }
         // console.log('after if navigator');
+        this.where = ''
         let sawAlert = false
         // We hide the button and show the spinner
         this.searchingForLocation = true;
@@ -368,7 +448,7 @@
         // console.log('just before navigator.geolocation.getCurrentPosition');
         setTimeout( _=> {
           this.searchingForLocation = false;
-          this.showLocationButton = true
+          // this.showLocationButton = true
           if (sawAlert === false && this.fetchedLocation === {lat: 0, lng: 0}) {
             alert('Couldn\'t load location, please try mannually')
             sawAlert = true
@@ -378,8 +458,7 @@
         navigator.geolocation.getCurrentPosition( position => {
           console.log('in navigator.geolocation.getCurrentPosition');
           this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
-          // console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
-
+          console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
           this.lat = position.coords.latitude;
           this.lon = position.coords.longitude;
           var geocoder = new google.maps.Geocoder();
@@ -401,15 +480,14 @@
           }
           console.log('[this address nvo object]', this.address);
           this.where = results[0].formatted_address
-          console.log('this.were', this.where);
-          // document.getElementById('autoComplete').value = this.where
-          // document.getElementById('map').value = this.where
-          // this.$refs.autoCompleteInput.value = this.where
-          // document.getElementById('map').value = this.where
-          console.log('document.getElementById(map).value', document.getElementById('map').value);
+          setTimeout(_ => {
+            this.where = results[0].formatted_address
+            console.log('[getLocation] in the setTimeout this.where', this.where);
+          }, 1)
           });
+          this.showVueAutoComplete = false
           this.searchingForLocation = false;
-          this.showLocationButton = true
+          // this.showLocationButton = true
 
         }), err => {
           console.log(err);
@@ -439,7 +517,8 @@
           description: this.description,
           date: this.submittableDateTime,
           users: [],
-          duration: this.durationInput,
+          duration: this.durationInput
+          // dateToRank: this.date.getTime()
         }
         this.$store.dispatch('createEvent', eventData)
         // this.$store.dispatch('addNotifications', eventData)
@@ -505,28 +584,37 @@
 
 
 <style scoped>
-.arrowBack {
-  position: fixed;
-  top: 16px;
-  left: 8px;
-  z-index: 3;
-  cursor: pointer;
-}
-  /* i.material-icons.icon.alert__icon {
-    float: left !important;
-  } */
-  /* .alert .alert__icon.icon {
-    float: left !important;
-  } */
-  /* div.alert.alertGreen.sucess{
-    display: inline;
-  } */
-  /* .fitScreen {
+  .rotateLeftIcon {
+    margin-top: 0 !important;
+  }
+  .fitScreen {
     max-width: 100vw;
-  } */
-  /* .alert > div {
-    display: inline;
-  } */
+  }
+  .vueGoogleInput{
+    width: 96%;
+    border-bottom: 1px solid grey;
+    margin-left: 4%;
+    /* margin-top: 10px; */
+    font-size: 16px;
+    color: rgba(0,0,0,0.8);
+    margin-bottom: 20px;
+  }
+  input {
+    background-color: white !important;
+  }
+  input.vueGoogleInput:focus {
+    border: none !important;
+    border-bottom: black 2px solid !important;
+    border-top: white 2px solid;
+    outline: none;
+  }
+  .arrowBack {
+    position: fixed;
+    top: 16px;
+    left: 8px;
+    z-index: 3;
+    cursor: pointer;
+  }
   .alertGreen {
     position: fixed;
     bottom: 54px;
@@ -554,6 +642,7 @@
   @media screen and (max-width: 600px) {
     .chip {
       margin-left: 20vw;
+      margin-bottom: 20px;
     }
     .container {
       padding: 8px;

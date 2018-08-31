@@ -88,6 +88,7 @@
   }
   .container{
     margin: 0px auto 56px auto;
+    margin: 0px;
   }
   .card_actions{
     padding: 0px;

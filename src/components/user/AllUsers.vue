@@ -202,7 +202,7 @@
 
 <style scoped>
   .getContactButton {
-    position: absolute;
+    position: relative;
     top: 2px;
     right: -10px;
   }
@@ -245,12 +245,19 @@
     }
   .container{
     margin: 0px auto 56px auto;
+    margin: 0px;
   }
   .card__title--primary {
      padding-top: 0px;
   }
   .btn__content {
     justify-content: flex-start;
-
+  }
+    @media screen and (max-width: 600px) {
+      .getContactButton {
+        position: absolute;
+        top: 2px;
+        right: -10px;
+    }
   }
 </style>

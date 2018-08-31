@@ -84,7 +84,7 @@
                       </v-dialog>
                     </v-flex>
                   </v-layout>
-                  <v-layout row>
+                  <!-- <v-layout row>
                     <v-flex xs12>
                       <vuetify-google-autocomplete
                           v-model="where"
@@ -96,12 +96,27 @@
                           :rules="[v => !!v || 'Location is required']"
                           types= ''
                       >
-                      <!-- to be added above to get only the city -->
-                      <!-- types= '(cities)' -->
                       </vuetify-google-autocomplete>
                     </v-flex>
+                  </v-layout> -->
+                  <v-layout row>
+                      <v-flex xs1>
+                        <v-icon >place</v-icon>
+                      </v-flex>
+                      <v-flex xs11>
+                        <vue-google-autocomplete
+                            id="map"
+                            classname="form-control"
+                            placeholder="Location*"
+                            v-on:no-results-found="alertNoResultFound"
+                            v-on:placechanged="getAddressData"
+                            v-model="where"
+                            types= ''
+                            class="vueGoogleInput"
+                        >
+                        </vue-google-autocomplete>
+                      </v-flex>
                   </v-layout>
-
                   <v-layout>
                     <v-flex xs12 sm6 offset-sm3>
                       <v-flex xs12>
@@ -282,24 +297,31 @@
           gender: this.gender,
           image: this.image
         }
-        console.log('[saveUserDetails] updatedUser', updatedUser)
-
         this.$store.dispatch('updateProfile', updatedUser)
-        // // this.$store.dispatch('addNotifications', eventData)
-        // this.$router.push('/myEvents')
       },
       back () {
         this.$router.go(-1)
       }
-      // sendFriendRequest (userId) {
-      //   console.log('userID from sendFriendRequest ', userId)
-      //   this.$store.dispatch('sendFriendRequest', userId)
-      // }
     }
   }
 </script>
 
 <style scoped>
+    .vueGoogleInput{
+      width: 96%;
+      border-bottom: 1px solid grey;
+      margin-left: 4%;
+      /* margin-top: 10px; */
+      font-size: 16px;
+      color: rgba(0,0,0,0.8);
+      margin-bottom: 20px;
+    }
+    input.vueGoogleInput:focus {
+      border: none !important;
+      border-bottom: black 2px solid !important;
+      border-top: white 2px solid;
+      outline: none;
+    }
   .arrowBack {
       position: fixed;
       top: 19px;

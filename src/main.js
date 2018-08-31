@@ -19,7 +19,6 @@ import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
-import { VueTyper } from 'vue-typer'
 import FriendsSearch from './components/user/friendsSearch.vue'
 // import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@mdi/font/css/materialdesignicons.css'
@@ -62,8 +61,7 @@ window.addEventListener('beforeinstallprompt', function (event) {
 // eslint-disable-next-line
 //***************************************************************************************************************
 Vue.use(VuetifyGoogleAutocomplete, {
-  apiKey: 'AIzaSyCv2i8Das8W3j2xw5cj7VN7-dcJJVekbiY' // Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
-  // apiKey: 'AIzaSyAJS653Q-dx8Qs49NVmnVVmeEuT3hXSIYU'
+  apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
   // version: '...', // Optional
 })
 
@@ -76,7 +74,6 @@ Vue.use(Vuetify, { theme: {
   primaryLight: '#439889',
   secondary: '#0E1E51',
   secondaryDark: '#01021E',
-  // secondary: '#004d40',
   accent: '#82B1FF',
   error: '#FF5252',
   info: '#2196F3',
@@ -101,8 +98,6 @@ Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
 Vue.component('friends-only', FriendsOnly)
 Vue.component('friends-search', FriendsSearch)
-
-Vue.component('vue-typer', VueTyper)
 
 Vue.config.productionTip = false
 // Vue.use(Typewriter)

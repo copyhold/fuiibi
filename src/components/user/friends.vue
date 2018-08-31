@@ -126,6 +126,7 @@
     margin-top: 0px;
     padding: 0px;
     margin-bottom: 56px;
+    margin: 0px auto 56px auto;
   }
   .greyColors{
     background-color: #f6f7f9;

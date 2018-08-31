@@ -63,5 +63,6 @@ export default {
   .container{
     margin-top: 0;
     margin-bottom: 56px;
+    margin: 0px auto 56px auto;
   }
 </style>
