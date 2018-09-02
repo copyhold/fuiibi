@@ -73,14 +73,8 @@
                 <v-avatar>
                   <v-icon >my_location</v-icon>
                 </v-avatar>
-                Change location
+                Change event location
               </v-chip>
-              <!-- <v-flex xs12 class="text-xs-center">
-                <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
-              </v-flex> -->
-              <div class="mdl-spinner mdl-js-spinner is-active" id="location-loader"></div>
-              </div>
-              <!-- <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn> -->
             </v-flex>
           </v-layout>
 
@@ -91,15 +85,17 @@
               <v-flex xs11>
                 <vue-google-autocomplete
                     id="map"
+                    ref="where"
                     placeholder="Location*"
                     v-on:no-results-found="alertNoResultFound"
                     v-on:placechanged="getAddressData"
                     v-model="where"
                     types= ''
-                    v-on:where="where"
                     class="vueGoogleInput"
                     :rules="locationRules"
+                    required
                 >
+                <!-- :rules="[rules.locationRules, rules.required]" -->
                 </vue-google-autocomplete>
               </v-flex>
           </v-layout>
@@ -178,9 +174,38 @@
             </v-flex>
           </v-layout>
 
-          <v-layout row>
+          <v-dialog v-model="validationAlerts" lazy full-width width="290px" v-if="!formIsValid">
+            <v-btn class="lightGrey white--text" block type="submit" flat slot="activator" @click="openAlertValidation">Create Event</v-btn>
+            <v-card>
+              <v-card-text v-if="this.title === ''">
+                * Event name is required
+              </v-card-text>
+              <v-card-text v-if="this.where === ''">
+                * Location is required
+              </v-card-text>
+              <v-card-text v-if="this.address.locality === '' || this.address.locality === undefined">
+                * Locality in location is required
+              </v-card-text>
+              <v-card-text v-if="this.durationInput === ''">
+                * Duration is required
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="primary"
+                  flat
+                  @click="validationAlerts = false"
+                >
+                  OK
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-layout row v-else>
             <v-flex xs12 sm6 offset-sm3>
-              <v-btn class="orange white--text" :disabled="!formIsValid" type="submit" block @click="showAlert">Create Event</v-btn>
+              <v-btn class="orange white--text" type="submit" block @click="showAlert">Create Event</v-btn>
+              <!-- :disabled="!formIsValid" -->
             </v-flex>
           </v-layout>
         </form>
@@ -201,8 +226,14 @@
         showVueAutoComplete: true,
         alert: false,
         valid: true,
+        validationAlerts: false,
+        // rules: {
+        //   required: value => !!value || 'Location is required.',
+        //   locationRules: value => !!value.locality || 'Locality is missing, a full address is required'
+        // },
         locationRules: [
-          v => !!v || 'A full address is required'
+          v => !!v || 'A full address is required',
+          v => v.locality === undefined || 'Locality is missing, a full address is required'
           // v => !!v.locality || 'Locality is missing, a full address is required'
           // v => !!v.route || 'Route is missing, a full address is required'
         ],
@@ -278,14 +309,7 @@
       // }
       formIsValid () {
         if (this.address) {
-          // if (this.address.country && this.address.locality && this.address.route) {
-          //   console.log('[formIsValid] this.address', this.address);
-          //   console.log('[formIsValid] this.where', this.where);
-          //   return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
-          // } else {
-          //   console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
-          // }
-          if (this.address.country && this.address.locality && this.address.route && this.address.longitude && this.address.latitude) {
+          if (this.address.country && this.address.locality && this.address.route && this.address.longitude && this.address.latitude && this.address.locality != undefined) {
             console.log('[formIsValid] this.address', this.address);
             console.log('[formIsValid] this.where', this.where);
             return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
@@ -320,6 +344,14 @@
       }
     },
     methods: {
+      closeAlertValidation () {
+        console.log('[closeAlertValidation]');
+      },
+      openAlertValidation () {
+        this.validationAlerts = true
+        console.log('[openAlertValidation]');
+
+      },
       showChangeButton () {
         this.showVueAutoComplete = true
         this.showLocationButton = true
@@ -405,7 +437,8 @@
               latitude: addressData.latitude,
               longitude: addressData.longitude,
               // postal_code: addressData.postal_code,
-              street_number: addressData.street_number
+              // street_number: addressData.street_number
+              street_number: '-'
             }
           }
         }
@@ -492,7 +525,7 @@
         }), err => {
           console.log(err);
           this.searchingForLocation = false;
-          this.showLocationButton = true
+          // this.showLocationButton = true
           if (!sawAlert) {
             alert('Couldn\'t load location, please try mannually')
             sawAlert = true
@@ -619,6 +652,7 @@
     position: fixed;
     bottom: 54px;
     width: 100vw;
+    left: 0;
   }
   .above {
     z-index: 50;

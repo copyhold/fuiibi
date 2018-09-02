@@ -82,7 +82,8 @@ Vue.use(Vuetify, { theme: {
   grey: '#A8A8A8',
   darkgray: '#424242',
   orange: '#E65100',
-  white: '#FFFFFF'
+  white: '#FFFFFF',
+  lightGrey: '#C8C8C8'
 }})
 
 Vue.filter('date', DateFilter)
