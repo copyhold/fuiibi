@@ -35,28 +35,29 @@ if (!window.Promise) {
   window.Promise = Promise
 }
 
-// if ('serviceWorker' in navigator) {
-//   navigator.serviceWorker.register('/sw.js')
-//   .then(function () {
-//     console.log('serviceWorker registered')
-//   })
-//   .catch(function (err) {
-//     console.log(err)
-//   })
-// }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+  .then(function () {
+    console.log('serviceWorker registered')
+  })
+  .catch(function (err) {
+    console.log('ERROR WHILE REGISTERING SERVICE WORKER', err)
+  })
+}
 
 // Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
 // want as well to propose it after the user click the add picture button
 
 // eslint-disable-next-line
-var deferredPrompt
-
-window.addEventListener('beforeinstallprompt', function (event) {
-  console.log('beforeinstallprompt fired')
-  event.preventDefault()
-  deferredPrompt = event
-  return false
-})
+// var deferredPrompt
+// console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
+//
+// window.addEventListener('beforeinstallprompt', (event) => {
+//   console.log('beforeinstallprompt fired')
+//   event.preventDefault()
+//   deferredPrompt = event
+//   return false
+// })
 
 // eslint-disable-next-line
 //***************************************************************************************************************
@@ -118,6 +119,13 @@ new Vue({
       // the below link address is from firebase storage
       storageBucket: 'gs://iwtapplication.appspot.com'
       // storageBucket: 'iwtvueapp.appspot.com'
+      // *****NEW DEVELOPMENT DATA BASE *******
+      // apiKey: 'AIzaSyB0kWl-youGgQW8AyZ4N-cfoN4vSMhRvl8',
+      // authDomain: 'fuiibidatabasedevelopement.firebaseapp.com',
+      // databaseURL: 'https://fuiibidatabasedevelopement.firebaseio.com',
+      // projectId: 'fuiibidatabasedevelopement',
+      // storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
+      // messagingSenderId: '483536830177'
     })
     // console.log('should load it now')
     firebase.auth().onAuthStateChanged((user) => {

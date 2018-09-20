@@ -3,14 +3,16 @@
     <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-speed-dial v-model="fab" small :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
-      <v-btn slot="activator" v-model="fab" color="red darken-2" dark fab>
+    <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton hidden-sm-and-up">
+      <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
       </v-btn>
-      <v-btn fab dark small color="green"  @click="openWhatsapp">
-        <v-icon color="white--text">mdi-whatsapp</v-icon>
-      </v-btn>
+      <a href="whatsapp://send?text=Discover the event you have been invited to! Visit www.fuiibi.com" data-action="share/whatsapp/share" style="text-decoration: none">
+        <v-btn fab dark small color="green">
+          <v-icon color="white--text">mdi-whatsapp</v-icon>
+        </v-btn>
+      </a>
       <v-btn fab dark small color="indigo" data-href="https://fuiibi.com" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
           <v-icon dark>mdi-facebook</v-icon>
       </v-btn>
@@ -100,8 +102,8 @@
           <v-card>
             <v-card-title class="headline">Add this picture</v-card-title>
             <v-layout row>
-              <v-btn @click="rotateLeft" ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
-              <v-btn @click="rotateRight">rotate right<v-icon right>rotate_right</v-icon></v-btn>
+              <v-btn @click="rotateLeft" flat ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
+              <v-btn @click="rotateRight" flat>rotate right<v-icon right>rotate_right</v-icon></v-btn>
             </v-layout>
             <v-layout row>
               <v-flex xs12 sm6 md4 mg4 class="ml-0">
@@ -124,7 +126,6 @@
         <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
           <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
           <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item> -->
-          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="justClicked ? picToOpen : picture.imageUrl" :key="i">{{ i }}</v-carousel-item> -->
           <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
           <!-- <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="openTheRightPic(index, picture)" :key="index">{{ index }}</v-carousel-item> -->
         </v-carousel>
@@ -256,8 +257,8 @@ export default {
   },
   methods: {
     openWhatsapp () {
-      console.log('[clicked open whatsapp]')
-      window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
+      console.log('[clicked open whatsapp] this.id', this.id)
+      // window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
     },
     openFacebook () {
       console.log('[clicked open whatsapp]')
@@ -270,10 +271,6 @@ export default {
       this.carousel = true
       console.log('imgUrl', imgUrl)
       this.picToOpen = imgUrl
-
-      // setTimeout(_ => {
-      //   this.justClicked = false
-      // }, 2000)
     },
     removeFriend (user) {
       this.$store.dispatch('removeFriend', user)
@@ -316,7 +313,6 @@ export default {
     },
     closeDialog () {
       this.carousel = false
-      // this.justClicked = true
       this.picToOpen = ''
     },
     back () {
@@ -437,10 +433,10 @@ export default {
 
 <style scope>
   .shareButton {
-    position: fixed;
-    top: 42px !important;
+    position: absolute;
+    top: 64px !important;
     right: 0px;
-    z-index: 2;
+    z-index: 1;
   },
   .rotateLeftIcon {
     margin-top: 0 !important;
@@ -544,6 +540,9 @@ export default {
   @media screen and (max-width: 599px) {
     .container {
       padding: 0;
+    }
+    .shareButton {
+      top: 42px !important;
     }
     .arrowBack {
       position: fixed;

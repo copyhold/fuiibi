@@ -167,9 +167,11 @@ export default {
     },
     setUser (state, payload) {
       state.user = payload
-      state.email = payload.email
-      console.log('state.email', state.email);
-      console.log('payload of the state.user in the setUser', payload);
+      if (payload != null) {
+        state.email = payload.email
+        console.log('state.email', state.email);
+        console.log('payload of the state.user in the setUser', payload);
+      }
     }
   },
   actions: {
@@ -301,7 +303,7 @@ export default {
             events: [],
             friends: [],
             //*********************************************************
-            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/profileImgLight.png?alt=media&token=f5ce0264-b98b-4806-a81a-15ad52ba803e'
+            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/default_avatar.png?alt=media&token=245e435c-c87b-4af3-8688-a6469500b7de'
           }
           console.log('[signUserUp] setUser - newUser', newUser);
           commit('setUser', newUser)
@@ -318,6 +320,7 @@ export default {
           console.log(error);
         }
       )
+      router.push('/welcome')
     },
 
     //*****************************************************
@@ -766,7 +769,7 @@ export default {
     getUser (state) {
       return (userId) => {
         return state.users.find((user) => {
-          console.log('[getUser] user', user);
+          // console.log('[getUser] user', user);
           return user.id === userId
         })
       }

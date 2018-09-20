@@ -153,8 +153,8 @@
     },
     methods: {
       onLogout () {
-        this.$store.dispatch('logout')
         this.$router.push('/')
+        this.$store.dispatch('logout')
       },
       listenToProfileUpdate () {
         console.log('[listenToProfileUpdate] triggered')
@@ -166,6 +166,10 @@
 </script>
 
 <style media="screen">
+
+  html {
+    overscroll-behavior-y: contain;
+  }
   #redBadge span{
     height: 10px;
     width: 10px
@@ -206,6 +210,7 @@
   .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
     margin-left: 5%;
   }
+
   @media screen and (max-width: 600px) {
     .marginTop {
       margin-top: 40px;
@@ -230,6 +235,11 @@
        top: -20px;
        right: 0px;
     } */
+  }
+  @media all and (display-mode: standalone) {
+    body {
+      background-color: primary;
+    }
   }
 
 

@@ -138,7 +138,9 @@
           console.log('beforeinstallprompt fired')
           event.preventDefault()
           deferredPrompt = event
-          return false
+          // return false
+          // Update UI notify the user they can add to home screen
+          // btnAdd.style.display = 'block'
         })
         if (deferredPrompt) {
           deferredPrompt.prompt()
@@ -152,8 +154,11 @@
             }
           })
           deferredPrompt = null
+        } else {
+          console.log('NO deferredPrompt')
         }
       },
+
       onPickFile () {
         this.$refs.fileInput.click()
       },
