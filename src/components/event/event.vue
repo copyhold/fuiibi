@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-container class="container">
+  <v-container class="container" v-if="event">
     <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
@@ -8,12 +8,12 @@
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
       </v-btn>
-      <a href="whatsapp://send?text=Discover the event you have been invited to! Visit www.fuiibi.com" data-action="share/whatsapp/share" style="text-decoration: none">
+      <a :href=`whatsapp://send?text=Discover the event you have been invited to! Visit ${eventurl}` data-action="share/whatsapp/share" style="text-decoration: none">
         <v-btn fab dark small color="green">
           <v-icon color="white--text">mdi-whatsapp</v-icon>
         </v-btn>
       </a>
-      <v-btn fab dark small color="indigo" data-href="https://fuiibi.com" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
+      <v-btn fab dark small color="indigo" :data-href="eventurl" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
           <v-icon dark>mdi-facebook</v-icon>
       </v-btn>
     </v-speed-dial>
@@ -72,11 +72,11 @@
 
     <v-layout class="mt-2">
       <v-flex xs12 sm12>
-          <v-container fluid>
-            <v-layout row wrap>
-              <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
-                <v-card flat tile class="picInGallery">
-                  <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
+        <v-container fluid>
+          <v-layout row wrap>
+            <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
+              <v-card flat tile class="picInGallery">
+                <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
                   <v-card-media :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable">
                   </v-card-media>
                 </v-card>
@@ -89,14 +89,15 @@
               </v-flex>
             </v-layout>
           </v-container>
-      </v-flex>
-    </v-layout>
+        </v-flex>
+      </v-layout>
+
     <v-layout row class="mb-2" justify-center fluid>
       <v-flex xs12>
-        <v-fab-transition >
+        <v-fab-transition>
           <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"><v-icon>add_a_photo</v-icon></v-btn>
           <v-btn v-else fixed bottom right fab class="greyColors darkgray--text mb-3"><v-icon>add_a_photo</v-icon></v-btn>
-        </v-fab-transition >
+        </v-fab-transition>
         <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
         <v-dialog v-model="dialog" fullscreen>
           <v-card>
@@ -171,6 +172,7 @@ export default {
   props: ['id'],
   data () {
     return {
+      eventurl: location.href,
       showUsers: false,
       imageUrl: '',
       image: this.$refs.imageToCanvas,
@@ -241,7 +243,7 @@ export default {
       if (this.event.event.title !== 'Your subscribtion') {
         let counter = 0
         for (let user in this.event.event.users) {
-          console.log(user)
+          this.$debug(user)
           counter++
         }
         return counter
@@ -257,19 +259,19 @@ export default {
   },
   methods: {
     openWhatsapp () {
-      console.log('[clicked open whatsapp] this.id', this.id)
+      this.$debug('[clicked open whatsapp] this.id', this.id)
       // window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
     },
     openFacebook () {
-      console.log('[clicked open whatsapp]')
-      window.location.href = 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffuiibi.com%2F&amp;src=sdkpreparse'
+      this.$debug('[clicked open whatsapp]')
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${location.href}%2F&amp;src=sdkpreparse`)
     },
     openTheRightPic (index, picture) {
-      console.log('[openTheRightPic] index, picture', index, picture)
+      this.$debug('[openTheRightPic] index, picture', index, picture)
     },
     checkPicSrc (imgUrl) {
       this.carousel = true
-      console.log('imgUrl', imgUrl)
+      this.$debug('imgUrl', imgUrl)
       this.picToOpen = imgUrl
     },
     removeFriend (user) {
@@ -287,13 +289,13 @@ export default {
       }
     },
     getUserPage (key) {
-      console.log('[getUserPage] clicked key', key)
+      this.$debug('[getUserPage] clicked key', key)
       this.$store.dispatch('getUserData', {userId: key.id})
       this.$router.push('/users/' + key.id)
     },
     hasPendingInvitation (user) {
       if (this.$store.getters.user) {
-        // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
+        // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
         // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
         if (this.$store.getters.user.pendingInvitations) {
           return this.$store.getters.user.pendingInvitations.findIndex(friend => {
@@ -304,7 +306,7 @@ export default {
     },
     isPendingFriend (user) {
       if (this.$store.getters.user) {
-        // console.log('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
+        // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
         // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
         return this.$store.getters.user.pendingFriends.findIndex(friend => {
           return friend.id === user.id
@@ -338,7 +340,7 @@ export default {
     },
     onFilePicked (event) {
       this.dialog = true
-      console.log('[onFilePicked] this dialog true?', this.dialog)
+      this.$debug('[onFilePicked] this dialog true?', this.dialog)
       // We get the wanted file
       const files = event.target.files
       // As we can choose only one file, we take the first one in the array
@@ -365,7 +367,7 @@ export default {
           context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
 
           this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-          console.log('this.image', this.image)
+          this.$debug('this.image', this.image)
         })
       })
       fileReader.readAsDataURL(files[0])
@@ -423,7 +425,7 @@ export default {
 
     addPicture () {
       this.dialog = false
-      console.log('[onFilePicked] this dialog true?', this.dialog)
+      this.$debug('[onFilePicked] this dialog true?', this.dialog)
       // Vuex
       this.$store.dispatch('addPicture', {key: this.id, image: this.image})
     }

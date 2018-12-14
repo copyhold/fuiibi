@@ -19,6 +19,7 @@ import userPage from '@/components/user/userPage'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/welcome',

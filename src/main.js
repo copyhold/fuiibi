@@ -4,6 +4,7 @@ import Vue from 'vue'
 
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.css'
+import vuelogger from 'vue-logger'
 
 import App from './App'
 import * as firebase from 'firebase'
@@ -61,6 +62,10 @@ if ('serviceWorker' in navigator) {
 
 // eslint-disable-next-line
 //***************************************************************************************************************
+
+Vue.use(vuelogger, {
+  dev: true
+})
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
   // version: '...', // Optional
@@ -127,10 +132,10 @@ new Vue({
       // storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
       // messagingSenderId: '483536830177'
     })
-    // console.log('should load it now')
+    // this.$debug('should load it now')
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('[main.js] user', user)
+        this.$debug('[main.js] user', user)
         this.$store.dispatch('loadUsers')
         this.$store.dispatch('autoSignIn', user)
         // GOOGLE
