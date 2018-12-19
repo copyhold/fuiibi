@@ -14,3 +14,7 @@ yarn-error.log*
 *.sln
 *.swp
 vendor
+config/fb-service-account.json
+config/ssr-account.json
+
+deploy
