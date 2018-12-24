@@ -4,6 +4,7 @@ import * as firebase from 'firebase'
 // export const store = new Vuex.Store({
 export default {
   state: {
+    currentEvent: null,
     events: []
   },
   mutations: {
@@ -32,6 +33,18 @@ export default {
     }
   },
   actions: {
+    loadEvent ({commit, ...context}, key) {
+      firebase.database()
+      .ref(`/events/${key}`)
+      .once('value')
+      .then(res => {
+        commit('addEvent', {
+          event: res.val(),
+          key: key
+        });
+      })
+      .catch(console.log);
+    },
     removeEventFromUser ({commit, getters}, payload) {
       const eventId = payload.key
       const user = getters.user
@@ -399,11 +412,7 @@ export default {
   getters: {
     getEventData (state) {
       return (key) => {
-        // console.log('[getEventData] key', key);
-        return state.events.find((event) => {
-          // console.log('[getEventData] event', event);
-          return event.key === key
-        })
+        return state.events.find(event => event.key === key )
       }
     },
     loadedNotifications (state) {

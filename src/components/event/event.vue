@@ -13,9 +13,11 @@
           <v-icon color="white--text">mdi-whatsapp</v-icon>
         </v-btn>
       </a>
-      <v-btn fab dark small color="indigo" :data-href="eventurl" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
+      <a :href=`https://www.facebook.com/sharer/sharer.php?u=${eventurl}&amp;src=sdkpreparse`>
+        <v-btn fab dark small color="indigo" data-layout="button" data-size="small" data-mobile-iframe="true">
           <v-icon dark>mdi-facebook</v-icon>
-      </v-btn>
+        </v-btn>
+      </a>
     </v-speed-dial>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -219,14 +221,23 @@ export default {
       if (this.$store.getters.user) {
         return this.$store.getters.user.id
       }
+      return null
     },
     event () {
-      return this.$store.getters.getEventData(this.id)
+      const evt = this.$store.getters.getEventData(this.id)
+      if (!evt) {
+        this.$store.dispatch('loadEvent', this.id)
+      }
+      this.$log(evt)
+      return evt
     },
     loading () {
       return this.$store.getters.loading
     },
     eventUsers () {
+      if (!this.$store.getters.user) {
+        return []
+      }
       if (this.event.event.users) {
         let eventUsers = []
         let userData = ''
@@ -252,7 +263,11 @@ export default {
       }
     },
     userWasThere () {
-      return this.$store.getters.user.events.findIndex(event => {
+      const user = this.$store.getters.user
+      if (!user) {
+        return false
+      }
+      return user.events.findIndex(event => {
         return event.key === this.id
       }) >= 0
     }
@@ -281,6 +296,9 @@ export default {
       this.$store.dispatch('sendFriendRequest', userId)
     },
     isFriend (user) {
+      if (!user) {
+        return false
+      }
       if (this.$store.getters.user) {
         // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
         return this.$store.getters.user.friends.findIndex(friend => {
@@ -294,6 +312,9 @@ export default {
       this.$router.push('/users/' + key.id)
     },
     hasPendingInvitation (user) {
+      if (!user) {
+        return false
+      }
       if (this.$store.getters.user) {
         // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
         // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
@@ -305,6 +326,9 @@ export default {
       }
     },
     isPendingFriend (user) {
+      if (!user) {
+        return false
+      }
       if (this.$store.getters.user) {
         // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
         // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
