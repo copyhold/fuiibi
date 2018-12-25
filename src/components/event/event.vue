@@ -8,16 +8,12 @@
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
       </v-btn>
-      <a :href=`whatsapp://send?text=Discover the event you have been invited to! Visit ${eventurl}` data-action="share/whatsapp/share" style="text-decoration: none">
-        <v-btn fab dark small color="green">
-          <v-icon color="white--text">mdi-whatsapp</v-icon>
-        </v-btn>
-      </a>
-      <a :href=`https://www.facebook.com/sharer/sharer.php?u=${eventurl}&amp;src=sdkpreparse`>
-        <v-btn fab dark small color="indigo" data-layout="button" data-size="small" data-mobile-iframe="true">
-          <v-icon dark>mdi-facebook</v-icon>
-        </v-btn>
-      </a>
+      <v-btn fab dark small color="green" @click="openWhatsapp">
+        <v-icon color="white--text">mdi-whatsapp</v-icon>
+      </v-btn>
+      <v-btn fab dark small color="indigo" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
+        <v-icon dark>mdi-facebook</v-icon>
+      </v-btn>
     </v-speed-dial>
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -275,11 +271,11 @@ export default {
   methods: {
     openWhatsapp () {
       this.$debug('[clicked open whatsapp] this.id', this.id)
-      // window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
+      window.open(`whatsapp://send?text=Discover the event you have been invited to! Visit ${this.eventurl}`)
     },
     openFacebook () {
       this.$debug('[clicked open whatsapp]')
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${location.href}%2F&amp;src=sdkpreparse`)
+      window.open(`https://www.facebook.com/sharer/sharer.php?u=${location.href}`)
     },
     openTheRightPic (index, picture) {
       this.$debug('[openTheRightPic] index, picture', index, picture)
