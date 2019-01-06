@@ -94,7 +94,7 @@
         var fbKey = 'welcomeEvent'
         var key = 'welcomeEvent'
         var event = {
-          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=241c26b9-e086-4f03-ad49-63ead90c87d9',
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/fuiibidatabasedevelopement.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=7a4382b4-dafd-4d9b-bb56-6354bdef7ef7',
           title: 'Your subscribtion',
           description: 'Congratulations for your first event! This event has been created automatically and will be deleted at your next login. But go and open your fist personal event and it will be automatically shared with all your friends.',
           friendsCount: 1,

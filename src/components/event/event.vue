@@ -3,7 +3,7 @@
     <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton hidden-sm-and-up">
+    <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
