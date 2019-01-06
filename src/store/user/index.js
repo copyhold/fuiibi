@@ -769,7 +769,7 @@ export default {
     getUser (state) {
       return (userId) => {
         return state.users.find((user) => {
-          console.log('[getUser] user', user);
+          // console.log('[getUser] user', user);
           return user.id === userId
         })
       }

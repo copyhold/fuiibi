@@ -85,7 +85,7 @@
                             <div @click="eventDetails(notification.key)" class="clickable">
                               <h4 class="pl-2 secondaryDark--text bold"> {{ notification.event.title }}</h4>
                             </div>
-                              <p class="timer">{{ timeStamp(notification) }}</p>
+                              <p class="timer">{{ timeStamp(notification) }} ago</p>
                           </v-card-actions>
                         </v-card-title>
                       </v-layout>

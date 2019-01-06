@@ -23,15 +23,15 @@
           </v-layout>
 
           <v-layout row v-if="imageUrl != ''">
-            <v-btn @click="rotateLeft" ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
-            <v-btn @click="rotateRight">rotate right<v-icon right>rotate_right</v-icon></v-btn>
+            <v-btn @click="rotateLeft" flat><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
+            <v-btn @click="rotateRight" flat>rotate right<v-icon right>rotate_right</v-icon></v-btn>
           </v-layout>
 
           <v-layout row>
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
               <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
-              <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="pb-5 above">Change</v-btn>
+              <v-btn v-if="showCanvas" right @click="onPickFile2" class="above">Change</v-btn>
               <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
             </v-flex>
           </v-layout>
@@ -69,7 +69,7 @@
 
           <v-layout row wrap>
             <v-flex xs12 sm6 offset-sm3>
-              <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="showChangeButton">
+              <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="hideChangeButton">
                 <v-avatar>
                   <v-icon >my_location</v-icon>
                 </v-avatar>
@@ -309,12 +309,30 @@
       // }
       formIsValid () {
         if (this.address) {
-          if (this.address.country && this.address.locality && this.address.route && this.address.longitude && this.address.latitude && this.address.locality != undefined) {
-            console.log('[formIsValid] this.address', this.address);
-            console.log('[formIsValid] this.where', this.where);
-            return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+          if (this.address.administrative_area_level_1) {
+            // if (this.address.country &&
+            //   this.address.locality &&
+            //   this.address.route &&
+            //   this.address.longitude &&
+            //   this.address.latitude &&
+            //   this.address.locality != undefined) {
+            //   console.log('[formIsValid] this.address', this.address);
+            //   console.log('[formIsValid] this.where', this.where);
+            //   return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+            // } else {
+              if (this.address.country &&
+                this.address.route &&
+                this.address.longitude &&
+                this.address.latitude) {
+                console.log('[formIsValid] this.address', this.address);
+                console.log('[formIsValid] this.where', this.where);
+                return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+              } else {
+              console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+            }
           } else {
             console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+            console.log('no address.administrative_area_level_1')
           }
         } else {
           console.log('no address yet');
@@ -352,10 +370,10 @@
         console.log('[openAlertValidation]');
 
       },
-      showChangeButton () {
+      hideChangeButton () {
         this.showVueAutoComplete = true
         this.showLocationButton = true
-        console.log('[showchangeButton] clicked');
+        console.log('[hideChangeButton] clicked');
       },
       // gotFocused () {
       //   // setTimeout( _ => {
@@ -428,19 +446,44 @@
               street_number: addressData.street_number
             }
             // this.address = addressData;
-          } else {
-            this.address = {
-              country: addressData.country,
-              locality: addressData.locality,
-              route: 'Unnamed road',
-              administrative_area_level_1: addressData.administrative_area_level_1,
-              latitude: addressData.latitude,
-              longitude: addressData.longitude,
-              // postal_code: addressData.postal_code,
-              // street_number: addressData.street_number
-              street_number: '-'
-            }
+          // } else {
+          //   this.address = {
+          //     country: addressData.country,
+          //     locality: addressData.locality,
+          //     route: 'Unnamed road',
+          //     administrative_area_level_1: addressData.administrative_area_level_1,
+          //     latitude: addressData.latitude,
+          //     longitude: addressData.longitude,
+          //     // postal_code: addressData.postal_code,
+          //     // street_number: addressData.street_number
+          //     street_number: '-'
+          //   }
+          // }
+        } else if (!addressData.locality) {
+          this.address = {
+            country: addressData.country,
+            locality: addressData.administrative_area_level_1,
+            route: 'Unnamed road',
+            administrative_area_level_1: addressData.administrative_area_level_1,
+            latitude: addressData.latitude,
+            longitude: addressData.longitude,
+            // postal_code: addressData.postal_code,
+            // street_number: addressData.street_number
+            street_number: '-'
           }
+        } else {
+          this.address = {
+            country: addressData.country,
+            locality: addressData.locality,
+            route: 'Unnamed road',
+            administrative_area_level_1: addressData.administrative_area_level_1,
+            latitude: addressData.latitude,
+            longitude: addressData.longitude,
+            // postal_code: addressData.postal_code,
+            // street_number: addressData.street_number
+            street_number: '-'
+          }
+        }
         }
         console.log('[getAddressData], this.address', this.address);
         if (addressData) {
@@ -480,7 +523,9 @@
         this.showLocationButton = false;
         // console.log('just before navigator.geolocation.getCurrentPosition');
         setTimeout( _=> {
+          this.showVueAutoComplete = false
           this.searchingForLocation = false;
+          this.showLocationButton = false
           // this.showLocationButton = true
           if (sawAlert === false && this.fetchedLocation === {lat: 0, lng: 0}) {
             alert('Couldn\'t load location, please try mannually')
@@ -489,7 +534,6 @@
           this.fetchedLocation = {lat: 0, lng: 0}
         }, 7000);
         navigator.geolocation.getCurrentPosition( position => {
-          console.log('in navigator.geolocation.getCurrentPosition');
           this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
           console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
           this.lat = position.coords.latitude;
@@ -520,7 +564,7 @@
           });
           this.showVueAutoComplete = false
           this.searchingForLocation = false;
-          // this.showLocationButton = true
+          this.showLocationButton = false
 
         }), err => {
           console.log(err);
@@ -656,6 +700,8 @@
   }
   .above {
     z-index: 50;
+    left: 1vw;
+    position: relative;
   }
   .centered {
     margin-top: 75px;

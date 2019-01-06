@@ -166,8 +166,9 @@
 </script>
 
 <style media="screen">
+
   html {
-  overscroll-behavior-y: contain;
+    overscroll-behavior-y: contain;
   }
   #redBadge span{
     height: 10px;
@@ -209,6 +210,7 @@
   .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
     margin-left: 5%;
   }
+
   @media screen and (max-width: 600px) {
     .marginTop {
       margin-top: 40px;
@@ -233,6 +235,11 @@
        top: -20px;
        right: 0px;
     } */
+  }
+  @media all and (display-mode: standalone) {
+    body {
+      background-color: primary;
+    }
   }
 
 

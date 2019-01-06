@@ -4,6 +4,7 @@ import Vue from 'vue'
 
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.css'
+import vuelogger from 'vue-logger'
 
 import App from './App'
 import * as firebase from 'firebase'
@@ -35,31 +36,36 @@ if (!window.Promise) {
   window.Promise = Promise
 }
 
-// if ('serviceWorker' in navigator) {
-//   navigator.serviceWorker.register('/sw.js')
-//   .then(function () {
-//     console.log('serviceWorker registered')
-//   })
-//   .catch(function (err) {
-//     console.log(err)
-//   })
-// }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+  .then(function () {
+    console.log('serviceWorker registered')
+  })
+  .catch(function (err) {
+    console.log('ERROR WHILE REGISTERING SERVICE WORKER', err)
+  })
+}
 
 // Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
 // want as well to propose it after the user click the add picture button
 
 // eslint-disable-next-line
-var deferredPrompt
-
-window.addEventListener('beforeinstallprompt', function (event) {
-  console.log('beforeinstallprompt fired')
-  event.preventDefault()
-  deferredPrompt = event
-  return false
-})
+// var deferredPrompt
+// console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
+//
+// window.addEventListener('beforeinstallprompt', (event) => {
+//   console.log('beforeinstallprompt fired')
+//   event.preventDefault()
+//   deferredPrompt = event
+//   return false
+// })
 
 // eslint-disable-next-line
 //***************************************************************************************************************
+
+Vue.use(vuelogger, {
+  dev: true
+})
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
   // version: '...', // Optional
@@ -126,10 +132,10 @@ new Vue({
       storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
       messagingSenderId: '483536830177'
     })
-    // console.log('should load it now')
+    // this.$debug('should load it now')
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('[main.js] user', user)
+        this.$debug('[main.js] user', user)
         this.$store.dispatch('loadUsers')
         this.$store.dispatch('autoSignIn', user)
         // GOOGLE

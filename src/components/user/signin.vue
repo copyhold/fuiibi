@@ -144,7 +144,7 @@
                <v-layout row>
                  <v-flex xs12>
                    <v-btn @click="onSignin" @click.native="signInForm = false" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
-                     Sign In
+                     Log in
                      <span slot="loader" class="custom-loader">
                        <v-icon light>cached</v-icon>
                      </span>
