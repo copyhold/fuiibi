@@ -15,7 +15,6 @@ import AlertCmp from './components/shared/alert.vue'
 import EditMeetupDialog from './components/event/Edit/EditMeetupDetailsDialog.vue'
 import EditMeetupDateDialog from './components/event/Edit/EditMeetupDateDialog.vue'
 import RegisterDialog from './components/event/Registration/RegisterDialog.vue'
-import AddPictureDialog from './components/event/AddPic/AddPictureDialog.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
@@ -99,7 +98,6 @@ Vue.component('app-edit-meetup-details-dialog', EditMeetupDialog)
 Vue.component('app-edit-meetup-date-dialog', EditMeetupDateDialog)
 Vue.component('app-alert', AlertCmp)
 Vue.component('app-meetup-register-dialog', RegisterDialog)
-Vue.component('app-event-addpicture-dialog', AddPictureDialog)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 // Vue.component('vuetify-google-autocomplete', VuetifyGoogleAutocomplete)
 Vue.component('all-users', AllUsers)

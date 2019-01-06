@@ -90,34 +90,8 @@
         </v-flex>
       </v-layout>
 
-    <v-layout row class="mb-2" justify-center fluid>
-      <v-flex xs12>
-        <v-fab-transition>
-          <v-btn v-if="userWasThere" color="orange" fixed bottom right fab class="orange white--text mb-3" @click="onPickFile"><v-icon>add_a_photo</v-icon></v-btn>
-          <v-btn v-else fixed bottom right fab class="greyColors darkgray--text mb-3"><v-icon>add_a_photo</v-icon></v-btn>
-        </v-fab-transition>
-        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked">
-        <v-dialog v-model="dialog" fullscreen>
-          <v-card>
-            <v-card-title class="headline">Add this picture</v-card-title>
-            <v-layout row>
-              <v-btn @click="rotateLeft" flat ><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
-              <v-btn @click="rotateRight" flat>rotate right<v-icon right>rotate_right</v-icon></v-btn>
-            </v-layout>
-            <v-layout row>
-              <v-flex xs12 sm6 md4 mg4 class="ml-0">
-                <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
-                <canvas ref="canvas" class="fitScreen"></canvas>
-              </v-flex>
-            </v-layout>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn class="primary--text" flat="flat" @click.native="dialog = false ">Cancel</v-btn>
-              <v-btn raised class="primary" @click="addPicture">Add</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-flex>
+    <v-layout row class="mb-2 ilya" justify-center fluid>
+      <add-pictures userWasThere="userWasThere"></add-pictures>
     </v-layout>
 
     <v-layout>
@@ -166,8 +140,12 @@
   </v-container>
 </template>
 <script>
+import AddPictures from './AddPictureDialog.vue'
 export default {
   props: ['id'],
+  components: {
+    AddPictures
+  },
   data () {
     return {
       eventurl: location.href,
