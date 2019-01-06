@@ -70,11 +70,11 @@
       <v-container grid-list-sm fluid>
         <v-layout row wrap>
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
-              <v-card height="216px">
+              <v-card height="316px">
                 <v-container fluid>
                   <v-layout col class="clickable">
                     <v-flex @click="eventDetails(notification.key)">
-                      <v-card-media :src="notification.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
+                      <v-card-media :src="notification.event.imageUrl" height="212px" style="background-color: white"></v-card-media>
                     </v-flex>
                   </v-layout>
                   <v-layout col >
@@ -247,7 +247,8 @@ span.vuBadge {
   background: url("../img/iwt3.png") center/95% no-repeat;
   position: absolute;
   right: -4px;
-  top: 143px;
+  /* top: 143px; */
+  top: 244px;
 }
 .clicked{
   filter: opacity(50%);

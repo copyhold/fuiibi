@@ -153,8 +153,8 @@
     },
     methods: {
       onLogout () {
-        this.$store.dispatch('logout')
         this.$router.push('/')
+        this.$store.dispatch('logout')
       },
       listenToProfileUpdate () {
         console.log('[listenToProfileUpdate] triggered')
@@ -166,6 +166,9 @@
 </script>
 
 <style media="screen">
+  html {
+  overscroll-behavior-y: contain;
+  }
   #redBadge span{
     height: 10px;
     width: 10px

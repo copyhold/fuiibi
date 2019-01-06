@@ -111,13 +111,20 @@ new Vue({
   components: { App },
   created () {
     firebase.initializeApp({
-      apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
-      authDomain: 'iwtapplication.firebaseapp.com',
-      databaseURL: 'https://iwtapplication.firebaseio.com',
-      projectId: 'iwtapplication',
-      // the below link address is from firebase storage
-      storageBucket: 'gs://iwtapplication.appspot.com'
+      // apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
+      // authDomain: 'iwtapplication.firebaseapp.com',
+      // databaseURL: 'https://iwtapplication.firebaseio.com',
+      // projectId: 'iwtapplication',
+      // // the below link address is from firebase storage
+      // storageBucket: 'gs://iwtapplication.appspot.com'
       // storageBucket: 'iwtvueapp.appspot.com'
+      // *****NEW DEVELOPMENT DATA BASE *******
+      apiKey: 'AIzaSyB0kWl-youGgQW8AyZ4N-cfoN4vSMhRvl8',
+      authDomain: 'fuiibidatabasedevelopement.firebaseapp.com',
+      databaseURL: 'https://fuiibidatabasedevelopement.firebaseio.com',
+      projectId: 'fuiibidatabasedevelopement',
+      storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
+      messagingSenderId: '483536830177'
     })
     // console.log('should load it now')
     firebase.auth().onAuthStateChanged((user) => {

@@ -3,14 +3,16 @@
     <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-speed-dial v-model="fab" small :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
-      <v-btn slot="activator" v-model="fab" color="red darken-2" dark fab>
+    <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
+      <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
       </v-btn>
-      <v-btn fab dark small color="green"  @click="openWhatsapp">
-        <v-icon color="white--text">mdi-whatsapp</v-icon>
-      </v-btn>
+      <a href="whatsapp://send?text=Discover the event you have been invited to! Visit www.fuiibi.com" data-action="share/whatsapp/share" style="text-decoration: none">
+        <v-btn fab dark small color="green">
+          <v-icon color="white--text">mdi-whatsapp</v-icon>
+        </v-btn>
+      </a>
       <v-btn fab dark small color="indigo" data-href="https://fuiibi.com" data-layout="button" data-size="small" data-mobile-iframe="true" @click="openFacebook">
           <v-icon dark>mdi-facebook</v-icon>
       </v-btn>
@@ -255,10 +257,11 @@ export default {
     }
   },
   methods: {
-    openWhatsapp () {
-      console.log('[clicked open whatsapp]')
-      window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
-    },
+    // openWhatsapp () {
+    //   console.log('[clicked open whatsapp]')
+    //   // window.location.href = 'https://api.whatsapp.com/send?phone=whatsappphonenumber&text=www.fuiibi.com'
+    //   window.location.href = 'whatsapp://send?text=www.fuiibi.com' data-action="share/whatsapp/share"
+    // },
     openFacebook () {
       console.log('[clicked open whatsapp]')
       window.location.href = 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffuiibi.com%2F&amp;src=sdkpreparse'
@@ -438,7 +441,7 @@ export default {
 <style scope>
   .shareButton {
     position: fixed;
-    top: 42px !important;
+    top: 64px !important;
     right: 0px;
     z-index: 2;
   },
@@ -544,6 +547,9 @@ export default {
   @media screen and (max-width: 599px) {
     .container {
       padding: 0;
+    }
+    .shareButton {
+      top: 42px !important;
     }
     .arrowBack {
       position: fixed;
