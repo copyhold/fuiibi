@@ -11,18 +11,19 @@
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-card v-if="editFile">
-          <v-card-actions>
-            <v-btn icon flat @click="crop"><v-icon>crop</v-icon></v-btn>
-            <v-btn icon flat @click="rotateleft"><v-icon>rotate_left</v-icon></v-btn>
-            <v-btn icon flat @click="rotaterite"><v-icon>rotate_right</v-icon></v-btn>
-          </v-card-actions>
           <img :src="editFile.blob" ref="editImage" />
+          <v-card-actions>
+            <v-btn icon flat @click="crop()"><v-icon>crop</v-icon></v-btn>
+            <v-btn icon flat @click="editFile.cropper.rotate(-90)"><v-icon>rotate_left</v-icon></v-btn>
+            <v-btn icon flat @click="editFile.cropper.rotate(+90)"><v-icon>rotate_right</v-icon></v-btn>
+            <v-btn icon flat @click="commitEditFile"><v-icon>done</v-icon></v-btn>
+          </v-card-actions>
         </v-card>
         <v-layout justify-start row wrap>
           <v-flex v-if="imagesready" lg2 xs4 sm3 v-for="(file, index) in files" :key="file.id">
             <v-card v-if="file.thumb" flat tile>
               <v-btn flat icon small top right absolute color="red" @click="$refs.upload.remove(file)"><v-icon>close</v-icon></v-btn>
-              <v-img :src="file.thumb" aspect-ratio="1" @click="editFile=file"></v-img>
+              <v-img :src="file.thumb" aspect-ratio="1" @click="selectFileForEdit(file)"></v-img>
             </v-card>
           </v-flex>
           <file-upload 
@@ -50,12 +51,13 @@
 
 <script>
 import Cropper from 'cropperjs'
+import 'cropperjs/dist/cropper.css'
 import FileUpload from 'vue-upload-component'
 import Compressor from 'compressorjs'
 
 export default {
   props: ['meetupId', 'userWasThere'],
-  components: {Cropper, Compressor, FileUpload},
+  components: {FileUpload},
   data () {
     return {
       imagesready: false,
@@ -65,29 +67,54 @@ export default {
     }
   },
   watch: {
-    editFile (newValue, oldValue) {
+    'editFile.show' (newValue, oldValue) {
       if (!newValue && oldValue) {
         this.$refs.upload.update(this.editFile.id, { error: this.editFile.error || '' })
       }
       if (newValue) {
-        this.$nextTick(() => {
-          if (!this.editFile) {
+        this.$nextTick(function () {
+          if (!this.$refs.editImage) {
             return
           }
           let cropper = new Cropper(this.$refs.editImage, {
             autoCrop: false
           })
-          this.editFile = { ...this.editFile, cropper }
+          this.editFile = {
+            ...this.editFile,
+            cropper
+          }
         })
       }
     }
   },
   methods: {
     crop () {
+      this.editFile.cropper.crop()
+      // upfate this.editFile with new data from cropper
     },
-    rotateleft () {
+    selectFileForEdit (file) {
+      this.editFile = { ...file, show: true }
+      this.$refs.upload.update(file.id, { error: 'editing' })
     },
-    rotaterite () {
+    commitEditFile () {
+      let data = {
+        name: this.editFile.name
+      }
+      if (this.editFile.cropper) {
+        let binStr = atob(this.editFile.cropper.getCroppedCanvas().toDataURL(this.editFile.type).split(',')[1])
+        let arr = new Uint8Array(binStr.length)
+        for (let i = 0; i < binStr.length; i++) {
+          arr[i] = binStr.charCodeAt(i)
+        }
+        data.file = new File([arr], data.name, { type: this.editFile.type })
+        data.size = data.file.size
+      }
+      this.imagesready = false
+      this.$refs.upload.update(this.editFile.id, data)
+      setTimeout(() => {
+        this.imagesready = true
+      }, 100)
+      this.editFile = null
     },
     inputFilter (newfile, oldfile, prevent) {
       if (newfile.file && newfile.type.substr(0, 6) !== 'image/') { // only images allowed
