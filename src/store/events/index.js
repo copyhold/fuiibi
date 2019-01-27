@@ -388,8 +388,8 @@ export default {
           firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
           .then(data => {
             const dataPairs = data.val()
-            for (let item in dataPairs) {
-              const friendId = dataPairs[item]
+            for (let friendId in dataPairs) {
+              friendId = dataPairs[friendId] === true ? friendId : dataPairs[friendId]
               // I send notifications to each friend of the user on the newly created event
               firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
               // I set the clickerId and the dateToRank

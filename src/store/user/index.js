@@ -690,16 +690,16 @@ export default {
       }
       // We push the friendID to the user's friend list
       console.log('**********!!!!!!!!! adding friend to user');
-      firebase.database().ref('/users/' + user.id + '/friends').push(friendId)
+      Promise.all([
+        firebase.database().ref('/users/' + user.id + '/friends/' + friendId).set(true),
+        firebase.database().ref('/users/' + user.id + '/friends').push(friendId),
+        // Add user to friend
+        firebase.database().ref('/users/' + friendId + '/friends').push(user.id),
+        firebase.database().ref('/users/' + friendId + '/friends/' + user.id).set(true)
+      ])
+      .then(res => console.debug('added friends'))
       .catch(error => {
         console.log(error);
-        commit('setLoading', false)
-      }),
-      // Add user to friend
-      firebase.database().ref('/users/' + friendId + '/friends').push(user.id)
-      .catch(error => {
-        console.log(error);
-        commit('setLoading', false)
       })
     },
 
