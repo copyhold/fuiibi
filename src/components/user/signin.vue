@@ -198,14 +198,14 @@
         if (this.email && this.password) {
           return this.email && this.password
         } else {
-          console.log('this form is not valid!')
+          this.$log('this form is not valid!')
         }
       },
       signUpFormIsValid () {
         if (this.email && this.password && this.firstName && this.lastName && this.password === this.confirmPassword) {
           return this.email && this.password && this.firstName && this.lastName
         } else {
-          console.log('this form is not valid!')
+          this.$log('this form is not valid!')
         }
       },
       comparePasswords () {
@@ -220,7 +220,7 @@
         }
       },
       user () {
-        console.log('SignInIsHidden', this.SignInIsHidden)
+        this.$log('SignInIsHidden', this.SignInIsHidden)
         return this.$store.getters.user
       },
       loading () {
@@ -236,7 +236,7 @@
     },
     methods: {
       signInWithGoogle () {
-        console.log('signInWithGoogle')
+        this.$log('signInWithGoogle')
         this.$store.dispatch('signInWithGoogle')
       },
       onSignin () {

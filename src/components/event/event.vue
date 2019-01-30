@@ -23,8 +23,7 @@
     <v-layout row wrap v-else>
       <v-flex xs12>
         <v-card>
-          <v-card-media :src="event.event.imageUrl" height="250px">
-          </v-card-media>
+          <v-img :src="event.event.imageUrl" height="250px" />
           <v-card-title class="eventTitle">
               <h2>{{ event.event.title }}</h2>
           </v-card-title>
@@ -75,14 +74,12 @@
             <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
               <v-card flat tile class="picInGallery">
                 <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
-                <v-card-media :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable">
-                </v-card-media>
+                <v-img :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable"/>
                 </v-card>
             </v-flex>
             <v-flex xs3 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-xs-only">
               <v-card flat tile class="picInGallery">
-                <v-card-media :src="pic.imageUrl" height="150px" @click="carousel = true" >
-                </v-card-media>
+                <v-img :src="pic.imageUrl" height="150px" @click="carousel = true" />
               </v-card>
             </v-flex>
           </v-layout>

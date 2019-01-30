@@ -13,7 +13,7 @@
           <v-container fluid>
             <v-layout col xs12 @click="eventDetails(item.key)">
               <v-flex xs4 sm4 md4 >
-                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable"></v-card-media>
+                <v-img :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout>

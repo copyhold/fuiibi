@@ -74,7 +74,7 @@
                 <v-container fluid>
                   <v-layout col class="clickable">
                     <v-flex @click="eventDetails(notification.key)">
-                      <v-card-media :src="notification.event.imageUrl" height="212px" style="background-color: white"></v-card-media>
+                      <v-img :src="notification.event.imageUrl" height="212px" style="background-color: white" />
                     </v-flex>
                   </v-layout>
                   <v-layout col >
