@@ -314,7 +314,11 @@ export default {
       this.$router.go(-1)
     },
     iwtClicked () {
-      this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+      if (this.$store.getters.user) {
+        this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+      } else {
+        this.$router.push('/')
+      }
     },
     onPickFile () {
       // the $refs below give us access to all the ref elements in the template of this component

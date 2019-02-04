@@ -34,7 +34,7 @@
       </v-toolbar-items>
 
       <v-btn icon right @click="sideNav = !sideNav">
-        <v-icon class="pl-4">more_vert</v-icon>
+        <v-icon>more_vert</v-icon>
       </v-btn>
 
 
