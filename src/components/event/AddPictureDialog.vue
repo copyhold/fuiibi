@@ -1,7 +1,6 @@
 <template>
   <v-layout v-if="userWasThere">
     <v-dialog v-model="picDialog" fullscreen full-width max-width="800px" hide-overlay>
-      <v-btn slot="activator" dark>Add photos</v-btn>
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon white @click="picDialog=false;imagesready=false;">
@@ -10,7 +9,6 @@
           <v-toolbar-title>Upload pictures</v-toolbar-title>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <image-editor v-if="editFile" :data="editFile" />
         <v-layout justify-start row wrap>
           <v-flex v-if="imagesready" lg2 xs4 sm3 v-for="(file, index) in files" :key="file.id">
             <v-card v-if="file.thumb" flat tile>
@@ -26,10 +24,15 @@
                 :multiple="true" 
                 @input-filter="inputFilter"
                 ref="upload" >
-                <v-btn
-                  color="blue-grey"
-                  class="white--text" > Upload <v-icon right dark>cloud_upload</v-icon> </v-btn>
+                <v-btn color="orange" fab class="orange white--text mb-3" @click="picDialog=true">
+                  <v-icon>add_a_photo</v-icon>
+                </v-btn>
           </file-upload>
+          <v-btn
+            v-if="files.length>0"
+            color="blue-grey"
+            @click="startUpload"
+            class="white--text" > begin upload <v-icon right dark>cloud_upload</v-icon> </v-btn>
         </v-layout>
       </v-card>
     </v-dialog>
@@ -58,6 +61,9 @@ export default {
     }
   },
   methods: {
+    startUpload () {
+      this.$store.dispatch('uploadPictures', {files: this.files})
+    },
     selectFileForEdit (file) {
       this.editFile = { ...file, show: true }
       this.$refs.upload.update(file.id, { error: 'editing' })

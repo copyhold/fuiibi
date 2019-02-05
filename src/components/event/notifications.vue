@@ -141,9 +141,9 @@
     computed: {
       onLine () {
         if (navigator.onLine) {
-          console.log('online')
+          this.$debug('online')
         } else {
-          console.log('offline')
+          this.$debug('offline')
         }
       },
       notifications () {

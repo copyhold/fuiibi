@@ -177,6 +177,9 @@ export default {
       this.right = !val
     }
   },
+  created () {
+    this.$store.dispatch('setCurrentEvent', this.$route.params.id)
+  },
   computed: {
     activeFab () {
       switch (this.tabs) {

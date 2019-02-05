@@ -1,4 +1,5 @@
 import * as firebase from 'firebase'
+import Vue from 'vue'
 /* eslint-disable */
 // Here we are not eporting anymore a store, it's done in the index.js of the all store, so we export a normal JS object
 // export const store = new Vuex.Store({
@@ -11,11 +12,10 @@ export default {
     addEvent (state, payload) {
       // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
       if (state.events.findIndex(events => events.key === payload.key) < 0) {
-        // console.log('[mutations] addevent payload', payload)
         state.events.push(payload)
       }
       else {
-        console.log('[addEvent] event not added as already existing');
+        Vue.console.log('[addEvent] event not added as already existing');
       }
     },
     updateEventCounter (state, payload) {
@@ -28,11 +28,18 @@ export default {
         return event.key === payload.key
       })
       eventData.event = payload.event
-      // console.log('[updateEvent] eventData', eventData);
-      // console.log('[updateEvent] mutation payload', payload);
     }
   },
   actions: {
+    setCurrentEvent (store, id) {
+      firebase.database()
+      .ref(`/events/${id}`)
+      .once('value')
+      .then(res => {
+        store.state.currentEvent = { ...res.val(), id }
+      })
+      .catch(Vue.console.debug)
+    },
     loadEvent ({commit, ...context}, key) {
       firebase.database()
       .ref(`/events/${key}`)
@@ -43,7 +50,7 @@ export default {
           key: key
         });
       })
-      .catch(console.log);
+      .catch(Vue.console.log);
     },
     removeEventFromUser ({commit, getters}, payload) {
       const eventId = payload.key
@@ -55,21 +62,39 @@ export default {
       commit('removeEventFromUser', eventId)
       commit('setLoading', false)
     },
+    uploadPictures (store, {files}) {
+      const currentEvent = store.state.currentEvent
+      if (!currentEvent) {
+        return null
+      }
+      for (let file of files) {
+        const filename = Math.round(Math.random() * 10000) + '-' + file.file.name;
+        firebase.storage().ref(`events/${filename}`).put(file.file)
+        .then(storedFile => {
+          const imageUrl = storedFile.metadata.downloadURLs[0]
+          return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ imageUrl: imageUrl })
+        })
+        .then(() => {
+          store.commit('reloadEvent')
+        })
+        .catch(this.$debug)
+      }
+    },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
       let id = payload.key
       // let id = payload.eventId
       let imageUrl = ''
       let key
-      console.log('[addpicture] image', payload)
-      console.log('[addpicture] image', image)
-      console.log('[addpicture] id', id)
+      Vue.console.log('[addpicture] image', payload)
+      Vue.console.log('[addpicture] image', image)
+      Vue.console.log('[addpicture] id', id)
       // Below I send an empty imageUrl in order to get the key from FB
       // and then I stock the image in FB storage and then I update it to the event pictures with the real pic.
       firebase.database().ref('events/' + id + '/pictures/').push(imageUrl)
       .then((data) => {
         key = data.key
-        console.log('key of the resoponse from firebase when stocking the imagge', key)
+        Vue.console.log('key of the resoponse from firebase when stocking the imagge', key)
         return key
       }).then(key => {
         // I stock the event's image in FB storage
@@ -82,18 +107,18 @@ export default {
       .then(fileData => {
         imageUrl = fileData.metadata.downloadURLs[0]
         // to reach the specific item witht the key in the events array:
-        console.log('[addPicture] imageUrl', imageUrl);
+        Vue.console.log('[addPicture] imageUrl', imageUrl);
         return firebase.database().ref('events/' + id + '/pictures/' + key).update({imageUrl: imageUrl})
       }).then(() => {
         // here we commit that to my local store
         firebase.database().ref('events/' + id).once('value').then( data => {
-          console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
+          Vue.console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
           const updateddEvent = data.val()
           const updateddEventWithAddedPic = {
             event: updateddEvent,
             key: id
           }
-          console.log('newPicture ', updateddEventWithAddedPic);
+          Vue.console.log('newPicture ', updateddEventWithAddedPic);
           commit('updateEvent', updateddEventWithAddedPic)
         })
       })
@@ -237,21 +262,17 @@ export default {
     },
 
     iwtClicked ({commit, getters}, payload) {
-      console.log('[iwtClicked] notification - payload', payload);
+      Vue.console.debug('[iwtClicked] notification - payload', payload);
       const key = payload.notification.key
       const userId = payload.userId
       const clickerName = payload.firstName
-      console.log('[iwtClicked] clickerId', userId);
+      Vue.console.debug('[iwtClicked] clickerId', userId);
       // I push the new event key in the events array of the clicker user
       firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
-      .catch((error) => {
-        console.log(error);
-      })
+      .catch(Vue.console.log)
       // Then I push the userId in the users array of the event
       firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
-      .catch((error) => {
-        console.log(error);
-      })
+      .catch(Vue.console.log)
       // I get the friend's list of the user in order to send them notifications
       firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
       .then(data => {
@@ -410,6 +431,7 @@ export default {
       },
     },
   getters: {
+    getCurrentEvent: state => state.currentEvent,
     getEventData (state) {
       return (key) => {
         return state.events.find(event => event.key === key )
