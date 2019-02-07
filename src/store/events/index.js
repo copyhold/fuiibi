@@ -28,6 +28,10 @@ export default {
         return event.key === payload.key
       })
       eventData.event = payload.event
+    },
+    setCurrentEvent (state, eventData) {
+      Vue.console.log('set event data')
+      state.currentEvent = eventData
     }
   },
   actions: {
@@ -36,7 +40,7 @@ export default {
       .ref(`/events/${id}`)
       .once('value')
       .then(res => {
-        store.state.currentEvent = { ...res.val(), id }
+        store.commit('setCurrentEvent', { ...res.val(), id })
       })
       .catch(Vue.console.debug)
     },
@@ -67,18 +71,24 @@ export default {
       if (!currentEvent) {
         return null
       }
-      for (let file of files) {
-        const filename = Math.round(Math.random() * 10000) + '-' + file.file.name;
-        firebase.storage().ref(`events/${filename}`).put(file.file)
-        .then(storedFile => {
-          const imageUrl = storedFile.metadata.downloadURLs[0]
-          return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ imageUrl: imageUrl })
+      Promise.all(
+        files.map(file => {
+          const filename = Math.round(Math.random() * 10000) + '-' + file.name;
+          return firebase.storage().ref(`events/${filename}`).put(file)
         })
-        .then(() => {
-          store.commit('reloadEvent')
-        })
-        .catch(this.$debug)
-      }
+      )
+      .then(storedfiles => {
+        return Promise.all(
+          storedfiles.map(storedFile => {
+            const imageUrl = storedFile.metadata.downloadURLs[0]
+            return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ imageUrl: imageUrl })
+          })
+        )
+      })
+      .then(() => {
+        store.dispatch('setCurrentEvent', currentEvent.id)
+      })
+      .catch(this.$debug)
     },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
@@ -127,33 +137,20 @@ export default {
     listenToNotifications ({commit, getters}) {
       commit('setLoading', true)
       // I listen to any new notifications received by the user.
-      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20).on('child_added', data => {
-      // firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20).once('value')
-      // .then( data => {
-      //   console.log('[listenToNotifications] data.val()', data.val());
-        // In order to find the data.ref_.key, I console.log the data and look into the response
+      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20)
+      .on('child_added', data => { // here we attach listener to user notifications
         const key = data.ref_.key
         const notifData = data.val()
-        var thisEvent;
-        var counter;
-        // var eventUserCounter;
-        // HERE I LIMIT TO 20 !!!!!!!!!!!!!!!!!!!!!!
+        var thisEvent, counter
         firebase.database().ref('/events/' + key).limitToFirst(20).once('value')
         .then( data => {
           this.thisEvent = data.val()
-          // const updateddEvent = {
-          //   event: this.thisEvent,
-          //   key: key
-          // }
-          // commit('updateEvent', this.thisEvent)
-          // this.eventUserCounter = data.child("users").numChildren()
         })
         .then( _=> {
           firebase.database().ref('/events/' + key + '/pictures').on('child_added', data => {
-            // console.log('on child added NEW PICTURE => data.key', data.key)
+            // here we attach listener to single event pictures
             setTimeout( _=> {
               firebase.database().ref('events/' + key).once('value').then( data => {
-                // console.log('dans add pic retour de firebase avec le nouvel evenement', data.val())
                 const updateddEvent = data.val()
                 const updateddEventWithAddedPic = {
                   event: updateddEvent,
@@ -201,7 +198,7 @@ export default {
             // console.log('[listenToNotifications] NOT ON THE userEvents', newEvent);
             commit('addEvent', newEvent)
           }else {
-            console.log('[listenToNotifications] ALREADY IN THE userEvents else *******************************');
+            Vue.console.log('[listenToNotifications] ALREADY IN THE userEvents else *******************************');
           }
           // console.log('[listenToNotifications] newNotif', newNotif);
           commit('addNotification', newNotif)
@@ -225,7 +222,7 @@ export default {
         .then( data => {
           this.thisEvent = data.val()
           // this.eventUserCounter = data.child("users").numChildren()
-          console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
+          Vue.console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
         })
         .then( _=> {
           // I add a setTimeout, otherwise, the userFriends has no time to get updated and it keep the same amount of chiuldren
@@ -280,13 +277,13 @@ export default {
         for (let item in dataPairs) {
           // const userId = dataPairs[item]
           const friendId = dataPairs[item]
-          console.log('[iwtClicked] friendId', friendId);
+          Vue.console.log('[iwtClicked] friendId', friendId);
           // I send notifications to each friend of the user about the clicked event
           firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
           // firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
-          console.log('[iwtClicked] after push userId');
-          console.log('[iwtClicked] clickerName', clickerName);
-          console.log('[iwtClicked] userId', userId);
+          Vue.console.log('[iwtClicked] after push userId');
+          Vue.console.log('[iwtClicked] clickerName', clickerName);
+          Vue.console.log('[iwtClicked] userId', userId);
 
           // I update the clickerId and the dateToRank
           // QUAND JE CLIQUE SUR UN USER, C'EST LA PAGE DE CELUI QUI EST LOADER QUI APPARAIT CAR IL EST COMME CA DANS FIREBASE
@@ -299,7 +296,7 @@ export default {
         commit('setLoading', false)
       })
       .catch(error => {
-        console.log(error)
+        Vue.console.log(error)
         commit('setLoading', false)
       })
     },
@@ -315,7 +312,7 @@ export default {
         creationDate: Date(),
         dateToRank: - payload.date.getTime()
       }
-      console.log('[createEvent] eventData', eventData);
+      Vue.console.log('[createEvent] eventData', eventData);
       let imageUrl
       let key
       let userEvents = []
@@ -430,18 +427,18 @@ export default {
         })
       },
     },
-  getters: {
-    getCurrentEvent: state => state.currentEvent,
-    getEventData (state) {
-      return (key) => {
-        return state.events.find(event => event.key === key )
+    getters: {
+      getCurrentEvent: state => state.currentEvent,
+      getEventData (state) {
+        return (key) => {
+          return state.events.find(event => event.key === key )
+        }
+      },
+      loadedNotifications (state) {
+        return state.loadedNotifications.sort((notificationA, notificationB) => {
+          console.log('notificationA, notificationB', notificationA, notificationB);
+          return notificationA.date - notificationB.date
+        })
       }
-    },
-    loadedNotifications (state) {
-      return state.loadedNotifications.sort((notificationA, notificationB) => {
-        console.log('notificationA, notificationB', notificationA, notificationB);
-        return notificationA.date - notificationB.date
-      })
     }
-  }
 }

@@ -23,25 +23,25 @@
     <v-layout row wrap v-else>
       <v-flex xs12>
         <v-card>
-          <v-img :src="event.event.imageUrl" height="250px" />
+          <v-img :src="event.imageUrl" height="250px" />
           <v-card-title class="eventTitle">
-              <h2>{{ event.event.title }}</h2>
+              <h2>{{ event.title }}</h2>
           </v-card-title>
           <v-divider class="mb-2"></v-divider>
           <v-card-text>
-            <p v-if="event.event.location.street_number"><v-icon class="mr-1">place</v-icon>
-              {{ event.event.location.route }}
-              <!-- {{ event.event.location.street_number }}, -->
-              {{ event.event.location.locality }} - {{ event.event.location.country }}
+            <p v-if="event.location.street_number"><v-icon class="mr-1">place</v-icon>
+              {{ event.location.route }}
+              <!-- {{ event.location.street_number }}, -->
+              {{ event.location.locality }} - {{ event.location.country }}
             </p>
             <p v-else><v-icon class="mr-1">place</v-icon>
-              {{ event.event.location.route }}
-              {{ event.event.location.locality }} - {{ event.event.location.country }}
+              {{ event.location.route }}
+              {{ event.location.locality }} - {{ event.location.country }}
             </p>
-            <p><v-icon class="mr-2">access_time</v-icon>{{ event.event.date | date }}</p>
+            <p><v-icon class="mr-2">access_time</v-icon>{{ event.date | date }}</p>
             <v-layout row>
               <v-flex xs10>
-                <p><v-icon class="mr-2">timelapse</v-icon>{{ event.event.duration }}</p>
+                <p><v-icon class="mr-2">timelapse</v-icon>{{ event.duration }}</p>
                 <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
                   <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
                 </div>
@@ -61,7 +61,7 @@
               </v-flex>
             </v-layout>
               <v-divider class="mb-2"></v-divider>
-              <p>{{ event.event.description }}</p>
+              <p>{{ event.description }}</p>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -71,13 +71,13 @@
       <v-flex xs12 sm12>
         <v-container fluid>
           <v-layout row wrap>
-            <v-flex xs4 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-sm-and-up">
+            <v-flex xs4 v-for="pic in event.pictures" :key="pic.id" class="hidden-sm-and-up">
               <v-card flat tile class="picInGallery">
                 <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
                 <v-img :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable"/>
                 </v-card>
             </v-flex>
-            <v-flex xs3 v-for="pic in event.event.pictures" :key="pic.id" class="hidden-xs-only">
+            <v-flex xs3 v-for="pic in event.pictures" :key="pic.id" class="hidden-xs-only">
               <v-card flat tile class="picInGallery">
                 <v-img :src="pic.imageUrl" height="150px" @click="carousel = true" />
               </v-card>
@@ -93,14 +93,14 @@
       <v-dialog v-model="carousel" fullscreen id="carousel">
         <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
           <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
-          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item> -->
-          <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
-          <!-- <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="openTheRightPic(index, picture)" :key="index">{{ index }}</v-carousel-item> -->
+          <!-- <v-carousel-item v-for="(picture,i) in event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item> -->
+          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <!-- <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="openTheRightPic(index, picture)" :key="index">{{ index }}</v-carousel-item> -->
         </v-carousel>
         <v-carousel  hide-delimiters :cycle="cycle" class="hidden-xs-only">
           <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
-          <v-carousel-item v-for="(picture, key, index) in event.event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
-          <!-- <v-carousel-item v-for="(picture,i) in event.event.pictures" v-bind:src="picture.imageUrl" :key="i">{{ index }}</v-carousel-item> -->
+          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <!-- <v-carousel-item v-for="(picture,i) in event.pictures" v-bind:src="picture.imageUrl" :key="i">{{ index }}</v-carousel-item> -->
         </v-carousel>
       </v-dialog>
     </v-layout>
@@ -181,6 +181,9 @@ export default {
     this.$store.dispatch('setCurrentEvent', this.$route.params.id)
   },
   computed: {
+    event () {
+      return this.$store.getters.getCurrentEvent
+    },
     activeFab () {
       switch (this.tabs) {
         case 'one': return { 'class': 'purple', icon: 'account_circle' }
@@ -195,14 +198,6 @@ export default {
       }
       return null
     },
-    event () {
-      const evt = this.$store.getters.getEventData(this.id)
-      if (!evt) {
-        this.$store.dispatch('loadEvent', this.id)
-      }
-      this.$log(evt)
-      return evt
-    },
     loading () {
       return this.$store.getters.loading
     },
@@ -210,10 +205,10 @@ export default {
       if (!this.$store.getters.user) {
         return []
       }
-      if (this.event.event.users) {
+      if (this.event.users) {
         let eventUsers = []
         let userData = ''
-        const users = this.event.event.users
+        const users = this.event.users
         for (let user in users) {
           let userId = users[user]
           userData = this.$store.getters.getUserData(userId)
@@ -223,9 +218,9 @@ export default {
       }
     },
     totalUserCount () {
-      if (this.event.event.title !== 'Your subscribtion') {
+      if (this.event.title !== 'Your subscribtion') {
         let counter = 0
-        for (let user in this.event.event.users) {
+        for (let user in this.event.users) {
           this.$debug(user)
           counter++
         }

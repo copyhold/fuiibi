@@ -191,12 +191,6 @@
     font-family: 'Marck Script', cursive;
     font-size: 33px;
   }
-   #app{
-    background-color: rgb(0, 0, 0)
-  }/*
-  #app .greyBackground {
-    background-color: rgb(239, 238, 236)
-  } */
   .bottomAtTop {
     bottom: 60px;
   }

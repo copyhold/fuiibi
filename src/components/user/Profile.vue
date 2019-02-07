@@ -32,6 +32,7 @@
                   <h4 class="greyColor mb-1 bold">Living in:</h4>
                   <h4 else class="greyColor mb-1 bold">Gender:</h4>
                   <h4 else class="greyColor mb-1 bold">Email:</h4>
+                  <h4 else class="greyColor mb-1">key: </h4>
                 </v-flex>
                 <v-flex xs7 sm7 md7>
                   <h4 class="mb-1"> {{ user.firstName }}</h4>
@@ -44,6 +45,7 @@
                   <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
                   <h4 v-else class="mb-1">To be edited</h4>
                   <h4 class="mb-1">{{ user.email }}</h4>
+                  <h4 class="mb-1">{{ user.id }}</h4>
                 </v-flex>
                 <v-fab-transition>
                   <v-btn color="orange" fixed bottom right fab class=" white--text" @click="turnOnEditMode">

@@ -95,6 +95,7 @@ export default {
       Vue.console.log('[updateuser] user', user);
     },
     addEventToMyEvents (state, payload) {
+      state.user.events = state.user.events || []
       state.user.events.push(payload)
       state.user.events.sort((eventA, eventB) => {
         return eventA.event.dateToRank - eventB.event.dateToRank
@@ -170,8 +171,8 @@ export default {
       state.user = payload
       if (payload != null) {
         state.email = payload.email
-        Vue.console.log('state.email', state.email);
-        Vue.console.log('payload of the state.user in the setUser', payload);
+        Vue.console.debug('state.email', state.email);
+        Vue.console.debug('payload of the state.user in the setUser', payload);
       }
     }
   },
@@ -212,8 +213,8 @@ export default {
           const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
           const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
           const userData = firebase.database().ref('users/' + user.uid).once('value')
-          Vue.console.log('[signUserIn] userData', userData);
-          Vue.console.log('[signUserIn] userData.firstName', userData.firstName);
+          Vue.console.debug('[signUserIn] userData', userData);
+          Vue.console.debug('[signUserIn] userData.firstName', userData.firstName);
 
           const newUser = {
             id: user.uid,
@@ -227,7 +228,7 @@ export default {
             friends: [],
             events: []
           }
-          Vue.console.log('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
+          Vue.console.debug('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
           commit('setUser', newUser)
           commit('setLoading', false)
         }
