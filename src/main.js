@@ -61,9 +61,8 @@ if ('serviceWorker' in navigator) {
 
 // eslint-disable-next-line
 //***************************************************************************************************************
-
 Vue.use(vuelogger, {
-  dev: true
+  dev: process.env.NODE_ENV === 'development'
 })
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'

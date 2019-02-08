@@ -16,40 +16,22 @@
                 <v-img :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
-                <v-layout>
-                  <v-card-title primary-title >
-                    <v-card-actions wrap>
-                      <div>
-                        <div >
-                          <h4 class="pl-2 secondaryDark--text bold"> {{ item.event.title }}</h4>
-                        </div>
-                      </div>
-                    </v-card-actions>
-                  </v-card-title>
-                </v-layout>
-                <v-layout >
-                  <div offset-xs3>
+                <v-layout wrap full-height>
+                  <v-flex xs12 font-weight-bold title>{{ item.event.title }}</v-flex>
+                  <v-flex xs8 mt-3>
                     <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                     <p class="date">{{ item.event.date | date}}</p>
-                  </div>
-                </v-layout>
-                <v-layout>
-                    <v-btn flat small class="greyColors" absolute @click="alertB4remove(item)">Remove</v-btn>
-                    <!-- <v-btn flat small class="greyColors " absolute outline @click="alertB4remove(item)"><v-icon dark class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
-                    <!-- <v-btn fab small class="error mt-4" @click="alertB4remove(item)"><v-icon dark>delete_forever</v-icon></v-btn> -->
+                  </v-flex>
+                  <v-btn xs4 flat small class="greyColors" @click="alertB4remove(item)" style="align-self: end;">Remove</v-btn>
                 </v-layout>
               </v-flex>
-              <!-- <v-flex xs2 sm2 md2>
-                <v-btn outline small class="greyColors" @click="alertB4remove(item)">Remove</v-btn>
-                <v-btn fab small class="error mt-4" @click="alertB4remove(item)"><v-icon dark>delete_forever</v-icon></v-btn>
-              </v-flex> -->
             </v-layout>
           </v-container>
         </v-card>
       </v-flex>
     </v-layout>
     <v-fab-transition >
-      <v-btn @click="newEvent" color="orange" fixed bottom right fab class=" white--text">
+      <v-btn @click="newEvent" color="orange" fixed bottom right fab class="addevent white--text">
         <v-icon>add</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -120,6 +102,11 @@
   }
 </script>
 
+<style>
+#app.size-xs .addevent {
+  bottom: 80px;
+}
+</style>
 <style scoped>
 .btn--bottom:not(.btn--absolute) {
     bottom: 72px;

@@ -59,7 +59,7 @@
       </v-container>
 
       <v-fab-transition >
-        <v-btn @click="newEvent" color="orange" ripple fixed bottom right fab class=" white--text" >
+        <v-btn @click="newEvent" color="orange" ripple fixed bottom right fab class="addevent white--text" >
           <v-icon>add</v-icon>
         </v-btn>
       </v-fab-transition>
@@ -74,6 +74,9 @@
       return {
         marginTop: true
       }
+    },
+    created () {
+      this.$log(this.$vuetify.breakpoint)
     },
     computed: {
       onLine () {
@@ -137,7 +140,11 @@
     }
   }
 </script>
-
+<style>
+#app.size-xs .addevent {
+  bottom: 80px;
+}
+</style>
 <style scoped>
 .container.grid-list-sm .layout .flex {
   padding: 2px;
@@ -208,7 +215,6 @@ p {
 p.location {
       margin-bottom: 0px;
 }
-
 @media screen and (max-width: 600px) {
   .iwt{
     position: absolute;
@@ -231,48 +237,3 @@ p.location {
   }
 }
 </style>
-
-
-<!-- <v-card height="120px">
-<v-container fluid>
-  <v-layout col xs12>
-    <v-flex xs3 sm2 md2>
-      <v-card-media :src="notification.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
-    </v-flex>
-    <v-flex xs7 sm8 md8 class="ml-3">
-      <v-layout>
-        <v-card-title primary-title >
-          <v-card-actions wrap>
-            <div @click="eventDetails(notification.key)">
-              <h4 class="pl-2 secondaryDark--text bold"> {{ notification.event.title }}</h4>
-            </div>
-              <p class="timer">{{ timeStamp(notification) }}</p>
-          </v-card-actions>
-        </v-card-title>
-      </v-layout>
-      <v-layout>
-        <div offset-xs3>
-          <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
-          <p class="date">{{ notification.event.date | date}}</p>
-        </div>
-      </v-layout>
-      <v-layout>
-        <div offset-xs3> -->
-          <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
-          <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
-          <!-- <p v-if="friendsCount(notification)" class="bold" @click="getUserPage(notification)">{{ notification.clickerName }} was there!</p>
-          <p else><span class="bold" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount }} friends were there!</p>
-        </div>
-      </v-layout>
-    </v-flex>
-    <v-flex xs2 sm2 md2>
-      <v-btn fab large class="iwt" center v-if="!wasThere(notification.key)" @click="iwtClicked(notification)"></v-btn>
-      <span v-else>
-        <v-btn fab flat large class="iwt clicked" center></v-btn>
-        <v-badge overlap overlay color="red" class="vuBadge">
-          <v-icon dark slot="badge">check</v-icon>
-        </v-badge>
-      </span>
-    </v-flex>
-  </v-layout>
-</v-container> -->

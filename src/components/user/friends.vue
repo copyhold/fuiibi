@@ -48,7 +48,7 @@
       <v-divider></v-divider>
       <friends-only></friends-only>
     <v-fab-transition >
-      <v-btn router to="/search" color="orange" ripple fixed bottom right fab class=" white--text">
+      <v-btn router to="/search" color="orange" ripple fixed bottom right fab class="gotosearch white--text">
         <v-icon>search</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -154,4 +154,9 @@
   p {
     margin-bottom: 4px;
   }
+</style>
+<style>
+#app.size-xs .gotosearch {
+  bottom: 80px;
+}
 </style>

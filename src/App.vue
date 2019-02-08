@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app :class="`size-${$vuetify.breakpoint.name}`">
     <v-toolbar class="primaryWhite" fixed app v-if="userIsAuthenticated">
 
       <v-toolbar-title absolute class="center">
@@ -40,28 +40,28 @@
 
     </v-toolbar>
 
-    <!-- <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
+    <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
       <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
         <span>{{ item.title }}</span>
         <v-icon left>{{ item.icon }}</v-icon>
       </v-btn>
-    </v-bottom-nav> -->
+    </v-bottom-nav>
 
-    <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
+    <v-bottom-nav fixed value="true" class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
       <v-btn flat :key="'Notifications'" :to="'/notifications'">
         <span>Notifications</span>
-        <v-icon left>home</v-icon>
+        <v-icon>home</v-icon>
       </v-btn>
       <v-btn flat :key="'My events'" :to="'/myEvents'">
         <span>My events</span>
-        <v-icon left>list</v-icon>
+        <v-icon>list</v-icon>
       </v-btn>
       <v-btn flat :key="'My friends'" :to="'/friends'">
         <span>My friends</span>
         <v-badge color="red" id="redBadge" v-if="user.pendingFriends != ''">
           <span slot="badge"></span>
         </v-badge>
-        <v-icon left>supervisor_account</v-icon>
+        <v-icon>supervisor_account</v-icon>
       </v-btn>
     </v-bottom-nav>
 
@@ -207,7 +207,7 @@
 
   @media screen and (max-width: 600px) {
     .marginTop {
-      margin-top: 40px;
+      margin-top: 56px;
     }
     div.toolbar__content {
       height: 40px !important;

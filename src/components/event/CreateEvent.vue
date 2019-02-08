@@ -129,12 +129,12 @@
             <v-flex xs12 sm6 offset-sm3>
               <v-dialog persistent v-model="modal" lazy full-width width="290px">
                 <v-text-field slot="activator" label="When?" v-model="date" prepend-icon="event" readonly></v-text-field>
-                <v-date-picker v-model="date" scrollable actions>
+                <v-date-picker v-model="selectingDate" scrollable actions>
                   <template slot-scope="{ save, cancel }">
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn flat color="secondaryDark" @click="cancel">Cancel</v-btn>
-                      <v-btn flat color="secondaryDark" @click="save">OK</v-btn>
+                      <v-btn flat color="secondaryDark" @click="modal=false">Cancel</v-btn>
+                      <v-btn flat color="secondaryDark" @click="date=selectingDate;modal=false">OK</v-btn>
                     </v-card-actions>
                   </template>
                 </v-date-picker>
@@ -146,11 +146,11 @@
             <v-flex xs12 sm6 offset-sm3>
               <v-dialog persistent v-model="modal2" lazy full-width width="290px">
                 <v-text-field slot="activator" label="What time?" v-model="time" prepend-icon="access_time" readonly></v-text-field>
-                <v-time-picker v-model="time" format="24hr" actions>
+                <v-time-picker v-model="selectingTime" format="24hr" actions>
                   <template slot-scope="{ save, cancel }">
                     <v-card-actions>
-                      <v-btn flat color="secondaryDark" @click="cancel">Cancel</v-btn>
-                      <v-btn flat color="secondaryDark" @click="save">Save</v-btn>
+                      <v-btn flat color="secondaryDark" @click="modal2=false">Cancel</v-btn>
+                      <v-btn flat color="secondaryDark" @click="time=selectingTime;modal2=false">Save</v-btn>
                     </v-card-actions>
                   </template>
                 </v-time-picker>
@@ -165,7 +165,7 @@
                   v-bind:items="states"
                   v-model="durationInput"
                   label="Duration"
-                  single-line auto
+                  single-line menu-props="auto"
                   prepend-icon="timelapse"
                   required
                   :rules="[v => !!v || 'Duration is required']"
@@ -253,10 +253,10 @@
         description: '',
         imageUrl: '',
         /* eslint-disable */
-        // date: new Date().toLocaleDateString(),
-        // date: new Date().toISOString(),
+        selectingDate: new Date().toISOString().substring(0, 10),
+        selectingTime: new Date().toLocaleTimeString('en-US').substring(0,5),
         date: new Date().toISOString().substring(0, 10),
-        time: new Date()﻿.toLocaleTimeString(),
+        time: new Date().toLocaleTimeString('en-US').substring(0,5),
         image: null,
         address: {
           country: '',
@@ -367,8 +367,7 @@
       },
       openAlertValidation () {
         this.validationAlerts = true
-        console.log('[openAlertValidation]');
-
+        this.$log('[openAlertValidation]');
       },
       hideChangeButton () {
         this.showVueAutoComplete = true
@@ -414,10 +413,8 @@
         image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
       },
       showAlert () {
-        console.log('showing alert');
         this.alert = true
         setTimeout ( _=> {
-          console.log('closing alert');
           this.alert = false
         }, 2000)
       },
@@ -485,7 +482,7 @@
           }
         }
         }
-        console.log('[getAddressData], this.address', this.address);
+        this.$log('[getAddressData], this.address', this.address);
         if (addressData) {
           if (this.address.street_number && this.address.route && this.address.route != 'Unnamed road') {
             setTimeout(_ => {

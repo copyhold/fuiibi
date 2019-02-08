@@ -5,6 +5,7 @@ import Vue from 'vue'
 // export const store = new Vuex.Store({
 export default {
   state: {
+    loadedNotifications: [],
     currentEvent: null,
     events: []
   },
@@ -435,10 +436,7 @@ export default {
         }
       },
       loadedNotifications (state) {
-        return state.loadedNotifications.sort((notificationA, notificationB) => {
-          console.log('notificationA, notificationB', notificationA, notificationB);
-          return notificationA.date - notificationB.date
-        })
+        return state.loadedNotifications.sort((notificationA, notificationB) => notificationA.date - notificationB.date)
       }
     }
 }

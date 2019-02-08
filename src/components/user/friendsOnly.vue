@@ -50,10 +50,11 @@
     },
     computed: {
       friends () {
-        if (this.$store.getters.user) {
-          if (this.$store.getters.user.friends.length > 0) {
-            return this.$store.getters.user.friends
-          }
+        if (!this.$store.getters.user || !this.$store.getters.user.friends) {
+          return []
+        }
+        if (this.$store.getters.user.friends.length > 0) {
+          return this.$store.getters.user.friends
         }
       },
       // filteredFriends () {

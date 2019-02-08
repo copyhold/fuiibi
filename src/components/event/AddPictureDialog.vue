@@ -45,8 +45,8 @@
         </v-container>
       </v-card>
     </v-dialog>
-    <v-fab-transition>
-      <v-btn color="orange" fixed bottom right fab class="orange white--text mb-3" @click="picDialog=true">
+    <v-fab-transition> 
+      <v-btn  @click="picDialog=true" color="orange" ripple fixed bottom right fab class="addphoto white--text" >
         <v-icon>add_a_photo</v-icon>
       </v-btn>
     </v-fab-transition>
@@ -117,3 +117,8 @@ export default {
   }
 }
 </script>
+<style>
+#app.size-xs .addphoto {
+  bottom: 80px;
+}
+</style>

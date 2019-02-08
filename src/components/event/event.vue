@@ -538,9 +538,6 @@ export default {
     .container {
       padding: 0;
     }
-    .shareButton {
-      top: 42px !important;
-    }
     .arrowBack {
       position: fixed;
       top: 8px;
