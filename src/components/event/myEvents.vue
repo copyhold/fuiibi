@@ -16,8 +16,8 @@
                 <v-img :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
-                <v-layout wrap full-height>
-                  <v-flex xs12 font-weight-bold title>{{ item.event.title }}</v-flex>
+                <v-layout wrap full-height style="height: 100%;">
+                  <v-flex xs12 font-weight-bold mt-3>{{ item.event.title }}</v-flex>
                   <v-flex xs8 mt-3>
                     <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                     <p class="date">{{ item.event.date | date}}</p>
