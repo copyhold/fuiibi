@@ -31,11 +31,12 @@
                       </div>
                     </v-layout>
                   </v-flex>
-                  <v-flex xs3 align-self-end text-xs-center>
-                    <v-btn fab large class="iwt" v-if="!wasThere(notification.key)" @click="iwtClicked(notification)"></v-btn>
-                    <v-btn v-else fab flat large class="iwt clicked" center>
-                      <v-badge overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge>
-                    </v-btn>
+                  <v-flex xs3 align-self-end text-xs-center v-if="!wasThere(notification.key)">
+                    <v-btn fab large class="iwt" @click="iwtClicked(notification)"></v-btn>
+                  </v-flex>
+                  <v-flex xs3 align-self-end text-xs-center v-else>
+                    <v-btn fab flat large class="iwt clicked" center></v-btn>
+                    <v-badge bottom overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -135,9 +136,9 @@
   padding: 2px;
 }
 span.vuBadge {
-  bottom: 22px;
-  right: 12px;
   position: absolute;
+  bottom: 17px;
+  right: 26px;
 }
 .clickable {
   cursor: pointer;
@@ -176,7 +177,7 @@ span.vuBadge {
   bottom: unset;
   filter: none;
 }
-.iwt .v-badge .vi-icon {
+.iwt .v-badge .v-icon {
   font-size: 15px;
 }
 .clicked{
@@ -209,21 +210,11 @@ p.location {
     height: 60px;
     width: 60px;
   }
-  .i wt {
-    position: absolute;
-    bottom: 0px;
-    right: -4px;
-  }
   .timer{
     font-size: 12px;
   }
   p {
     font-size: 13px;
-  }
-  span.vuBadge {
-      bottom: 22px;
-      right: 12px;
-      position: absolute;
   }
 }
 </style>
