@@ -1,8 +1,8 @@
 <template>
   <v-app :class="`size-${$vuetify.breakpoint.name}`">
-    <v-toolbar class="primaryWhite" fixed app v-if="userIsAuthenticated">
+    <v-toolbar class="app-toolbar primaryWhite" fixed app v-if="userIsAuthenticated">
 
-      <v-toolbar-title absolute class="center">
+      <v-toolbar-title class="center">
         <router-link to="/notifications" tag="span" style="cursor: pointer" class="fuiibi">Fuiibi</router-link>
       </v-toolbar-title>
       <v-spacer></v-spacer>
@@ -235,6 +235,7 @@
       background-color: primary;
     }
   }
-
-
+  #app.size-xs .app-toolbar .v-toolbar__title {
+    margin-left: 40%;
+  }
 </style>
