@@ -16,13 +16,11 @@
                 <v-img :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
-                <v-layout wrap full-height style="height: 100%;">
-                  <v-flex xs12 font-weight-bold mt-3>{{ item.event.title }}</v-flex>
-                  <v-flex xs8 mt-3>
-                    <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
-                    <p class="date">{{ item.event.date | date}}</p>
-                  </v-flex>
-                  <v-btn xs4 flat small class="greyColors" @click="alertB4remove(item)" style="align-self: end;">Remove</v-btn>
+                <v-layout column full-height style="height: 100%;">
+                  <p class="title mt-2">{{ item.event.title }}</p>
+                  <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
+                  <p class="date">{{ item.event.date | date}}</p>
+                  <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(item)" end>Remove</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>

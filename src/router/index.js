@@ -15,6 +15,15 @@ import Notifications from '@/components/event/notifications'
 import Welcome from '@/components/Welcome'
 import Search from '@/components/user/search'
 import userPage from '@/components/user/userPage'
+import { store } from '../store'
+
+const redirectSignedIn = (to, from, next) => {
+  if (to.path === '/' && store.getters.user) {
+    next('/notifications')
+  } else {
+    next()
+  }
+}
 
 Vue.use(Router)
 
@@ -91,7 +100,8 @@ export default new Router({
     {
       path: '/',
       name: 'signin',
-      component: signin
+      component: signin,
+      beforeEnter: redirectSignedIn
     }
   ]
 })

@@ -9,12 +9,12 @@
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
               <v-card>
                 <v-img @click="eventDetails(notification.key)" :src="notification.event.imageUrl" height="212px" style="background-color: white" />
-                <v-layout col align-end class="ml-3 mt-1">
-                  <h4 @click="eventDetails(notification.key)" class="secondaryDark--text bold"> {{ notification.event.title }}</h4>
-                  <time class="timer">{{ timeStamp(notification) }} ago</time>
+                <v-layout col align-end ml-3 mt-1>
+                  <v-flex xs9 tag="h4" @click="eventDetails(notification.key)" class="secondaryDark--text bold"> {{ notification.event.title }}</v-flex>
+                  <time class="xs3 flex timer text-xs-center">{{ timeStamp(notification) }} ago</time>
                 </v-layout>
                 <v-layout col align-end ml-3>
-                  <v-flex xs10 sm10 md10>
+                  <v-flex xs9>
                     <v-layout @click="eventDetails(notification.key)">
                       <div offset-xs3>
                         <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
@@ -31,14 +31,11 @@
                       </div>
                     </v-layout>
                   </v-flex>
-                  <v-flex xs2 sm2 md2 align-self-end>
-                    <v-btn fab large class="iwt" bottom v-if="!wasThere(notification.key)" @click="iwtClicked(notification)"></v-btn>
-                    <span v-else>
-                      <v-btn fab flat large class="iwt clicked" center></v-btn>
-                      <v-badge overlap overlay color="red" class="vuBadge">
-                        <v-icon dark slot="badge">check</v-icon>
-                      </v-badge>
-                    </span>
+                  <v-flex xs3 align-self-end text-xs-center>
+                    <v-btn fab large class="iwt" v-if="!wasThere(notification.key)" @click="iwtClicked(notification)"></v-btn>
+                    <v-btn v-else fab flat large class="iwt clicked" center>
+                      <v-badge overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge>
+                    </v-btn>
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -155,8 +152,6 @@ span.vuBadge {
     text-decoration: none;
 }
 .timer{
-  position: absolute;
-  right: 30px;
   color: grey;
 }
 .container{
@@ -177,6 +172,12 @@ span.vuBadge {
   height: 60px;
   width: 60px;
   background: url("../img/iwt3.png") center/95% no-repeat;
+  right: unset;
+  bottom: unset;
+  filter: none;
+}
+.iwt .v-badge .vi-icon {
+  font-size: 15px;
 }
 .clicked{
   filter: opacity(50%);
@@ -205,14 +206,15 @@ p.location {
 }
 @media screen and (max-width: 600px) {
   .iwt{
-    position: absolute;
     height: 60px;
     width: 60px;
+  }
+  .i wt {
+    position: absolute;
     bottom: 0px;
     right: -4px;
   }
   .timer{
-    right: 24px;
     font-size: 12px;
   }
   p {
