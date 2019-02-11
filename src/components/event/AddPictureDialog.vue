@@ -4,48 +4,55 @@
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon white @click="picDialog=false">
-            <v-icon>close</v-icon>
+            <v-icon>arrow_back</v-icon>
           </v-btn>
           <v-toolbar-title>Upload pictures</v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-icon right dark v-if="files.length>0"   @click="startUpload">cloud_upload</v-icon>
+          <!-- <v-btn
+            v-if="files.length > 0"
+            color="white"
+            @click="startUpload"
+            class="white--text" ><v-icon right dark>cloud_upload</v-icon>
+          </v-btn> -->
         </v-toolbar>
         <v-container grid-list-s fluid>
           <v-layout row wrap>
+
             <v-flex lg2 xs4 sm3 v-for="(file, index) in files" :key="file.id">
               <v-card v-if="file" flat tile>
-                <v-btn flat icon small top right absolute color="red" @click="deletePhoto(file, index)"><v-icon>close</v-icon></v-btn>
+                <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic black"><v-icon color="white">close</v-icon></v-btn>
                 <v-img :src="file.url" aspect-ratio="1" @click="selectFileForEdit(file)"></v-img>
               </v-card>
             </v-flex>
             <v-flex lg2 xs4 sm3>
               <input accept="image/*" type="file" id="selectphotos" multiple class="d-none" @change="addedPhoto()" ref="filesfield" />
-              <v-btn for="selectphotos" center class="orange white--text mb-3" tag="label" fab >
+              <!-- <v-flex class="uploadPicture" for="selectphotos" center tag="label">
+                <v-icon class="pt-5">add_a_photo</v-icon>
+              </v-flex> -->
+              <v-btn for="selectphotos" center outline color="grey" class="mb-3 uploadPicture" tag="label">
                 <v-icon>add_a_photo</v-icon>
               </v-btn>
             </v-flex>
-            <file-upload 
+            <file-upload
                   v-if="false"
                   class="flex grow align-self-center"
-                  v-model="files" 
-                  input-id="uploadeventpictures" 
+                  v-model="files"
+                  input-id="uploadeventpictures"
                   extensions="jpg,jpeg,png"
-                  :multiple="true" 
+                  :multiple="true"
                   @input-filter="inputFilter"
                   ref="upload" >
-                  <v-btn color="orange" fab class="orange white--text mb-3" @click="picDialog=true">
+                  <v-btn color="orange" class="orange white--text mb-3" @click="picDialog=true">
                     <v-icon>add_a_photo</v-icon>
                   </v-btn>
             </file-upload>
-            <v-btn
-              v-if="files.length>0"
-              color="blue-grey"
-              @click="startUpload"
-              class="white--text" > begin upload <v-icon right dark>cloud_upload</v-icon> </v-btn>
+
           </v-layout>
         </v-container>
       </v-card>
     </v-dialog>
-    <v-fab-transition> 
+    <v-fab-transition>
       <v-btn  @click="picDialog=true" color="orange" ripple fixed bottom right fab class="addphoto white--text" >
         <v-icon>add_a_photo</v-icon>
       </v-btn>
@@ -121,4 +128,18 @@ export default {
 #app.size-xs .addphoto {
   bottom: 80px;
 }
+.uploadPicture {
+  border-style: dashed;
+  border-color: grey;
+  border-width: thin;
+  height: 120px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 42px;
+}
+.closeButtonPic{
+  z-index: 2;
+  right: 0px;
+}
+
 </style>
