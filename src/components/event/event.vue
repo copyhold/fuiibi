@@ -68,42 +68,31 @@
     </v-layout>
 
     <v-layout class="mt-2">
-      <v-flex xs12 sm12>
-        <v-container fluid>
-          <v-layout row wrap>
-            <v-flex xs4 v-for="pic in event.pictures" :key="pic.id" class="hidden-sm-and-up">
-              <v-card flat tile class="picInGallery">
-                <!-- <v-card-media :src="pic.imageUrl" height="120px" @click="carousel = true" class="clickable"> -->
-                <v-img :src="pic.imageUrl" height="120px" @click="checkPicSrc(pic.imageUrl)" class="clickable"/>
-                </v-card>
-            </v-flex>
-            <v-flex xs3 v-for="pic in event.pictures" :key="pic.id" class="hidden-xs-only">
-              <v-card flat tile class="picInGallery">
-                <v-img :src="pic.imageUrl" height="150px" @click="carousel = true" />
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-flex>
+      <v-container fluid grid-list-sm>
+        <v-layout row wrap>
+          <v-flex xs4 sm3 md2 v-for="pic in event.pictures" :key="pic.id">
+            <v-card flat tile class="">
+              <v-img :src="pic.imageUrl" aspect-ratio="1" @click="checkPicSrc(pic.imageUrl)" class="clickable"/>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
     </v-layout>
 
     <add-pictures v-if="userWasThere" :userWasThere="userWasThere"></add-pictures>
 
-    <v-layout>
-      <v-dialog v-model="carousel" fullscreen id="carousel">
-        <v-carousel hide-delimiters hide-controls :cycle="cycle" class="hidden-sm-and-up">
+    <v-dialog dark :fullscreen="fullscreen_carousel || $vuetify.breakpoint.smAndDown" :scrollable="fullscreen_carousel" :hide-overlay="$vuetify.breakpoint.smAndDown" v-model="carousel" max-width="800px">
+      <v-card>
+        <v-toolbar>
           <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
-          <!-- <v-carousel-item v-for="(picture,i) in event.pictures" v-bind:src="picture.imageUrl" :key="i"></v-carousel-item> -->
+          <v-spacer></v-spacer>
+          <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
+        </v-toolbar>
+        <v-carousel hide-delimiters dark>
           <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
-          <!-- <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="openTheRightPic(index, picture)" :key="index">{{ index }}</v-carousel-item> -->
         </v-carousel>
-        <v-carousel  hide-delimiters :cycle="cycle" class="hidden-xs-only">
-          <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
-          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
-          <!-- <v-carousel-item v-for="(picture,i) in event.pictures" v-bind:src="picture.imageUrl" :key="i">{{ index }}</v-carousel-item> -->
-        </v-carousel>
-      </v-dialog>
-    </v-layout>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="showUsers" max-width="96%">
       <v-list subheader>
@@ -134,6 +123,7 @@
 
   </v-container>
 </template>
+
 <script>
 import AddPictures from './AddPictureDialog.vue'
 export default {
@@ -143,6 +133,7 @@ export default {
   },
   data () {
     return {
+      fullscreen_carousel: false,
       eventurl: location.href,
       showUsers: false,
       imageUrl: '',
@@ -252,9 +243,9 @@ export default {
       this.$debug('[openTheRightPic] index, picture', index, picture)
     },
     checkPicSrc (imgUrl) {
-      this.carousel = true
-      this.$debug('imgUrl', imgUrl)
+      this.$debug(imgUrl)
       this.picToOpen = imgUrl
+      this.carousel = true
     },
     removeFriend (user) {
       this.$store.dispatch('removeFriend', user)
