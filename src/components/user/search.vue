@@ -47,12 +47,15 @@
 </script>
 
 <style scoped>
+.v-icon {
+  display: -webkit-inline-box;
+}
 .btn--bottom:not(.btn--absolute) {
-    bottom: 72px;
+  bottom: 72px;
 }
 .arrowBack {
   position: fixed;
-  top: 8px;
+  top: 14px;
   left: 8px;
   z-index: 3;
   }

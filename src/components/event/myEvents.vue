@@ -17,7 +17,7 @@
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout column full-height style="height: 100%;">
-                  <p class="title mt-2">{{ item.event.title }}</p>
+                  <p class="bold  mt-2">{{ item.event.title }}</p>
                   <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                   <p class="date">{{ item.event.date | date}}</p>
                   <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(item)" end>Remove</v-btn>
@@ -111,6 +111,7 @@
 }
 .bold{
   font-weight: 500;
+  font-size: 1.2em;
 }
 .application a {
     text-decoration: none;

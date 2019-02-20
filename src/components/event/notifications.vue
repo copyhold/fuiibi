@@ -9,11 +9,11 @@
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
               <v-card>
                 <v-img @click="eventDetails(notification.key)" :src="notification.event.imageUrl" height="212px" style="background-color: white" />
-                <v-layout col align-end ml-3 mt-1>
-                  <v-flex xs9 tag="h4" @click="eventDetails(notification.key)" class="secondaryDark--text bold"> {{ notification.event.title }}</v-flex>
+                <v-layout col align-end ml-3 mt-3>
+                  <v-flex xs9 tag="h4" @click="eventDetails(notification.key)" class="secondaryDark--text bold bigger"> {{ notification.event.title }}</v-flex>
                   <time class="xs3 flex timer text-xs-center">{{ timeStamp(notification) }} ago</time>
                 </v-layout>
-                <v-layout col align-end ml-3>
+                <v-layout col align-end ml-3 pb-2>
                   <v-flex xs9>
                     <v-layout @click="eventDetails(notification.key)">
                       <div offset-xs3>
@@ -148,6 +148,9 @@ span.vuBadge {
 }
 .bold{
   font-weight: 500;
+}
+.bigger {
+  font-size: 1.2em;
 }
 .application a {
     text-decoration: none;

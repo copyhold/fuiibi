@@ -52,12 +52,15 @@
 
           <v-layout row wrap>
             <v-flex xs12 sm6 offset-sm3>
-              <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
-                <v-avatar>
-                  <v-icon >my_location</v-icon>
-                </v-avatar>
-                Use my current location
-              </v-chip>
+              <div class="text-xs-center mb-3" >
+                <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
+                  <v-avatar>
+                    <v-icon >my_location</v-icon>
+                  </v-avatar>
+                  Use my current location
+                </v-chip>
+              </div>
+
               <v-flex xs12 class="text-xs-center">
                 <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
               </v-flex>

@@ -89,7 +89,7 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
         <v-carousel hide-delimiters dark>
-          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index" ></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -531,7 +531,7 @@ export default {
     }
     .arrowBack {
       position: fixed;
-      top: 8px;
+      top: 14px;
       left: 8px;
       z-index: 3;
     }

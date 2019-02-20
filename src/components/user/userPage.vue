@@ -37,13 +37,13 @@
               </v-flex>
               <v-flex xs8 sm10 md10 class="ml-3">
                 <v-layout>
-                  <v-card-title primary-title >
-                    <v-card-actions wrap>
+                  <!-- <v-card-title primary-title > -->
+                    <!-- <v-card-actions wrap> -->
                       <div @click="eventDetails(item.key)">
-                        <h4 class="secondaryDark--text bold"> {{ item.event.title }}</h4>
+                        <h4 class="secondaryDark--text bold pt-3 pb-2"> {{ item.event.title }}</h4>
                       </div>
-                    </v-card-actions>
-                  </v-card-title>
+                    <!-- </v-card-actions> -->
+                  <!-- </v-card-title> -->
                 </v-layout>
                 <v-layout>
                   <div offset-xs3>
@@ -134,6 +134,9 @@ export default {
 </script>
 
 <style scoped>
+  h2 {
+    padding-left: 10px;
+  }
   .clickable {
     cursor: pointer;
   }
@@ -209,7 +212,7 @@ export default {
     }
     .arrowBack {
       position: fixed;
-      top: 8px;
+      top: 14px;
       left: 8px;
       z-index: 3;
     }
