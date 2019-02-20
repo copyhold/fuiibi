@@ -35,8 +35,8 @@
                     <v-btn fab large class="iwt" @click="iwtClicked(notification)"></v-btn>
                   </v-flex>
                   <v-flex xs3 align-self-end text-xs-center v-else>
-                    <v-btn fab flat large class="iwt clicked" center></v-btn>
-                    <v-badge bottom overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge>
+                    <v-btn flat large class="iwt checked" center></v-btn>
+                    <!-- <v-badge bottom overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge> -->
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -182,6 +182,9 @@ span.vuBadge {
 }
 .iwt .v-badge .v-icon {
   font-size: 15px;
+}
+.checked{
+  background: url("../img/iwtChecked.png") center/65% no-repeat;
 }
 .clicked{
   filter: opacity(50%);

@@ -53,10 +53,10 @@
               <v-flex xs2 sm2 md2>
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
                 <span v-else>
-                  <v-btn fab flat large class="iwt clicked" center></v-btn>
-                  <v-badge overlap overlay color="red" class="vuBadge">
+                  <v-btn flat large class="iwt checked" center></v-btn>
+                  <!-- <v-badge overlap overlay color="red" class="vuBadge">
                     <v-icon dark slot="badge">check</v-icon>
-                  </v-badge>
+                  </v-badge> -->
                 </span>
               </v-flex>
             </v-layout>
@@ -552,6 +552,9 @@ export default {
       position: relative;
       right: 16px;
       bottom: 16px;
+    }
+    .checked{
+      background: url("../img/iwtChecked.png") center/80% no-repeat;
     }
     .clicked{
       filter: opacity(50%);
