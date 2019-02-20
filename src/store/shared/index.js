@@ -4,6 +4,9 @@ export default {
     error: null
   },
   mutations: {
+    setMessaging (state, messaging) {
+      state.messaging = messaging
+    },
     setLoading (state, payload) {
       state.loading = payload
     },

@@ -379,8 +379,30 @@ export default {
     },
 
     // ***********FETCHUSERDATA************************
-
-    fetchUserData ({commit, getters}) {
+    setupMessagingAndToken (store) {
+      const user = store.getters.user
+      if (!user.id) {
+        return false
+      }
+      const messaging = firebase.messaging()
+      messaging.usePublicVapidKey('BGMmgv-N2qcvFyT0Uek_21rxK1xpoRZOsUB4OnKNFxsHyETOYxv2x3YfhGqHnZQP55IJjgORd6-fn9he6JiOlVI')
+      messaging.requestPermission()
+      .then(() => {
+        store.commit('setMessaging', messaging)
+        if (!user.fcmtoken) {
+          return messaging.getToken()
+        }
+      })
+      .then(fcmtoken => {
+        store.commit('setUser', { ...user, fcmtoken })
+        const ref = `/users/${user.id}/fcmtoken`
+        return firebase.database().ref().update({
+          [ref]: fcmtoken
+        })
+      })
+      .catch(this.$debug)
+    },
+    fetchUserData ({commit, getters, dispatch}) {
       commit('setLoading', true)
       let events = []
       let friends = []
@@ -400,12 +422,10 @@ export default {
       firebase.database().ref('/users/' + getters.user.id).once('value')
       .then(data => {
         const userData = data.val()
-        // Vue.console.log('[fetchUserData] userData', userData);
         if (!getters.user.imageUrl) {
           this.imageUrl = userData.imageUrl
         }
         else {
-          // Vue.console.log('[fetchUserData] image prise est this.imageUrl = getters.user.imageUrl');
           this.imageUrl = getters.user.imageUrl
         }
         this.firstName = userData.firstName
@@ -498,6 +518,7 @@ export default {
           }
           Vue.console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
           commit('setUser', updatedUser)
+          dispatch('setupMessagingAndToken')
           commit('setLoading', false)
         })
         .catch(error => {

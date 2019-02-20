@@ -37,11 +37,11 @@ if (!window.Promise) {
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
-  .then(function () {
-    console.log('serviceWorker registered')
+  .then(registration => {
+    firebase.messaging().useServiceWorker(registration)
   })
   .catch(function (err) {
-    console.log('ERROR WHILE REGISTERING SERVICE WORKER', err)
+    console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
   })
 }
 
@@ -118,6 +118,8 @@ new Vue({
       authDomain: 'iwtapplication.firebaseapp.com',
       databaseURL: 'https://iwtapplication.firebaseio.com',
       projectId: 'iwtapplication',
+   // messagingSenderId: '483536830177',
+      messagingSenderId: '208715939086',
       // the below link address is from firebase storage
       storageBucket: 'gs://iwtapplication.appspot.com'
       // storageBucket: 'iwtvueapp.appspot.com'
@@ -127,7 +129,6 @@ new Vue({
       // databaseURL: 'https://fuiibidatabasedevelopement.firebaseio.com',
       // projectId: 'fuiibidatabasedevelopement',
       // storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
-      // messagingSenderId: '483536830177'
     })
     // this.$debug('should load it now')
     firebase.auth().onAuthStateChanged((user) => {
@@ -135,6 +136,7 @@ new Vue({
         this.$debug('[main.js] user', user)
         this.$store.dispatch('loadUsers')
         this.$store.dispatch('autoSignIn', user)
+
         // GOOGLE
         if (user.photoURL) {
           this.$store.dispatch('checkUserFromGoogle', user)
