@@ -379,29 +379,6 @@ export default {
     },
 
     // ***********FETCHUSERDATA************************
-    setupMessagingAndToken (store) {
-      const user = store.getters.user
-      if (!user.id) {
-        return false
-      }
-      const messaging = firebase.messaging()
-      messaging.usePublicVapidKey('BGMmgv-N2qcvFyT0Uek_21rxK1xpoRZOsUB4OnKNFxsHyETOYxv2x3YfhGqHnZQP55IJjgORd6-fn9he6JiOlVI')
-      messaging.requestPermission()
-      .then(() => {
-        store.commit('setMessaging', messaging)
-        if (!user.fcmtoken) {
-          return messaging.getToken()
-        }
-      })
-      .then(fcmtoken => {
-        store.commit('setUser', { ...user, fcmtoken })
-        const ref = `/users/${user.id}/fcmtoken`
-        return firebase.database().ref().update({
-          [ref]: fcmtoken
-        })
-      })
-      .catch(this.$debug)
-    },
     fetchUserData ({commit, getters, dispatch}) {
       commit('setLoading', true)
       let events = []
@@ -441,90 +418,70 @@ export default {
           this.dateOfBirth = userData.dateOfBirth
         }
 
-        Vue.console.log('[fetchUserData] this.email', this.email);
+        const promises = [
+          firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value'),
+          firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').once('value'),
+          firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').once('value')
+        ]
+        return Promise.all(promises)
       })
-      .then( _=>{
-        // Fetch the user's ****FRIENDS**** from Firebase and store it in the local store
-        firebase.database().ref('/users/' + getters.user.id + '/friends/').on('child_added', data => {
-          const userId = data.val()
-          const fbKey = data.key
-          firebase.database().ref('/users/' + userId).once('value').then(data =>{
-              const friendData = data.val()
-              const newFriend = {
-                id: friendData.id,
-                imageUrl: friendData.imageUrl,
-                firstName: friendData.firstName,
-                lastName: friendData.lastName,
-                fbKey: fbKey
-              }
-              friends.push(newFriend)
-            })
-          })
+      .then(data => {
+        return Promise.all(data.map(snap  => {
+          if (!snap.exists()) return []
+          return Promise.all( Object.values(snap.val()).filter(val => val!==true).map( id => firebase.database().ref(`/users/${id}`).once('value')))
+        }))
       })
-      .then( _ => {
-        // Fetch the user's ****PENDINGFRIENDS**** from Firebase and store it in the local store
-        firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').on('child_added', data => {
-          const userId = data.val()
-          const fbKey = data.key
-          // Here I try to fetch the data for each friend and store it in vuex in order to be able to present it on the friends page.
-          // I should check if it's updated when there is a change in the value of one of the friends data.
-          firebase.database().ref('/users/' + userId).once('value').then(data =>{
-            // Vue.console.log('[fetchUserData] PENDINGFRIENDS data.val() ', data.val())
-            const friendData = data.val()
-            const newFriend = {
-              id: friendData.id,
-              imageUrl: friendData.imageUrl,
-              firstName: friendData.firstName,
-              lastName: friendData.lastName,
-              fbKey: fbKey
-              }
-            pendingFriends.push(newFriend)
-            })
-          })
-        })
-        .then(_=> {
-          firebase.database().ref('/users/' + getters.user.id + '/pendingInvitations/').on('child_added', data => {
-            // Fetch the user's ****PENDINGINVITAITONS**** from Firebase and store it in the local store
-            // Vue.console.log('[fetchUserData] onChildAdded pour pendingInvitations => data.val()',  data.val());
-            const userId = data.val()
-            const fbKey = data.key
-            firebase.database().ref('/users/' + userId).once('value').then(data =>{
-              const friendData = data.val()
-              const newFriend = {
-                id: friendData.id,
-                fbKey: fbKey
-                }
-              // commit('addPendingInvitations', newFriend)
-              pendingInvitations.push(newFriend)
-
-              })
-            })
-        })
-        .then( _=> {
-          const updatedUser = {
-            id: getters.user.id,
-            imageUrl: this.imageUrl,
-            firstName: this.firstName,
-            email: this.email,
-            dateOfBirth: this.dateOfBirth,
-            gender: this.gender,
-            livingIn: this.livingIn,
-            lastName: this.lastName,
-            events: events,
-            friends: friends,
-            notifications: notifications,
-            pendingFriends: pendingFriends,
-            pendingInvitations: pendingInvitations
+      .then(([fr, pfr, pinv]) => {
+        friends = fr.map(snap => {
+          return {
+            id:        snap.val().id,
+            imageUrl:  snap.val().imageUrl,
+            firstName: snap.val().firstName,
+            lastName:  snap.val().lastName,
+            fbKey:     'friends'
           }
-          Vue.console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
-          commit('setUser', updatedUser)
-          dispatch('setupMessagingAndToken')
-          commit('setLoading', false)
         })
-        .catch(error => {
-          Vue.console.log(error)
-          commit('setLoading', false)
+        pendingFriends = pfr.map(snap => {
+          return {
+            id:        snap.val().id,
+            imageUrl:  snap.val().imageUrl,
+            firstName: snap.val().firstName,
+            lastName:  snap.val().lastName,
+            fbKey:     'friends'
+          }
         })
+        pendingInvitations = pinv.map(fr => {
+          return {
+            id:        fr.val().id,
+            imageUrl:  fr.val().imageUrl,
+            firstName: fr.val().firstName,
+            lastName:  fr.val().lastName,
+            fbKey:     'friends'
+          }
+        })
+        const updatedUser = {
+          id: getters.user.id,
+          imageUrl: this.imageUrl,
+          firstName: this.firstName,
+          email: this.email,
+          dateOfBirth: this.dateOfBirth,
+          gender: this.gender,
+          livingIn: this.livingIn,
+          lastName: this.lastName,
+          events: events,
+          friends: friends,
+          notifications: notifications,
+          pendingFriends: pendingFriends,
+          pendingInvitations: pendingInvitations
+        }
+        Vue.console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
+        commit('setUser', updatedUser)
+        dispatch('setupMessagingAndToken')
+      })
+      .catch(error => {
+        Vue.console.log(error)
+      })
+      .finally(() => commit('setLoading', false))
     },
 
     fetchUsersEvents ({commit, getters}) {
