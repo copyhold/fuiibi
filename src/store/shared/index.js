@@ -45,12 +45,12 @@ export default {
       messaging.usePublicVapidKey('BGMmgv-N2qcvFyT0Uek_21rxK1xpoRZOsUB4OnKNFxsHyETOYxv2x3YfhGqHnZQP55IJjgORd6-fn9he6JiOlVI')
       messaging.onMessage(message => {
         Vue.console.log(message)
+        // fires if app is in foreground
         // message[notification[body|title]|data]
         // here need to add notification to notifications store
       })
       messaging.requestPermission()
       .then(() => {
-     // store.commit('setMessaging', messaging)
         messaging.onTokenRefresh(() => store.dispatch('updateFCMtoken'))
         if (!user.fcmtoken) {
           store.dispatch('updateFCMtoken')
