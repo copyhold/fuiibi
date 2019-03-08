@@ -1,5 +1,6 @@
 import * as firebase from 'firebase'
 import Vue from 'vue'
+require('firebase/functions')
 /* eslint-disable */
 // Here we are not eporting anymore a store, it's done in the index.js of the all store, so we export a normal JS object
 // export const store = new Vuex.Store({
@@ -261,27 +262,32 @@ export default {
 
     iwtClicked ({commit, getters}, payload) {
       Vue.console.debug('[iwtClicked] notification - payload', payload);
-      const key = payload.notification.key
+      const key = payload.notification.id
       const userId = payload.userId
       const clickerName = payload.firstName
       Vue.console.debug('[iwtClicked] clickerId', userId);
+      Promise.all([
       // I push the new event key in the events array of the clicker user
-      firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
-      .catch(Vue.console.log)
+      firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key),
       // Then I push the userId in the users array of the event
       firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
-      .catch(Vue.console.log)
+      ])
+      .then(res => {
+        const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
+        return LFKnow({
+          evid: key,
+          uid: getters.user.id
+        })
+      })
+      /**
       // I get the friend's list of the user in order to send them notifications
-      firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
-      .then(data => {
-        const dataPairs = data.val()
-        for (let item in dataPairs) {
+        const friends = res.val()[2];
+        for (let item in friends) {
           // const userId = dataPairs[item]
           const friendId = dataPairs[item]
           Vue.console.log('[iwtClicked] friendId', friendId);
           // I send notifications to each friend of the user about the clicked event
           firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
-          // firebase.database().ref('/users/' + userId + '/notifications/' + key + '/users/').push(getters.user.id)
           Vue.console.log('[iwtClicked] after push userId');
           Vue.console.log('[iwtClicked] clickerName', clickerName);
           Vue.console.log('[iwtClicked] userId', userId);
@@ -294,12 +300,9 @@ export default {
             dateToRank: - Date.now()
           });
         }
-        commit('setLoading', false)
-      })
-      .catch(error => {
-        Vue.console.log(error)
-        commit('setLoading', false)
-      })
+        */
+      .catch(Vue.console.log)
+      .finally(() => commit('setLoading', false))
     },
 
     createEvent ({commit, getters, dispatch}, payload) {
