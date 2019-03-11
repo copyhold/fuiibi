@@ -556,14 +556,14 @@ export default {
     .checked{
       background: url("../img/iwtChecked.png") center/80% no-repeat;
     }
-    .clicked{
+    /* .clicked{
       filter: opacity(50%);
     }
     span.vuBadge {
       bottom: 56px;
       right: -48px;
       position: relative;
-    }
+    } */
   }
 </style>
 // if (screenWidth < 700) {
