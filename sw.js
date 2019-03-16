@@ -21,7 +21,7 @@ self.addEventListener('push', function(event) {
       icon: ICON,
       image: data.image,
       tag:  notification.tag,
-      body: notification.body,
+      body: notification.body + data['gcm.notification.data'],
       data,
     })
   )
