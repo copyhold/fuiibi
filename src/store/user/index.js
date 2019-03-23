@@ -21,6 +21,12 @@ export default {
         user.imageUrl = payload.imageUrl
       }
     },
+    updateNotifications(state, payload) {
+      if (!payload.key) return
+      const noti = {}
+      noti[payload.key] = payload
+      state.user.notifications = { ...state.user.notifications || {}, ...noti }
+    },
     addNotification (state, payload) {
       state.user.notifications.push(payload)
       // I REMOVED THE SORT AS I SORT IT ALREADY WITH FIREBASE ORDERBYCHILD()!!!
@@ -254,7 +260,6 @@ export default {
            Vue.console.log('[checkUserFromGoogle] this user is NOT new')
            dispatch('fetchUserData')
            dispatch('fetchUsersEvents')
-           dispatch('listenToNotifications')
            dispatch('listenToNotificationsChanges')
            dispatch('listenToInvitationRemoval')
            dispatch('listenToFriendRemoval')
@@ -383,7 +388,6 @@ export default {
       commit('setLoading', true)
       let events = []
       let friends = []
-      let notifications = []
       let firstName = ''
       let email = ''
       let lastName = ''
@@ -470,13 +474,14 @@ export default {
           lastName: this.lastName,
           events: events,
           friends: friends,
-          notifications: notifications,
+          notifications: {},
           pendingFriends: pendingFriends,
           pendingInvitations: pendingInvitations
         }
         Vue.console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
         commit('setUser', updatedUser)
         dispatch('setupMessagingAndToken')
+        dispatch('listenToNotifications')
       })
       .catch(error => {
         Vue.console.log(error)
@@ -737,6 +742,7 @@ export default {
   },
 
   getters: {
+    notification: state => evid => state.user.notifications[evid],
     user (state) {
       return state.user
     },

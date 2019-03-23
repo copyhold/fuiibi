@@ -6,8 +6,8 @@
       </v-flex>
       <v-container grid-list-sm fluid>
         <v-layout row wrap>
-            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
-              <v-card>
+            <v-flex xs12 sm6 md4 wrap v-for="(notification,key) in notifications" :key="key" class="mb-1" v-if="!loading">
+              <v-card v-if="notification.event">
                 <v-img @click="eventDetails(notification.key)" :src="notification.event.imageUrl" height="212px" style="background-color: white" />
                 <v-layout col align-end ml-3 mt-3>
                   <v-flex xs9 tag="h4" @click="eventDetails(notification.key)" class="secondaryDark--text bold bigger"> {{ notification.event.title }}</v-flex>
@@ -55,6 +55,7 @@
 </template>
 
 <script>
+  const {mapState} = require('vuex')
   export default {
     data () {
       return {
@@ -64,30 +65,12 @@
     created () {
       this.$log(this.$vuetify.breakpoint)
     },
-    computed: {
-      onLine () {
-        if (navigator.onLine) {
-          this.$debug('online')
-        } else {
-          this.$debug('offline')
-        }
+    computed: mapState({
+      notifications: state => {
+        return state.user.user.notifications || {}
       },
-      notifications () {
-        if (this.$store.getters.user.notifications) {
-          // console.log('[notifications] this.$store.getters.user.notifications', this.$store.getters.user.notifications)
-          return this.$store.getters.user.notifications
-        }
-      },
-      loading () {
-        return this.$store.getters.loading
-      },
-      locality (notification) {
-        if (notification.event) {
-          console.log('[locality] notification.event', notification.event)
-          return true
-        }
-      }
-    },
+      loading: state => state.loading
+    }),
     methods: {
       newEvent () {
         this.$router.push('/event/new')

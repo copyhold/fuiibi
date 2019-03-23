@@ -135,129 +135,93 @@ export default {
         })
       })
     },
-
-    listenToNotifications ({commit, getters}) {
-      commit('setLoading', true)
-      // I listen to any new notifications received by the user.
-      firebase.database().ref('users/' + getters.user.id + '/notifications/').orderByChild('dateToRank').limitToFirst(20)
-      .on('child_added', data => { // here we attach listener to user notifications
-        const key = data.ref_.key
-        const notifData = data.val()
-        var thisEvent, counter
-        firebase.database().ref('/events/' + key).limitToFirst(20).once('value')
-        .then( data => {
-          this.thisEvent = data.val()
-        })
-        .then( _=> {
-          firebase.database().ref('/events/' + key + '/pictures').on('child_added', data => {
-            // here we attach listener to single event pictures
-            setTimeout( _=> {
-              firebase.database().ref('events/' + key).once('value').then( data => {
-                const updateddEvent = data.val()
-                const updateddEventWithAddedPic = {
-                  event: updateddEvent,
-                  key: key
-                }
-                // console.log('updateddEventWithAddedPic ', updateddEventWithAddedPic);
-                commit('updateEvent', updateddEventWithAddedPic)
-              })
-            }, 8000)
-          })
-        })
-        .then( _=> {
-          firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
-          .then( data => {
-            // console.log('[listenToNotifications] users', data.val());
-            this.counter = data.numChildren()
-            // console.log('[listenToNotifications] counter', this.counter);
-          })
-          // firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').on('child_added', data => {
-          //   console.log('[listenToNotifications] users', data.val());
-          //   this.counter = data.numChildren()
-          //   console.log('[listenToNotifications] counter', this.counter);
-          // })
-        })
-        .then( _=> {
-          // HERE THE FBKEY AND KEY ARE THE SAME AS IT'S NOT PASSED IN THE NOTIFICATION OBJECT AND WE DONT NEED IT ANYWAY AS WE WONT DELETE NOTIFICATIONS
-          const fbKey = data.key
-          const userEvents =  getters.user.events
-          // const event = data.val()
-          const newNotif = {
-            event: this.thisEvent,
-            key: key,
-            clickerName : notifData.clickerName,
-            userId: notifData.userId,
-            dateToRank : notifData.dateToRank,
-            friendsCount : this.counter
-          }
-          const newEvent = {
-            event: this.thisEvent,
-            key: key,
-            fbKey: fbKey
-          }
-          // I commit the new event only if it doesn't exist in the userEvents list. Otherwhise, it's done by the fetchEvents and createEvent.
-          if (userEvents.findIndex(item => item.key === key) < 0) {
-            // console.log('[listenToNotifications] NOT ON THE userEvents', newEvent);
-            commit('addEvent', newEvent)
-          }else {
-            Vue.console.log('[listenToNotifications] ALREADY IN THE userEvents else *******************************');
-          }
-          // console.log('[listenToNotifications] newNotif', newNotif);
-          commit('addNotification', newNotif)
-          commit('setLoading', false)
-        })
+    listenToEventPictures({commit, state}, evid) {
+      firebase.database().ref(`/events/${evid}/pictures`)
+      .on('child_added')
+      .then(data => { // new picture snapshot
+        const picture = data.val()
       })
+      .catch(Vue.console.error) 
+    },
+    reloadEvent({commit, ...store}, evid) {
+      if (evid=='null') return
+      firebase.database().ref(`/events/${evid}`).once('value').then(data => {
+        const noti = store.rootGetters.notification(data.key)
+        if (!noti) return
+        noti.event = data.val()
+        commit('updateNotifications', noti)
+      })
+      .catch(Vue.console.error)
+    },
+    listenToNotifications ({commit, getters, dispatch}) {
+      function updateNotifications(data) {
+        const evid = data.key
+        const notifData = data.val()
+        if (evid=='null' || notifData==null) return
+        const newNotif = {
+          key:          evid,
+          clickerName:  notifData.clickerName,
+          userId:       notifData.userId,
+          dateToRank:   notifData.dateToRank,
+          friendsCount: data.child('users').numChildren(),
+          event:        null
+        }
+        commit('updateNotifications', newNotif)
+        dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
+      }
+      const ref = firebase.database().ref(`users/${getters.user.id}/notifications/`)
+      ref.on('child_added', updateNotifications)
+      ref.on('child_changed', updateNotifications)
     },
 
     listenToNotificationsChanges ({commit, getters}) {
-      commit('setLoading', true)
+      return
       // I listen to any new notifications received by the user.
-      firebase.database().ref('users/' + getters.user.id + '/notifications/').on('child_changed', data => {
-        // In order to find the data.ref_.key, I console.log the data and look into the response
-        const key = data.ref_.key
-        const notifData = data.val()
-        var thisEvent;
-        var counter;
-        // var eventUserCounter;
+      //
+   // firebase.database().ref(`users/${getters.user.id}/notifications/`)
+   // .on('child_changed')
+   //   const key = data.key
+   //   const notifData = data.val()
+   //   var thisEvent;
+   //   var counter;
+   //   // var eventUserCounter;
 
-        firebase.database().ref('/events/' + key).once('value')
-        .then( data => {
-          this.thisEvent = data.val()
-          // this.eventUserCounter = data.child("users").numChildren()
-          Vue.console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
-        })
-        .then( _=> {
-          // I add a setTimeout, otherwise, the userFriends has no time to get updated and it keep the same amount of chiuldren
-          setTimeout( _=> {
-            firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
-            .then( data => {
-              this.counter = data.numChildren()
-              console.log('[listenToNotificationsChanges] counter changed!!!!!!', this.counter);
-            })
-          }, 8000)
-        })
-        .then( _ => {
-          firebase.database().ref('/events/' + key).once('value')
-          .then(data => {
-            const fbKey = data.key
-            const userEvents =  getters.user.events
-            const event = data.val()
-            const newNotif = {
-              key: key,
-              clickerName : notifData.clickerName,
-              userId: notifData.userId,
-              dateToRank : notifData.dateToRank,
-              friendsCount : this.counter
-              // eventUserCounter: this.eventUserCounter
-            }
+   //   firebase.database().ref('/events/' + key).once('value')
+   //   .then( data => {
+   //     this.thisEvent = data.val()
+   //     Vue.console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
+   //     //
+   //     // I add a setTimeout, otherwise, the userFriends has no time to get updated and it keep the same amount of chiuldren
+   //     setTimeout( _=> {
+   //       firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
+   //       .then( data => {
+   //         this.counter = data.numChildren()
+   //         console.log('[listenToNotificationsChanges] counter changed!!!!!!', this.counter);
+   //       })
+   //     }, 8000)
+   //   })
+   //   .then( _ => {
+   //     firebase.database().ref('/events/' + key).once('value')
+   //     .then(data => {
+   //       const fbKey = data.key
+   //       const userEvents =  getters.user.events
+   //       const event = data.val()
+   //       const newNotif = {
+   //         key: key,
+   //         clickerName : notifData.clickerName,
+   //         userId: notifData.userId,
+   //         dateToRank : notifData.dateToRank,
+   //         friendsCount : this.counter
+   //         // eventUserCounter: this.eventUserCounter
+   //       }
 
-            // Here update firebase
-            console.log('[listenToNotificationsChanges] newNotif avant de le faire le commit de updateNotification', newNotif);
-            commit('updateNotification', newNotif)
-            commit('setLoading', false)
-          })
-        })
-      })
+   //       // Here update firebase
+   //       console.log('[listenToNotificationsChanges] newNotif avant de le faire le commit de updateNotification', newNotif);
+   //       commit('updateNotification', newNotif)
+   //       commit('setLoading', false)
+   //     })
+   //   })
+   // })
     },
 
     iwtClicked ({commit, getters}, payload) {
@@ -403,7 +367,6 @@ export default {
             fbKey: this.fbKey
           }
           // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
-          console.log('[]');
           commit('addEvent', newEvent)
           commit('addEventToMyEvents', newEvent)
           // I get the friend's list of the user in order to send them notifications
