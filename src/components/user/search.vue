@@ -7,7 +7,7 @@
       <v-text-field solo label="Search" append-icon="search" v-model="search"></v-text-field>
     </v-layout>
     <v-tabs fixed centered >
-      <v-tabs-bar color="secondaryDark--text">
+      <!-- <v-tabs-bar color="secondaryDark--text"> -->
         <v-tabs-slider color="secondaryDark"></v-tabs-slider>
         <v-tabs-item :href="'#allUsers'">
           App users
@@ -15,7 +15,7 @@
         <v-tabs-item :href="'#friends'">
           My friends
         </v-tabs-item>
-      </v-tabs-bar>
+      <!-- </v-tabs-bar> -->
       <v-tabs-items>
         <v-tabs-content :id="'friends'">
           <!-- <friends-only :search="search"></friends-only> -->

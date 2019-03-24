@@ -225,7 +225,7 @@ export default {
       if (!user || !user.events) {
         return false
       }
-      return user.events.findIndex(event => event.key === this.id) >=0
+      return user.events.findIndex(event => event.key === this.id) >= 0
     }
   },
   methods: {
