@@ -6,7 +6,7 @@
       </v-flex>
       <v-container grid-list-sm fluid>
         <v-layout row wrap>
-            <v-flex xs12 sm6 md4 wrap v-for="(notification,key) in notifications" :key="key" class="mb-1" v-if="!loading">
+            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
               <v-card v-if="notification.event">
                 <v-img @click="eventDetails(notification.key)" :src="notification.event.imageUrl" height="212px" style="background-color: white" />
                 <v-layout col align-end ml-3 mt-3>
@@ -67,7 +67,9 @@
     },
     computed: mapState({
       notifications: state => {
-        return state.user.user.notifications || {}
+        const {notifications} = state.user.user
+        if (!notifications) return []
+        return Object.values(notifications).sort((a, b) => a.dateToRank - b.dateToRank)
       },
       loading: state => state.loading
     }),
