@@ -1,59 +1,20 @@
 <template >
   <v-container class="container">
-    <!-- <v-layout row>
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
-        </v-flex>
-    </v-layout> -->
-    <v-list subheader v-if="pendingFriends"  xs12>
-          <v-subheader>Friends invitations</v-subheader>
-          <template v-for="user in pendingFriends">
-            <v-divider></v-divider>
-            <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2 mb-2">
-              <v-flex xs2 >
-                <v-list-tile-avatar>
-                  <img :src="user.imageUrl"/>
-                </v-list-tile-avatar>
-                <!-- <v-list-tile-content>
-                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" @click="getUserPage(user)"></v-list-tile-title>
-                  <v-list-tile-sub-title>
-                    <v-list-tile-action>
-                      <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
-                      <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-                    </v-list-tile-action>
-                  </v-list-tile-sub-title>
-                </v-list-tile-content> -->
-              </v-flex>
-              <v-flex xs8 class="ml-3">
-                <v-list-tile-content @click="getUserPage(user)">
-                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
-                </v-list-tile-content>
-              </v-flex>
-            </v-list-tile>
-            <v-divider></v-divider>
-            <v-list-tile class="short">
-              <v-flex xs6 >
-                <v-list-tile-action>
-                  <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
-                </v-list-tile-action>
-              </v-flex>
-              <v-flex xs6>
-                <v-list-tile-action>
-                  <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-                </v-list-tile-action>
-              </v-flex>
-            </v-list-tile>
-          </template>
-      </v-list>
-      <v-divider></v-divider>
-      <friends-only></friends-only>
-    <v-fab-transition >
-      <v-btn router to="/search" color="orange" ripple fixed bottom right fab class="gotosearch white--text">
-        <v-icon>search</v-icon>
-      </v-btn>
-    </v-fab-transition>
+    <v-tabs fixed grow>
+      <v-tab href="#friends">My friends</v-tab>
+      <v-tab href="#contacts">My contacts</v-tab>
+      <v-tab href="#swarm">Swarm</v-tab>
+      <v-tab-item :value="'friends'">
+        <friends-only></friends-only>
+      </v-tab-item>
+      <v-tab-item :value="'contacts'">
+        <my-contacts></my-contacts>
+      </v-tab-item>
+      <v-tab-item :value="'swarm'">
+        <all-users></all-users>
+      </v-tab-item>
+    </v-tabs>
   </v-container>
-
 </template>
 
 <script>
@@ -68,16 +29,6 @@
         if (this.$store.getters.user) {
           if (this.$store.getters.user.friends.length > 0) {
             return this.$store.getters.user.friends
-          }
-        }
-      },
-      pendingFriends () {
-        if (this.$store.getters.user) {
-          if (this.$store.getters.user.pendingFriends) {
-            if (this.$store.getters.user.pendingFriends.length > 0) {
-              // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
-              return this.$store.getters.user.pendingFriends
-            }
           }
         }
       },

@@ -10,7 +10,6 @@ import signup from '@/components/user/signup'
 import AuthGard from './auth-guard'
 import friends from '@/components/user/friends'
 import settings from '@/components/user/settings'
-// import friend from '@/components/user/friend'
 import Notifications from '@/components/event/notifications'
 import Welcome from '@/components/Welcome'
 import Search from '@/components/user/search'
@@ -80,12 +79,6 @@ export default new Router({
       props: true,
       component: userPage
     },
-    // {
-    //   path: '/friends/:id',
-    //   name: 'Friend',
-    //   props: true,
-    //   component: friend
-    // },
     {
       path: '/profile',
       name: 'Profile',

@@ -1,39 +1,34 @@
 <template >
   <v-container class="container">
     <v-layout row>
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
-        </v-flex>
+      <v-flex xs12 class="text-xs-center">
+        <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
+      </v-flex>
     </v-layout>
     <v-list subheader v-if="!loading">
-      <v-layout class="getContactButton" v-if="!loading">
-        <v-btn @click="gapiLoad" flat class="blue--text">google contacts</v-btn>
-      </v-layout>
-        <v-subheader v-if="!loading">All users</v-subheader>
-        <!-- <template v-for="user in users" > -->
-        <template v-for="user in filteredUsers">
-          <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
-            <v-list-tile-avatar class="avatarImg">
-              <img :src="user.imageUrl"/>
-            </v-list-tile-avatar>
-            <v-list-tile-content  @click="getUserPage(user)" >
-              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-            </v-list-tile-content>
+      <v-subheader v-if="!loading">All users</v-subheader>
+      <template v-for="user in filteredUsers">
+        <v-divider></v-divider>
+        <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+          <v-list-tile-avatar class="avatarImg">
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content  @click="getUserPage(user)" >
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+          </v-list-tile-content>
             <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                <v-btn small class="greyColors" flat left>Pending...</v-btn>
+              <v-btn small class="greyColors" flat left>Pending...</v-btn>
             </v-list-tile-action>
             <v-list-tile-action v-else>
               <v-list-tile-action v-if="!isFriend(user)">
                 <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
               </v-list-tile-action>
               <v-list-tile-action v-else>
-                <!-- <v-btn @click="removeFriend(user)" outline small class="greyColors"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
                 <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
               </v-list-tile-action>
             </v-list-tile-action>
-          </v-list-tile>
-        </template>
+        </v-list-tile>
+      </template>
     </v-list>
     <v-layout>
       <v-fab-transition >
@@ -45,17 +40,17 @@
 
     <v-dialog v-model="showGoogleContact" max-width="96%">
       <v-list subheader>
-          <template v-for="user in googleContact">
-            <v-divider></v-divider>
-            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
-              <v-list-tile-avatar class="avatarImg">
-                <img :src="user.imageUrl"/>
-              </v-list-tile-avatar>
-              <v-list-tile-content  @click="getUserPage(user)" >
-                <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-              </v-list-tile-content>
+        <template v-for="user in googleContact">
+          <v-divider></v-divider>
+          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+            <v-list-tile-avatar class="avatarImg">
+              <img :src="user.imageUrl"/>
+            </v-list-tile-avatar>
+            <v-list-tile-content  @click="getUserPage(user)" >
+              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+            </v-list-tile-content>
               <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                  <v-btn small class="greyColors" flat left>Pending...</v-btn>
+                <v-btn small class="greyColors" flat left>Pending...</v-btn>
               </v-list-tile-action>
               <v-list-tile-action v-else>
                 <v-list-tile-action v-if="!isFriend(user)">
@@ -65,18 +60,17 @@
                   <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
                 </v-list-tile-action>
               </v-list-tile-action>
-            </v-list-tile>
-          </template>
-        </v-list>
-      </v-dialog>
-
+          </v-list-tile>
+        </template>
+      </v-list>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 /* eslint-disable */
   export default {
-    props: ['search'],
+    props: [],
     data () {
       return {
         key: '',
@@ -103,9 +97,7 @@
         return this.$store.getters.users
       },
       filteredUsers () {
-        return this.users.filter((user) => {
-          return user.firstName.toLowerCase().concat(user.lastName.toLowerCase()).trim().replace(' ', '').includes(this.search.toLowerCase().trim().replace(' ', '')) || user.lastName.toLowerCase().concat(user.firstName.toLowerCase()).trim().replace(' ', '').includes(this.search.toLowerCase().trim().replace(' ', ''))
-        })
+        return []
       },
       loading () {
         return this.$store.getters.loading
@@ -117,44 +109,6 @@
       }
     },
     methods: {
-    gapiLoad () {
-        var clientId = '24686685442-e8ookfdde4dbc6fqqmjo3iajo9rc71ai.apps.googleusercontent.com'
-        var apiKey = 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
-        var scopes = 'https://www.googleapis.com/auth/contacts.readonly'
-        console.log('in gapiLoad')
-        gapi.client.setApiKey(apiKey)
-        window.setTimeout(this.authorize(clientId, scopes))
-      },
-      authorize(clientId, scopes) {
-        console.log('in autorize')
-        gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, this.handleAuthorization)
-      },
-      handleAuthorization(authorizationResult) {
-        if (authorizationResult && !authorizationResult.error) {
-          this.$http.get("https://www.google.com/m8/feeds/contacts/default/thin?alt=json&access_token=" + authorizationResult.access_token + "&max-results=500&v=3.0")
-            .then(response => {
-              // let googleContactInFuiibi = []
-              let allEmailList = this.$store.getters.emails
-              let userEmailList = response.body.feed.entry
-              for (let email in userEmailList) {
-                let googleEmail = userEmailList[email].gd$email[0].address
-                // console.log('userEmailList[email].gd$email', userEmailList[email].gd$email[0].address);
-                allEmailList.find((user) => {
-                  if (user.email === googleEmail) {
-                    this.googleContactInFuiibi.push(user.id)
-                    console.log('THIS ON IS THERE!!!', user.id);
-                  } else {
-                    console.log('NOT FOUND....');
-                  }
-                })
-              }
-              console.log('[handleAuthorization] this.googleContactInFuiibi', this.googleContactInFuiibi);
-              this.showGoogleContact = true
-            })
-        } else {
-          console.log('ERROR IN GETTING PERMISSION');
-        }
-      },
       getUserPage (key) {
         console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})

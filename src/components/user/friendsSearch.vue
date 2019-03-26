@@ -1,28 +1,21 @@
 <template >
   <div class="container">
-    <!-- <v-layout row>
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
-        </v-flex>
-    </v-layout> -->
     <v-list subheader>
-        <v-subheader>My Friends</v-subheader>
-        <!-- <template v-for="user in friends" > -->
-        <template v-for="user in filteredFriends" >
-          <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
-            <v-list-tile-avatar>
-              <img :src="user.imageUrl"/>
-            </v-list-tile-avatar>
-            <v-list-tile-content @click="getUserPage(user)">
-              <v-list-tile-title>{{ user.firstName }} {{ user.lastName}}</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <!-- <v-btn outline small class="greyColors" @click="removeFriend(user)"><v-icon class="mr-1">delete_forever</v-icon>Remove</v-btn> -->
-              <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
-        </template>
+      <v-subheader>My Friends</v-subheader>
+      <template v-for="user in filteredFriends" >
+        <v-divider></v-divider>
+        <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title>{{ user.firstName }} {{ user.lastName}}</v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
     </v-list>
   </div>
 </template>

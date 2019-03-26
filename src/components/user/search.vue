@@ -3,28 +3,16 @@
     <router-link :to="'/friends'" class="arrowBack">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </router-link>
-    <v-layout id="inputSearch" >
-      <v-text-field solo label="Search" append-icon="search" v-model="search"></v-text-field>
-    </v-layout>
-    <v-tabs fixed centered >
-      <v-tabs-bar color="secondaryDark--text">
-        <v-tabs-slider color="secondaryDark"></v-tabs-slider>
-        <v-tabs-item :href="'#allUsers'">
-          App users
-        </v-tabs-item>
-        <v-tabs-item :href="'#friends'">
-          My friends
-        </v-tabs-item>
-      </v-tabs-bar>
-      <v-tabs-items>
-        <v-tabs-content :id="'friends'">
-          <!-- <friends-only :search="search"></friends-only> -->
-          <friends-search :search="search.trim()"></friends-search>
-        </v-tabs-content>
-        <v-tabs-content :id="'allUsers'">
-          <all-users :search="search.trim()"></all-users>
-        </v-tabs-content>
-      </v-tabs-items>
+    <v-tabs fixed grow >
+      <v-tab :href="'#friends'">My friends</v-tab>
+      <v-tab :href="'#friends'">My contacts</v-tab>
+      <v-tab>Swarm</v-tab>
+      <v-tab-item :id="'friends'">
+        <friends-search :search="search.trim()"></friends-search>
+      </v-tab-item>
+      <v-tab-item :id="'allUsers'">
+        <all-users :search="search.trim()"></all-users>
+      </v-tab-item>
     </v-tabs>
   </v-container>
 </template>
@@ -37,11 +25,6 @@
       }
     },
     computed: {
-      // filteredUsers () {
-      //   return this.users.filter((user) => {
-      //     return user.userName.match(this.search)
-      //   })
-      // }
     }
   }
 </script>
@@ -60,9 +43,6 @@
   z-index: 3;
   }
   #inputSearch {
-    position: fixed;
-    top: 56px;
-    right: 0px;
     width: 100%;
     height: 42px;
     padding: 0px;

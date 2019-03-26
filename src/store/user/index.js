@@ -537,7 +537,7 @@ export default {
         commit('addUser', newUser)
         commit('setLoading', false)
         commit('addEmail', {email: userData.email, id: userData.id})
-        })
+      })
     },
 
     getUserData ({commit, getters}, payload) {

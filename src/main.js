@@ -18,11 +18,11 @@ import AlertCmp from './components/shared/alert.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
+import MyContacts from './components/user/myContacts.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
 import FriendsSearch from './components/user/friendsSearch.vue'
 // import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@mdi/font/css/materialdesignicons.css'
-import VueResource from 'vue-resource'
 // import Typewriter from 'vue-typewriter'
 
 // import Router from 'vue-router'
@@ -66,10 +66,7 @@ Vue.use(vuelogger, {
 })
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
-  // version: '...', // Optional
 })
-
-Vue.use(VueResource)
 
 Vue.use(Vuetify, { theme: {
   primaryDark: '#F5F5F5',
@@ -91,15 +88,10 @@ Vue.use(Vuetify, { theme: {
 }})
 
 Vue.filter('date', DateFilter)
-// Here are the components I want to have globaly in order to reuse them in different places in my app.
-// the first argument in the parenthese is the selector
-// Vue.component('app-edit-meetup-details-dialog', EditMeetupDialog)
-// Vue.component('app-edit-meetup-date-dialog', EditMeetupDateDialog)
 Vue.component('app-alert', AlertCmp)
-// Vue.component('app-meetup-register-dialog', RegisterDialog)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
-// Vue.component('vuetify-google-autocomplete', VuetifyGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
+Vue.component('my-contacts', MyContacts)
 Vue.component('friends-only', FriendsOnly)
 Vue.component('friends-search', FriendsSearch)
 

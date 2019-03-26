@@ -1,54 +1,75 @@
 <template >
-  <div class="mt-2">
-    <!-- <v-layout row>
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="red" :witdh="7" :size="40" v-if="loading" class="mt-5"></v-progress-circular>
-        </v-flex>
-    </v-layout> -->
-    <v-list subheader>
-        <v-subheader>My Friends</v-subheader>
-        <template v-for="user in friends" >
-          <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+  <v-container>
+    <v-list subheader v-if="pendingFriends"  xs12>
+      <v-subheader>Friends invitations</v-subheader>
+      <template v-for="user in pendingFriends">
+        <v-divider></v-divider>
+        <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2 mb-2">
+          <v-flex xs2 >
             <v-list-tile-avatar>
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
+          </v-flex>
+          <v-flex xs8 class="ml-3">
             <v-list-tile-content @click="getUserPage(user)">
               <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
             </v-list-tile-content>
+          </v-flex>
+        </v-list-tile>
+        <v-divider></v-divider>
+        <v-list-tile class="short">
+          <v-flex xs6 >
             <v-list-tile-action>
-              <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
+              <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
             </v-list-tile-action>
-          </v-list-tile>
-        </template>
-        <!-- <v-layout>
-          <p>
-            My friends
-          </p>
-        </v-layout>
-        <template v-for="user in friends" >
-          <v-card>
-            <v-card-media :src="user.imageUrl" class="squaredVCard">
-              <v-btn flat small class="greyColors" @click="removeFriend(user)" absolute><v-icon class="mr-1">close</v-icon></v-btn>
-              <v-card-title class="white--text">
-                {{ user.firstName }} {{ user.lastName }}
-              </v-card-title>
-            </v-card-media>
-          </v-card>
-        </template>-->
+          </v-flex>
+          <v-flex xs6>
+            <v-list-tile-action>
+              <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
+            </v-list-tile-action>
+          </v-flex>
+        </v-list-tile>
+      </template>
     </v-list>
-  </div>
+    <v-list subheader>
+      <v-subheader>My Friends</v-subheader>
+      <template v-for="user in friends" >
+        <v-divider></v-divider>
+        <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
+    </v-list>
+  </v-container>
 </template>
 
 <script>
   export default {
-    props: ['search'],
+    props: [],
     data () {
       return {
         key: ''
       }
     },
     computed: {
+      pendingFriends () {
+        if (this.$store.getters.user) {
+          if (this.$store.getters.user.pendingFriends) {
+            if (this.$store.getters.user.pendingFriends.length > 0) {
+              // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
+              return this.$store.getters.user.pendingFriends
+            }
+          }
+        }
+      },
       friends () {
         if (!this.$store.getters.user || !this.$store.getters.user.friends) {
           return []
@@ -57,18 +78,6 @@
           return this.$store.getters.user.friends
         }
       },
-      // filteredFriends () {
-      //   if (this.$store.getters.user) {
-      //     if (this.$store.getters.user.friends) {
-      //       if (this.$store.getters.user.friends.length > 0) {
-      //         return this.friends.filter((user) => {
-      //           // return user.firstName.match(this.search)
-      //           return user.firstName.toLowerCase().match(this.search.toLowerCase()) || user.lastName.toLowerCase().match(this.search.toLowerCase())
-      //         })
-      //       }
-      //     }
-      //   }
-      // },
       loading () {
         return this.$store.getters.loading
       },
