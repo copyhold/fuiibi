@@ -491,31 +491,25 @@ export default {
     },
 
     fetchUsersEvents ({commit, getters}) {
-      commit('setLoading', true)
-      firebase.database().ref('/users/' + getters.user.id + '/userEvents/').on('child_added', data => {
-        const key = data.val()
-        const fbKey = data.key
-        // Vue.console.log('[fetchUsersEvents] fbKey - key', fbKey, key);
-        firebase.database().ref('/events/' + key).once('value').then(data =>{
-          const eventData = data.val()
-          const newEvent = {
-            event: eventData,
-            key: key,
-            fbKey: fbKey
-          }
-          if (newEvent.event.imageUrl) {
-            //Vue.console.log('[fetchUsersEvents] b4 commit add event => newEvent', newEvent);
-            commit('addEventToMyEvents', newEvent)
-            // I add the event already with a pic event so the new one created will come from the createEvent
-            // Vue.console.log('[fetchUsersEvents] b4 commit addevent => newEvent', newEvent);
-            commit('addEvent', newEvent)
-          }
-          commit('setLoading', false)
-        })
-        .catch(error => {
-          Vue.console.log(error)
-          commit('setLoading', false)
-        })
+      firebase.database()
+      .ref('/users/' + getters.user.id + '/userEvents/')
+      .on('value', function (snap) {
+        for (let evid of Object.keys(snap.val())) {
+          firebase.database()
+          .ref(`/events/${evid}`)
+          .once('value')
+          .then(snap => {
+            const newEvent = {
+              event: snap.val(),
+              key:   snap.key,
+              fbKey: snap.key
+            }
+            if (newEvent.event.imageUrl) {
+              commit('addEventToMyEvents', newEvent)
+              commit('addEvent', newEvent)
+            }
+          })
+        }
       })
     },
 
