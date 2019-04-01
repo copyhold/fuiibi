@@ -28,10 +28,10 @@ export default {
       const messaging = firebase.messaging()
       return messaging.getToken()
       .then(fcmtoken => {
-        if (user.fcmtokens && Object.values(user.fcmtokens).indexOf(fcmtoken) >= 0) {
+        if (user.fcmtokens && user.fcmtokens[fcmtoken]) {
           return
         }
-        return firebase.database().ref(`/users/${user.id}/fcmtokens`).push(fcmtoken)
+        return firebase.database().ref(`/users/${user.id}/fcmtokens/${fcmtoken}`).set(true)
       })
       .catch(err => {
         console.error(err)
