@@ -12,7 +12,7 @@
       <v-flex xs12>
 
         <v-card>
-          <v-card-media :src="user.imageUrl" height="300px" v-if="!showCanvas"></v-card-media>
+          <v-img :src="user.imageUrl" height="300px" v-if="!showCanvas"></v-img>
           <img :src="imageUrl" ref="imageToCanvas" style="display: none">
           <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
           <v-layout v-if="editMode">

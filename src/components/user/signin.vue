@@ -56,7 +56,7 @@
       <v-layout row>
 
 
-       <v-dialog v-model="signUpForm" persistent max-width="96%">
+       <v-dialog v-model="signUpForm" persistent max-width="96%" lazy width="400px">
         <v-btn flat slot="activator" class="simpleSignUp">Sign Up</v-btn>
         <v-card>
           <v-card-text>
@@ -121,8 +121,8 @@
         </v-card>
       </v-dialog>
 
-      <v-dialog v-model="signInForm" persistent max-width="96%">
-       <v-btn flat slot="activator" class="simpleSignIn">Sign In</v-btn>
+      <v-dialog v-model="signInForm" persistent max-width="96%" lazy width="400px">
+       <v-btn flat slot="activator" class="simpleSignIn">Log in</v-btn>
        <v-card>
          <v-card-text>
              <v-container grid-list-md>

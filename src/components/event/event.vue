@@ -89,7 +89,7 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
         <v-carousel hide-delimiters dark>
-          <v-carousel-item v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index" ></v-carousel-item>
+          <v-carousel-item class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -225,7 +225,7 @@ export default {
       if (!user || !user.events) {
         return false
       }
-      return user.events.findIndex(event => event.key === this.id) >= 0
+      return (user.events.findIndex(event => event.key === this.id) >= 0)
     }
   },
   methods: {
@@ -418,6 +418,9 @@ export default {
 </script>
 
 <style scope>
+  .picInCaroussel{
+    background-size: contain;
+  }
   .shareButton {
     position: absolute;
     top: 64px !important;
@@ -466,6 +469,12 @@ export default {
   .carousel__item {
     background-size: contain;
   }
+  div.v-responsive__content{
+    background-size: contain;
+  }
+  /* .v-image__image--cover {
+    background-size: contain;
+  } */
   .fitScreen {
     max-width: 100vw;
   }

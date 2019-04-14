@@ -28,9 +28,10 @@ export default {
       const messaging = firebase.messaging()
       return messaging.getToken()
       .then(fcmtoken => {
-        store.commit('setUser', { ...user, fcmtoken })
-        const ref = `/users/${user.id}/fcmtoken`
-        firebase.database().ref().update({ [ref]: fcmtoken })
+        if (user.fcmtokens && Object.values(user.fcmtokens).indexOf(fcmtoken) >= 0) {
+          return
+        }
+        return firebase.database().ref(`/users/${user.id}/fcmtokens`).push(fcmtoken)
       })
       .catch(err => {
         console.error(err)
@@ -48,13 +49,12 @@ export default {
         // fires if app is in foreground
         // message[notification[body|title]|data]
         // here need to add notification to notifications store
+        // or do nothing since notifications should be listened
       })
       messaging.requestPermission()
       .then(() => {
         messaging.onTokenRefresh(() => store.dispatch('updateFCMtoken'))
-        if (!user.fcmtoken) {
-          store.dispatch('updateFCMtoken')
-        }
+        store.dispatch('updateFCMtoken')
       })
       .catch(err => {
         Vue.console.debug(err)
