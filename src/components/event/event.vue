@@ -88,8 +88,8 @@
           <v-spacer></v-spacer>
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark>
-          <v-carousel-item class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" >
+          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -229,6 +229,10 @@ export default {
     }
   },
   methods: {
+    getCarouselHeight () {
+      var item = document.getElementsByClassName('v-image__image--cover')
+      this.carouselHeight = item[0].clientHeight + 'px'
+    },
     openWhatsapp () {
       this.$debug('[clicked open whatsapp] this.id', this.id)
       window.open(`whatsapp://send?text=Discover the event you have been invited to! Visit ${this.eventurl}`)
@@ -417,16 +421,13 @@ export default {
 }
 </script>
 
-<style scope>
-  .picInCaroussel{
-    background-size: contain;
-  }
+<style scoped>
   .shareButton {
     position: absolute;
     top: 64px !important;
     right: 0px;
     z-index: 1;
-  },
+  }
   .rotateLeftIcon {
     margin-top: 0 !important;
   }
@@ -473,7 +474,7 @@ export default {
     background-size: contain;
   }
   /* .v-image__image--cover {
-    background-size: contain;
+      background-size: contain;
   } */
   .fitScreen {
     max-width: 100vw;
@@ -511,28 +512,28 @@ export default {
     font-weight: 200;
     min-height: 70px;
   }
-    @media screen and (max-width: 1263px) {
-      span.vuBadge {
-        bottom: 100px;
-        right: 82px;
-        position: absolute;
-      }
-      .carousel {
-        min-height: 100%;
-        width: 100vw;
-      }
-      .carousel__item {
-        background-size: contain;
-      }
+  @media screen and (max-width: 1263px) {
+    span.vuBadge {
+      bottom: 100px;
+      right: 82px;
+      position: absolute;
     }
-    @media screen and (max-width: 960px) {
-      span.vuBadge {
-        bottom: 100px;
-        right: 82px;
-        position: absolute;
-      }
+    .carousel {
+      min-height: 100%;
+      width: 100vw;
     }
-  @media screen and (max-width: 599px) {
+    .carousel__item {
+      background-size: contain;
+    }
+  }
+  @media screen and (max-width: 960px) {
+    span.vuBadge {
+      bottom: 100px;
+      right: 82px;
+      position: absolute;
+    }
+  }
+  @media screen and (max-width: 600px) {
     .container {
       padding: 0;
     }
@@ -547,7 +548,7 @@ export default {
       width: 100vw;
     }
     .carousel__item {
-      background-size: contain;
+      background-size: contain !important;
     }
     /* .dialog {
       margin: 8px !important;
@@ -561,18 +562,14 @@ export default {
       bottom: 16px;
     }
     .checked{
-      background: url("../img/iwtChecked.png") center/80% no-repeat;
+      background: url("../img/iwtChecked.png") left/80% no-repeat;
     }
-    /* .clicked{
-      filter: opacity(50%);
-    }
-    span.vuBadge {
-      bottom: 56px;
-      right: -48px;
-      position: relative;
-    } */
   }
 </style>
+
+
+
+
 // if (screenWidth < 700) {
 //   context.translate(this.$refs.canvas.height / 2, screenWidth)
 // } else {
