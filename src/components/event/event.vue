@@ -89,7 +89,7 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
         <v-carousel hide-delimiters dark :cycle="false" >
-          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -172,6 +172,12 @@ export default {
     this.$store.dispatch('setCurrentEvent', this.$route.params.id)
   },
   computed: {
+    carouselPictures () {
+      const images = Object.values(this.event.pictures)
+      if (!this.picToOpen) return images
+      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
+      return [...images.slice(index), ...images.slice(0,index)]
+    },
     event () {
       return this.$store.getters.getCurrentEvent
     },
