@@ -1,4 +1,4 @@
-<template lang="html">
+v-img<template lang="html">
   <v-container class="container">
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -12,8 +12,8 @@
       <v-flex xs12>
 
         <v-card class="mb-1">
-          <v-card-media :src="user.imageUrl" height="120px" >
-          </v-card-media>
+          <v-img :src="user.imageUrl" height="120px" >
+          </v-img>
           <v-card-title class="eventTitle">
               <h2>{{ user.firstName }}</h2>
           </v-card-title>
@@ -33,7 +33,7 @@
           <v-container fluid>
             <v-layout col xs12>
               <v-flex xs4 sm2 md2>
-                <v-card-media :src="item.event.imageUrl" height="112px" style="background-color: white"></v-card-media>
+                <v-img :src="item.event.imageUrl" height="112px" style="background-color: white"></v-img>
               </v-flex>
               <v-flex xs8 sm10 md10 class="ml-3">
                 <v-layout>

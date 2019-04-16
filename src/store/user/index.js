@@ -169,6 +169,7 @@ export default {
       Reflect.deleteProperty(state.user.pendingInvitations, payload)
     },
     removeFriendFromUser(state, payload) {
+      console.log("[removeFriendFromUser] friend should be removed from user...");
       const friends = state.user.friends
       friends.splice(friends.findIndex(friend => friend.id === payload), 1)
       Reflect.deleteProperty(state.user.friends, payload)

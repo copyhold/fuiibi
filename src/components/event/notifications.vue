@@ -169,11 +169,11 @@ span.vuBadge {
   font-size: 15px;
 }
 .checked{
-  background: url("../img/iwtChecked.png") center/65% no-repeat;
+  background: url("../img/iwtChecked.png") left/65% no-repeat;
 }
-.clicked{
+/* .clicked{
   filter: opacity(50%);
-}
+} */
 .btn__content {
   padding: 0px !important;
 }
