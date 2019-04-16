@@ -88,8 +88,8 @@
           <v-spacer></v-spacer>
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark :cycle="false" >
-          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" v-if="carousel">
+          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -172,12 +172,6 @@ export default {
     this.$store.dispatch('setCurrentEvent', this.$route.params.id)
   },
   computed: {
-    carouselPictures () {
-      const images = Object.values(this.event.pictures)
-      if (!this.picToOpen) return images
-      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-      return [...images.slice(index), ...images.slice(0, index)]
-    },
     event () {
       return this.$store.getters.getCurrentEvent
     },
@@ -235,6 +229,12 @@ export default {
     }
   },
   methods: {
+    carouselPictures () {
+      const images = Object.values(this.event.pictures)
+      if (!this.picToOpen) return images
+      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
+      return [...images.slice(index), ...images.slice(0, index)]
+    },
     getCarouselHeight () {
       var item = document.getElementsByClassName('v-image__image--cover')
       this.carouselHeight = item[0].clientHeight + 'px'
@@ -251,7 +251,6 @@ export default {
       this.$debug('[openTheRightPic] index, picture', index, picture)
     },
     checkPicSrc (imgUrl) {
-      this.$debug(imgUrl)
       this.picToOpen = imgUrl
       this.carousel = true
     },
