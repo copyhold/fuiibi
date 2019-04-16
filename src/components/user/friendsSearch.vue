@@ -1,7 +1,7 @@
 <template >
   <div class="container">
     <v-list subheader>
-      <v-subheader>My Friends</v-subheader>
+      <v-subheader><v-input model="search" append-icon="search" /></v-subheader>
       <template v-for="user in filteredFriends" >
         <v-divider></v-divider>
         <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">

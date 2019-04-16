@@ -1,15 +1,13 @@
 <template >
   <v-container class="container">
-    <v-layout row>
-      <v-flex xs12 class="text-xs-center">
-        <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
-      </v-flex>
-    </v-layout>
-    <v-list subheader v-if="!loading">
-      <v-subheader v-if="!loading">All users</v-subheader>
-      <template v-for="user in filteredUsers">
+    <v-list subheader>
+      <v-subheader>
+        <v-text-field hide-details placeholder="start typing" :change="loading=false" single-line v-model="search" full-width />
+        <v-btn @click="searchUsers" :disabled="loading"><v-icon>search</v-icon></v-btn>
+      </v-subheader>
+      <template v-for="user in users">
         <v-divider></v-divider>
-        <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+        <v-list-tile avatar v-bind:key="user.id">
           <v-list-tile-avatar class="avatarImg">
             <img :src="user.imageUrl"/>
           </v-list-tile-avatar>
@@ -30,78 +28,21 @@
         </v-list-tile>
       </template>
     </v-list>
-    <v-layout>
-      <v-fab-transition >
-        <v-btn @click="refresh" color="orange" fixed bottom right fab ripple class=" white--text">
-          <v-icon>autorenew</v-icon>
-        </v-btn>
-      </v-fab-transition>
-    </v-layout>
-
-    <v-dialog v-model="showGoogleContact" max-width="96%">
-      <v-list subheader>
-        <template v-for="user in googleContact">
-          <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
-            <v-list-tile-avatar class="avatarImg">
-              <img :src="user.imageUrl"/>
-            </v-list-tile-avatar>
-            <v-list-tile-content  @click="getUserPage(user)" >
-              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-            </v-list-tile-content>
-              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                <v-btn small class="greyColors" flat left>Pending...</v-btn>
-              </v-list-tile-action>
-              <v-list-tile-action v-else>
-                <v-list-tile-action v-if="!isFriend(user)">
-                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
-                </v-list-tile-action>
-                <v-list-tile-action v-else>
-                  <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-                </v-list-tile-action>
-              </v-list-tile-action>
-          </v-list-tile>
-        </template>
-      </v-list>
-    </v-dialog>
   </v-container>
 </template>
 
 <script>
-/* eslint-disable */
+  const firebase = require('firebase')
   export default {
     props: [],
     data () {
       return {
-        key: '',
-        googleContactInFuiibi: [],
-        showGoogleContact: false
+        loading: false,
+        search: '',
+        users: []
       }
     },
     computed: {
-      googleContact () {
-        if (this.googleContactInFuiibi != '') {
-          let eventUsers = []
-          let userData = ''
-          const users = this.googleContactInFuiibi
-          for (let user in users) {
-            let userId = users[user]
-            userData = this.$store.getters.getUserData(userId)
-            eventUsers.push(userData)
-          }
-          console.log('[googleContact] eventUsers', eventUsers);
-          return eventUsers
-        }
-      },
-      users () {
-        return this.$store.getters.users
-      },
-      filteredUsers () {
-        return []
-      },
-      loading () {
-        return this.$store.getters.loading
-      },
       loggedInUserId () {
         if (this.$store.getters.user) {
           return this.$store.getters.user.id
@@ -109,6 +50,18 @@
       }
     },
     methods: {
+      searchUsers () {
+        this.loading = true
+        this.users = []
+        firebase.database().ref('/users')
+        .orderByChild('email')
+        .startAt(this.search)
+        .endAt(this.search + 'z')
+        .on('child_added', snap => {
+          this.users.push(snap.val())
+          this.loading = false
+        })
+      },
       getUserPage (key) {
         console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})
@@ -117,9 +70,6 @@
       removeFriend (user) {
         console.log('removeFriend', user)
         this.$store.dispatch('removeFriend', user)
-      },
-      refresh () {
-        this.$store.dispatch('loadUsers')
       },
       sendFriendRequest (userId) {
         this.$store.dispatch('sendFriendRequest', userId)

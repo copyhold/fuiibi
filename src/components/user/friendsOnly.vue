@@ -32,8 +32,8 @@
       </template>
     </v-list>
     <v-list subheader>
-      <v-subheader>My Friends</v-subheader>
-      <template v-for="user in friends" >
+      <v-subheader><v-text-field hide-details placeholder="start typing" single-line v-model="search" full-width append-icon="search" /></v-subheader>
+      <template v-for="user in filteredFriends" >
         <v-divider></v-divider>
         <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
           <v-list-tile-avatar>
@@ -56,18 +56,21 @@
     props: [],
     data () {
       return {
+        search: '',
         key: ''
       }
     },
     computed: {
+      filteredFriends () {
+        return this.friends.filter(friend => {
+          if (this.search.length < 3) return true
+          return `${friend.firstName}${friend.lastName}`.match(new RegExp(this.search, 'i'))
+        })
+      },
       pendingFriends () {
-        if (this.$store.getters.user) {
-          if (this.$store.getters.user.pendingFriends) {
-            if (this.$store.getters.user.pendingFriends.length > 0) {
-              // console.log('[pendingFriends] this.$store.getters.user.pendingFriends.length > 0')
-              return this.$store.getters.user.pendingFriends
-            }
-          }
+        if (!this.$store.getters.user || !this.$store.getters.user.pendingFriends) return []
+        if (this.$store.getters.user.pendingFriends.length > 0) {
+          return this.$store.getters.user.pendingFriends
         }
       },
       friends () {
@@ -77,6 +80,7 @@
         if (this.$store.getters.user.friends.length > 0) {
           return this.$store.getters.user.friends
         }
+        return []
       },
       loading () {
         return this.$store.getters.loading
