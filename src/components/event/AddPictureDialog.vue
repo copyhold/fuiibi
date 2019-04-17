@@ -37,13 +37,12 @@
 </template>
 
 <script>
-import FileUpload from 'vue-upload-component'
 import Compressor from 'compressorjs'
 import ImageEditor from './Edit/imageeditor.vue'
 
 export default {
   props: ['meetupId', 'userWasThere'],
-  components: {FileUpload, ImageEditor},
+  components: {ImageEditor},
   data () {
     return {
       editFile: null,
