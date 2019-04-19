@@ -1,50 +1,25 @@
 <template >
   <v-container>
-    <v-list subheader v-if="signedIn">
-      <v-subheader v-if="!loading">My Google Contacts</v-subheader>
+    <v-list subheader>
+      <v-subheader>
+        <v-btn flat @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
+      </v-subheader>
+      <user-card v-for="user in emails" :user="user" key="user.id" />
     </v-list>
-    <v-btn @click="signIn" color="orange" v-if="!signedIn" fixed bottom right fab ripple class=" white--text">
-      <v-icon>autorenew</v-icon>
-    </v-btn>
-
-    <v-dialog v-model="showGoogleContact" max-width="96%">
-      <v-list subheader>
-        <template v-for="user in googleContact">
-          <v-divider></v-divider>
-          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
-            <v-list-tile-avatar class="avatarImg">
-              <img :src="user.imageUrl"/>
-            </v-list-tile-avatar>
-            <v-list-tile-content  @click="getUserPage(user)" >
-              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-            </v-list-tile-content>
-              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                <v-btn small class="greyColors" flat left>Pending...</v-btn>
-              </v-list-tile-action>
-              <v-list-tile-action v-else>
-                <v-list-tile-action v-if="!isFriend(user)">
-                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
-                </v-list-tile-action>
-                <v-list-tile-action v-else>
-                  <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-                </v-list-tile-action>
-              </v-list-tile-action>
-          </v-list-tile>
-        </template>
-      </v-list>
-    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import * as firebase from 'firebase'
+require('firebase/functions')
 const gapi = window.gapi
 export default {
   data () {
     return {
+      emails: [],
       signedIn: false,
       googleContact: [],
-      loading: false,
-      showGoogleContact: false
+      loading: false
     }
   },
   created () {
@@ -54,11 +29,12 @@ export default {
     })
   },
   methods: {
+    startSync () {
+      if (!this.signedIn) return
+      this.loadGContacts()
+    },
     continueWithGoogle () {
       const updateSigninStatus = (isSignedIn) => {
-        if (!this.signedIn && isSignedIn) {
-          this.loadGContacts()
-        }
         this.signedIn = isSignedIn
       }
       // const clientId = '24686685442-e8ookfdde4dbc6fqqmjo3iajo9rc71ai.apps.googleusercontent.com'
@@ -76,33 +52,35 @@ export default {
       })
       .catch(err => console.error(err))
     },
-    loadGContacts () {
+    loadGContacts (nextPageToken = null) {
       gapi.client.people.people.connections.list({
         resourceName: 'people/me',
-        pageSize: 50,
-        personFields: 'names,emailAddresses'
-     // pageToken: nextPageToken
+        pageSize: 100,
+        personFields: 'names,emailAddresses',
+        pageToken: nextPageToken
       })
       .then(response => {
+        if (response.result.nextPageToken) {
+          this.loadGContacts(response.result.nextPageToken)
+        }
         // response.result: { totalItems, totalPeople, nextPageToken?, connections:[] }
         // @todo: send emails to firebase in batch to check if exist
         // add to list those that exist and retrieve new batch from G.
+
+        const emails = []
+        for (let contact of response.result.connections) {
+          const addresses = contact.emailAddresses
+          if (typeof addresses === 'object' && addresses.length > 0 && addresses[0].value) {
+            emails.push(addresses[0].value)
+          }
+        }
+        const findFuiibiers = firebase.app().functions().httpsCallable('findFuiibiers')
+        return findFuiibiers({ emails: emails })
+      })
+      .then(res => {
+        this.emails = [ ...this.emails, ...res.data ]
       })
       .catch(console.error)
-    },
-    signIn () {
-      gapi.auth2.getAuthInstance().signIn()
-    },
-    gapiLoad () {
-      alert('called')
-      var clientId = '24686685442-e8ookfdde4dbc6fqqmjo3iajo9rc71ai.apps.googleusercontent.com'
-      var apiKey = 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
-      var scopes = 'https://www.googleapis.com/auth/contacts.readonly'
-      gapi.client.setApiKey(apiKey)
-      window.setTimeout(this.authorize(clientId, scopes))
-    },
-    authorize (clientId, scopes) {
-      gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: false}, this.handleAuthorization)
     }
   }
 }

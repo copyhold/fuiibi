@@ -3,30 +3,9 @@
     <v-list subheader>
       <v-subheader>
         <v-text-field hide-details placeholder="start typing" :change="loading=false" single-line v-model="search" full-width />
-        <v-btn @click="searchUsers" :disabled="loading"><v-icon>search</v-icon></v-btn>
+        <v-btn @click="searchUsers" flat :disabled="loading"><v-icon>search</v-icon></v-btn>
       </v-subheader>
-      <template v-for="user in users">
-        <v-divider></v-divider>
-        <v-list-tile avatar v-bind:key="user.id">
-          <v-list-tile-avatar class="avatarImg">
-            <img :src="user.imageUrl"/>
-          </v-list-tile-avatar>
-          <v-list-tile-content  @click="getUserPage(user)" >
-            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-          </v-list-tile-content>
-            <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-              <v-btn small class="greyColors" flat left>Pending...</v-btn>
-            </v-list-tile-action>
-            <v-list-tile-action v-else>
-              <v-list-tile-action v-if="!isFriend(user)">
-                <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
-              </v-list-tile-action>
-              <v-list-tile-action v-else>
-                <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-              </v-list-tile-action>
-            </v-list-tile-action>
-        </v-list-tile>
-      </template>
+      <user-card v-for="user in users" :user="user" key="user.id" />
     </v-list>
   </v-container>
 </template>
@@ -42,13 +21,6 @@
         users: []
       }
     },
-    computed: {
-      loggedInUserId () {
-        if (this.$store.getters.user) {
-          return this.$store.getters.user.id
-        }
-      }
-    },
     methods: {
       searchUsers () {
         this.loading = true
@@ -62,45 +34,14 @@
           this.loading = false
         })
       },
-      getUserPage (key) {
-        console.log('[getUserPage] clicked key', key)
-        this.$store.dispatch('getUserData', {userId: key.id})
-        this.$router.push('/users/' + key.id)
-      },
-      removeFriend (user) {
-        console.log('removeFriend', user)
-        this.$store.dispatch('removeFriend', user)
-      },
-      sendFriendRequest (userId) {
-        this.$store.dispatch('sendFriendRequest', userId)
-      },
-      isFriend (user) {
+    },
+    computed: {
+      loggedInUserId () {
         if (this.$store.getters.user) {
-          // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-          return this.$store.getters.user.friends.findIndex(friend => {
-            return friend.id === user.id
-          }) >= 0
-        }
-      },
-      hasPendingInvitation (user) {
-        if (this.$store.getters.user) {
-          // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-          if (this.$store.getters.user.pendingInvitations) {
-            return this.$store.getters.user.pendingInvitations.findIndex(friend => {
-              return friend.id === user.id
-            }) >= 0
-          }
-        }
-      },
-      isPendingFriend (user) {
-        if (this.$store.getters.user) {
-          // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-          return this.$store.getters.user.pendingFriends.findIndex(friend => {
-            return friend.id === user.id
-          }) >= 0
+          return this.$store.getters.user.id
         }
       }
-    }
+    },
   }
 </script>
 

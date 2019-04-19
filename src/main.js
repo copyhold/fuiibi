@@ -16,6 +16,7 @@ import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
 import AllUsers from './components/user/AllUsers.vue'
 import MyContacts from './components/user/myContacts.vue'
+import UserCard from './components/user/userCard.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
 import FriendsSearch from './components/user/friendsSearch.vue'
 // import 'material-design-icons-iconfont/dist/material-design-icons.css'
@@ -91,6 +92,7 @@ Vue.component('all-users', AllUsers)
 Vue.component('my-contacts', MyContacts)
 Vue.component('friends-only', FriendsOnly)
 Vue.component('friends-search', FriendsSearch)
+Vue.component('user-card', UserCard)
 
 Vue.config.productionTip = false
 // Vue.use(Typewriter)
@@ -107,17 +109,8 @@ new Vue({
       authDomain: 'iwtapplication.firebaseapp.com',
       databaseURL: 'https://iwtapplication.firebaseio.com',
       projectId: 'iwtapplication',
-   // messagingSenderId: '483536830177',
       messagingSenderId: '208715939086',
-      // the below link address is from firebase storage
       storageBucket: 'gs://iwtapplication.appspot.com'
-      // storageBucket: 'iwtvueapp.appspot.com'
-      // *****NEW DEVELOPMENT DATA BASE *******
-      // apiKey: 'AIzaSyB0kWl-youGgQW8AyZ4N-cfoN4vSMhRvl8',
-      // authDomain: 'fuiibidatabasedevelopement.firebaseapp.com',
-      // databaseURL: 'https://fuiibidatabasedevelopement.firebaseio.com',
-      // projectId: 'fuiibidatabasedevelopement',
-      // storageBucket: 'gs://fuiibidatabasedevelopement.appspot.com',
     })
     // this.$debug('should load it now')
     firebase.auth().onAuthStateChanged((user) => {
