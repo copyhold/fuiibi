@@ -88,8 +88,8 @@
           <v-spacer></v-spacer>
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark :cycle="false" v-if="carousel">
-          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" >
+          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -110,11 +110,13 @@
               </v-list-tile-action>
               <v-list-tile-action v-else>
                 <v-list-tile-action v-if="!isFriend(user)">
-                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
+                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
                 </v-list-tile-action>
-                <v-list-tile-action v-else>
+                <!-- <v-list-tile-action v-else>
                   <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-                </v-list-tile-action>
+                </v-list-tile-action> -->
+                <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
+
               </v-list-tile-action>
             </v-list-tile>
           </template>
@@ -229,12 +231,6 @@ export default {
     }
   },
   methods: {
-    carouselPictures () {
-      const images = Object.values(this.event.pictures)
-      if (!this.picToOpen) return images
-      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-      return [...images.slice(index), ...images.slice(0, index)]
-    },
     getCarouselHeight () {
       var item = document.getElementsByClassName('v-image__image--cover')
       this.carouselHeight = item[0].clientHeight + 'px'
@@ -251,6 +247,7 @@ export default {
       this.$debug('[openTheRightPic] index, picture', index, picture)
     },
     checkPicSrc (imgUrl) {
+      this.$debug(imgUrl)
       this.picToOpen = imgUrl
       this.carousel = true
     },

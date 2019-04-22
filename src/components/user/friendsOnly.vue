@@ -43,7 +43,7 @@
             <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-btn small flat class="greyColors" @click="removeFriend(user)">Remove</v-btn>
+            <v-btn small flat class="greyColors" @click="removeFriend(user)"><v-icon color="lightGrey darken-2" class="pl-4">mdi-account-remove</v-icon></v-btn>
           </v-list-tile-action>
         </v-list-tile>
       </template>

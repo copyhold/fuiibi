@@ -33,7 +33,7 @@
           this.users.push(snap.val())
           this.loading = false
         })
-      },
+      }
     },
     computed: {
       loggedInUserId () {
@@ -41,7 +41,7 @@
           return this.$store.getters.user.id
         }
       }
-    },
+    }
   }
 </script>
 
