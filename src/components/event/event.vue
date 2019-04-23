@@ -88,8 +88,8 @@
           <v-spacer></v-spacer>
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark :cycle="false" v-if="carousel">
-          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" >
+          <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -153,6 +153,7 @@ export default {
       right: true,
       bottom: false,
       left: false,
+      contain: true,
       transition: 'slide-y-reverse-transition'
     }
   },
@@ -231,12 +232,6 @@ export default {
     }
   },
   methods: {
-    carouselPictures () {
-      const images = Object.values(this.event.pictures)
-      if (!this.picToOpen) return images
-        const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-      return [...images.slice(index), ...images.slice(0, index)]
-    },
     getCarouselHeight () {
       var item = document.getElementsByClassName('v-image__image--cover')
       this.carouselHeight = item[0].clientHeight + 'px'
@@ -475,15 +470,6 @@ export default {
     max-width: 1200px;
     margin: 0 auto;
   }
-  .carousel__item {
-    background-size: contain;
-  }
-  div.v-responsive__content{
-    background-size: contain;
-  }
-  /* .v-image__image--cover {
-      background-size: contain;
-  } */
   .fitScreen {
     max-width: 100vw;
   }
@@ -530,9 +516,6 @@ export default {
       min-height: 100%;
       width: 100vw;
     }
-    .carousel__item {
-      background-size: contain;
-    }
   }
   @media screen and (max-width: 960px) {
     span.vuBadge {
@@ -555,12 +538,6 @@ export default {
       min-height: 100%;
       width: 100vw;
     }
-    .carousel__item {
-      background-size: contain !important;
-    }
-    /* .dialog {
-      margin: 8px !important;
-    } */
     .iwt{
       height: 72px;
       width: 72px;
