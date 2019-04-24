@@ -83,12 +83,13 @@
 
     <v-dialog dark :fullscreen="fullscreen_carousel || $vuetify.breakpoint.smAndDown" :scrollable="fullscreen_carousel" :hide-overlay="$vuetify.breakpoint.smAndDown" v-model="carousel" max-width="800px">
       <v-card>
-        <v-toolbar>
-          <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
+        <v-toolbar v-if="$vuetify.breakpoint.mdAndUp">
+          <v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon>
           <v-spacer></v-spacer>
-          <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
+          <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark :cycle="false" >
+        <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn>
+        <v-carousel hide-delimiters dark :cycle="false" height="100%">
           <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
