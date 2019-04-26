@@ -83,13 +83,14 @@
 
     <v-dialog dark :fullscreen="fullscreen_carousel || $vuetify.breakpoint.smAndDown" :scrollable="fullscreen_carousel" :hide-overlay="$vuetify.breakpoint.smAndDown" v-model="carousel" max-width="800px">
       <v-card>
-        <v-toolbar>
-          <v-icon class="mr-1 clickable" dark large @click="closeDialog">close</v-icon>
+        <v-toolbar v-if="$vuetify.breakpoint.mdAndUp">
+          <v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon>
           <v-spacer></v-spacer>
-          <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel" v-if="$vuetify.breakpoint.mdAndUp">zoom_out_map</v-icon>
+          <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-carousel hide-delimiters dark :cycle="false" v-if="carousel">
-          <v-carousel-item  class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="picture.imageUrl" :key="index"></v-carousel-item>
+        <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn>
+        <v-carousel hide-delimiters dark :cycle="false" height="100%" v-if="carousel">
+          <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -153,6 +154,7 @@ export default {
       right: true,
       bottom: false,
       left: false,
+      contain: true,
       transition: 'slide-y-reverse-transition'
     }
   },
@@ -475,15 +477,6 @@ export default {
     max-width: 1200px;
     margin: 0 auto;
   }
-  .carousel__item {
-    background-size: contain;
-  }
-  div.v-responsive__content{
-    background-size: contain;
-  }
-  /* .v-image__image--cover {
-      background-size: contain;
-  } */
   .fitScreen {
     max-width: 100vw;
   }
@@ -530,9 +523,6 @@ export default {
       min-height: 100%;
       width: 100vw;
     }
-    .carousel__item {
-      background-size: contain;
-    }
   }
   @media screen and (max-width: 960px) {
     span.vuBadge {
@@ -555,12 +545,6 @@ export default {
       min-height: 100%;
       width: 100vw;
     }
-    .carousel__item {
-      background-size: contain !important;
-    }
-    /* .dialog {
-      margin: 8px !important;
-    } */
     .iwt{
       height: 72px;
       width: 72px;
