@@ -234,7 +234,7 @@ export default {
     carouselPictures () {
       const images = Object.values(this.event.pictures)
       if (!this.picToOpen) return images
-        const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
+      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
       return [...images.slice(index), ...images.slice(0, index)]
     },
     getCarouselHeight () {
