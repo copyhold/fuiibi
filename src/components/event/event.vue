@@ -89,8 +89,8 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn>
-        <v-carousel hide-delimiters dark :cycle="false" height="100%" v-if="carousel">
-          <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in carouselPictures()" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" height="100vh">
+          <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -233,12 +233,6 @@ export default {
     }
   },
   methods: {
-    carouselPictures () {
-      const images = Object.values(this.event.pictures)
-      if (!this.picToOpen) return images
-      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-      return [...images.slice(index), ...images.slice(0, index)]
-    },
     getCarouselHeight () {
       var item = document.getElementsByClassName('v-image__image--cover')
       this.carouselHeight = item[0].clientHeight + 'px'
