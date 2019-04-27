@@ -88,7 +88,7 @@
           <v-spacer></v-spacer>
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
-        <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn>
+        <v-btn v-else absolute small flat class="pr-5 pt-2"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
         <v-carousel hide-delimiters dark :cycle="false" height="100vh">
           <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
         </v-carousel>
