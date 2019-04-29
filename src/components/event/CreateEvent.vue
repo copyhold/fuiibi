@@ -223,6 +223,8 @@
 </template>
 
 <script>
+  const exifparser = require('exif-parser')
+
   export default {
     data () {
       return {
@@ -285,65 +287,27 @@
       }
     },
     computed: {
-      // submittableDate () {
-      //   if (this.modal === false) {
-      //     console.log('[submittableDate] this.modal === false');
-      //     return new Date().toLocaleDateString()
-      //   } else {
-      //     return new Date().toISOString()
-      //   }
-      // },
-      // submittableDate () {
-      //   const date = new Date(this.date)
-      //   console.log('[submittableDate] date', date);
-      //   if (typeof this.date === 'string') {
-      //     const day = this.time.match(/^(\d+)/)[1]
-      //     const month = this.time.match(/:(\d+)/)[1]
-      //     const year = this.time.match(/:(\d+)/)[1]
-      //     date.setYear(hours)
-      //     date.setMonth(month)
-      //     date.setDate(day)
-      //   } else {
-      //     date.setYear(this.date.getYear())
-      //     date.setMonth(this.date.getMonth())
-      //     date.setDate(this.date.getDate())
-      //   }
-      //   return date
-      // }
       formIsValid () {
         if (this.address) {
           if (this.address.administrative_area_level_1) {
-            // if (this.address.country &&
-            //   this.address.locality &&
-            //   this.address.route &&
-            //   this.address.longitude &&
-            //   this.address.latitude &&
-            //   this.address.locality != undefined) {
-            //   console.log('[formIsValid] this.address', this.address);
-            //   console.log('[formIsValid] this.where', this.where);
-            //   return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
-            // } else {
-              if (this.address.country &&
-                this.address.route &&
-                this.address.longitude &&
-                this.address.latitude) {
-                console.log('[formIsValid] this.address', this.address);
-                console.log('[formIsValid] this.where', this.where);
-                return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
-              } else {
-              console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+            if (this.address.country && this.address.route && this.address.longitude && this.address.latitude) {
+              this.$log('[formIsValid] this.address', this.address);
+              this.$log('[formIsValid] this.where', this.where);
+              return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+            } else {
+              this.$log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
             }
           } else {
-            console.log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
-            console.log('no address.administrative_area_level_1')
+            this.$log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+            this.$log('no address.administrative_area_level_1')
           }
         } else {
-          console.log('no address yet');
+          this.$log('no address yet');
         }
       },
       locationInNavigator() {
         if (!navigator.geolocation && !this.showLocationButton) {
-          console.log(' no geolocation in navigator');
+          this.$log(' no geolocation in navigator');
           // We dont show this button it there is no access to the geolocation
           return false;
         }
@@ -351,7 +315,7 @@
       },
       submittableDateTime () {
         const date = new Date(this.date)
-        console.log('[submittableDateTime] date', date);
+        this.$log('[submittableDateTime] date', date);
         if (typeof this.time === 'string') {
           const hours = this.time.match(/^(\d+)/)[1]
           const minutes = this.time.match(/:(\d+)/)[1]
@@ -366,7 +330,7 @@
     },
     methods: {
       closeAlertValidation () {
-        console.log('[closeAlertValidation]');
+        this.$log('[closeAlertValidation]');
       },
       openAlertValidation () {
         this.validationAlerts = true
@@ -375,12 +339,12 @@
       hideChangeButton () {
         this.showVueAutoComplete = true
         this.showLocationButton = true
-        console.log('[hideChangeButton] clicked');
+        this.$log('[hideChangeButton] clicked');
       },
       // gotFocused () {
       //   // setTimeout( _ => {
       //     this.showVueAutoComplete = false
-      //     console.log('[gotFocused] this.showVueAutoComplete', this.showVueAutoComplete);
+      //     this.$log('[gotFocused] this.showVueAutoComplete', this.showVueAutoComplete);
       //   // }, 10000)
       // },
       rotateRight () {
@@ -432,7 +396,7 @@
       */
       // getAddressData (addressData, placeResultData, id) {
       getAddressData (addressData) {
-        console.log('[getAddressData] => addressData', addressData);
+        this.$log('[getAddressData] => addressData', addressData);
         if (addressData) {
           if (addressData.route) {
             this.address = {
@@ -490,38 +454,38 @@
           if (this.address.street_number && this.address.route && this.address.route != 'Unnamed road') {
             setTimeout(_ => {
               this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
-              console.log('this.were this.address.street_number && this.address.route', this.where);
+              this.$debug('this.were this.address.street_number && this.address.route', this.where);
             }, 1)
           } else if (this.address.route && this.address.route != 'Unnamed road') {
             setTimeout(_ => {
               this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
-              console.log('this.were this.address.route', this.where);
+              this.$debug('this.were this.address.route', this.where);
             }, 1)
           } else {
             setTimeout(_ => {
               this.where = this.address.locality + ', ' + this.address.country
-              console.log('this.were', this.where);
+              this.$debug('this.were', this.where);
             }, 1)
           }
         }
       },
       alertNoResultFound () {
-        console.log('[alertNoResultFound], alertNoResultFound');
+        this.$log('[alertNoResultFound], alertNoResultFound');
       },
       getLocation () {
-        console.log('[getLocation] this.showVueAutoComplete', this.showVueAutoComplete);
-        console.log('getLocation')
+        this.$log('[getLocation] this.showVueAutoComplete', this.showVueAutoComplete);
+        this.$log('getLocation')
         if (!navigator.geolocation) {
-          console.log('no geolocation in browser');
+          this.$log('no geolocation in browser');
           return;
         }
-        // console.log('after if navigator');
+        // this.$log('after if navigator');
         this.where = ''
         let sawAlert = false
         // We hide the button and show the spinner
         this.searchingForLocation = true;
         this.showLocationButton = false;
-        // console.log('just before navigator.geolocation.getCurrentPosition');
+        // this.$log('just before navigator.geolocation.getCurrentPosition');
         setTimeout( _=> {
           this.showVueAutoComplete = false
           this.searchingForLocation = false;
@@ -533,19 +497,30 @@
           }
           this.fetchedLocation = {lat: 0, lng: 0}
         }, 7000);
-        navigator.geolocation.getCurrentPosition( position => {
-          this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
-          console.log('[getLocation] this.fetchedLocation', this.fetchedLocation);
-          this.lat = position.coords.latitude;
-          this.lon = position.coords.longitude;
-          var geocoder = new google.maps.Geocoder();
-          let myPlace = new google.maps.LatLng(this.lat,this.lon);
-          let geopos = `${this.lat},${this.lon}`;
-          let latlngStr = geopos.split(',', 2);
-          var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
-          // console.log(latlng)
-          geocoder.geocode({'location': latlng}, (results, status) => {
-          console.log('results ', results);
+        navigator.geolocation.getCurrentPosition( this.geocode_coordinates, err => {
+          this.$log(err);
+          this.searchingForLocation = false;
+          // this.showLocationButton = true
+          if (!sawAlert) {
+            alert('Couldn\'t load location, please try mannually')
+            sawAlert = true
+          }
+          this.fetchedLocation = {lat: 0, lng: 0}
+        })
+      },
+      geocode_coordinates (position) {
+        this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
+        this.$log('[getLocation] this.fetchedLocation', this.fetchedLocation);
+        this.lat = position.coords.latitude;
+        this.lon = position.coords.longitude;
+        var geocoder = new google.maps.Geocoder();
+        let myPlace = new google.maps.LatLng(this.lat,this.lon);
+        let geopos = `${this.lat},${this.lon}`;
+        let latlngStr = geopos.split(',', 2);
+        var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
+        // this.$log(latlng)
+        geocoder.geocode({'location': latlng}, (results, status) => {
+          this.$log('results ', results);
           this.address = {
             administrative_area_level_1: results[4].address_components["0"].long_name,
             country: results[4].address_components[1].long_name,
@@ -555,30 +530,20 @@
             route: results["0"].address_components["0"].long_name,
             street_number: results["0"].address_components["0"].long_name
           }
-          console.log('[this address nvo object]', this.address);
+          this.$log('[this address nvo object]', this.address);
           this.where = results[0].formatted_address
           setTimeout(_ => {
             this.where = results[0].formatted_address
-            console.log('[getLocation] in the setTimeout this.where', this.where);
+            this.$log('[getLocation] in the setTimeout this.where', this.where);
           }, 1)
-          });
-          this.showVueAutoComplete = false
-          this.searchingForLocation = false;
-          this.showLocationButton = false
+        })
+        this.showVueAutoComplete = false
+        this.searchingForLocation = false
+        this.showLocationButton = false
 
-        }), err => {
-          console.log(err);
-          this.searchingForLocation = false;
-          // this.showLocationButton = true
-          if (!sawAlert) {
-            alert('Couldn\'t load location, please try mannually')
-            sawAlert = true
-          }
-          this.fetchedLocation = {lat: 0, lng: 0}
-        }, {setTimeout: 7000}
-      },
+      }, 
       showMap () {
-        console.log('showMap')
+        this.$log('showMap')
       },
       onCreateEvent () {
         if (!this.formIsValid) {
@@ -611,9 +576,40 @@
         // the $refs below give us access to all the ref elements in the template of this component
         this.$refs.fileInput2.click()
       },
+      format_time (date) {
+        const twodigits = new Intl.NumberFormat('en-US', { minimumIntegerDigits: 2 })
+        return twodigits.format(date.getHours()) + ':' + twodigits.format(date.getMinutes())
+      },
+      fillEventDataFromImage(file) {
+        if ('image/jpeg' !== file.type) {
+          return
+        }
+        const file_reader = new FileReader()
+        const component = this
+        file_reader.addEventListener('load', e => {
+          const parser = exifparser.create(file_reader.result) 
+          try {
+            const imagemeta = parser.parse()
+            this.$debug(imagemeta)
+            const date_tag = imagemeta.tags.CreateDate || imagemeta.tags.ModifyDate
+            const create_date = new Date(date_tag * 1000)
+            component.date = component.selectingDate = create_date.toISOString().substring(0, 10)
+            component.time = component.selectingTime = this.format_time(create_date)
+            const {GPSLongitude,GPSLatitude} = imagemeta.tags
+            this.geocode_coordinates({ coords: {
+                latitude: GPSLatitude,
+                longitude: GPSLongitude
+            }})
+          } catch (err) {
+            component.$error(err)
+          }
+        })
+        file_reader.readAsArrayBuffer(file)
+      },
       onFilePicked (event) {
         // We get the wanted file
         const files = event.target.files
+        this.fillEventDataFromImage(files[0])
         // As we can choose only one file, we take the first one in the array
         let filename = files[0].name
         // Simple chack if the file is valid
@@ -627,7 +623,7 @@
           this.imageUrl = fileReader.result
           var img = new Image()
           img.src = this.imageUrl
-          img.addEventListener('load', _ => {
+          img.addEventListener('load', dataurl => {
             let context = this.$refs.canvas.getContext('2d')
             let image = this.$refs.imageToCanvas
             // let imageWidth = window.outerWidth - 16
@@ -637,10 +633,11 @@
             // Now I create the image - what?, top, left, width, height
             context.drawImage(image, 0, 0, imageWidth, imageWidth * image.height / image.width)
             this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
-            console.log('this.image', this.image)
+            this.$log('this.image', this.image)
           })
         })
         fileReader.readAsDataURL(files[0])
+
         this.showCanvas = true
         this.showUploadImage = false
       },
