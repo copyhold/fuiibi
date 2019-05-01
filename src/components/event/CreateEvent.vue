@@ -510,6 +510,9 @@
       },
       geocode_coordinates (position) {
         this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
+        if (!fetchedLocation.lat || !fetchedLocation.lng) {
+          return
+        }
         this.$log('[getLocation] this.fetchedLocation', this.fetchedLocation);
         this.lat = position.coords.latitude;
         this.lon = position.coords.longitude;
