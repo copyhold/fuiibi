@@ -72,12 +72,14 @@
 
           <v-layout row wrap>
             <v-flex xs12 sm6 offset-sm3>
-              <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="hideChangeButton">
-                <v-avatar>
-                  <v-icon >my_location</v-icon>
-                </v-avatar>
-                Change event location
-              </v-chip>
+              <div class="text-xs-center mb-3" >
+                <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="hideChangeButton">
+                  <v-avatar>
+                    <v-icon >my_location</v-icon>
+                  </v-avatar>
+                  Change event location
+                </v-chip>
+              </div>
             </v-flex>
           </v-layout>
 
@@ -409,20 +411,6 @@
               // postal_code: addressData.postal_code,
               street_number: addressData.street_number
             }
-            // this.address = addressData;
-          // } else {
-          //   this.address = {
-          //     country: addressData.country,
-          //     locality: addressData.locality,
-          //     route: 'Unnamed road',
-          //     administrative_area_level_1: addressData.administrative_area_level_1,
-          //     latitude: addressData.latitude,
-          //     longitude: addressData.longitude,
-          //     // postal_code: addressData.postal_code,
-          //     // street_number: addressData.street_number
-          //     street_number: '-'
-          //   }
-          // }
         } else if (!addressData.locality) {
           this.address = {
             country: addressData.country,
@@ -544,7 +532,7 @@
         this.searchingForLocation = false
         this.showLocationButton = false
 
-      }, 
+      },
       showMap () {
         this.$log('showMap')
       },
@@ -590,7 +578,7 @@
         const file_reader = new FileReader()
         const component = this
         file_reader.addEventListener('load', e => {
-          const parser = exifparser.create(file_reader.result) 
+          const parser = exifparser.create(file_reader.result)
           try {
             const imagemeta = parser.parse()
             this.$debug(imagemeta)
