@@ -3,6 +3,7 @@ import Vue from 'vue'
 export default {
   state: {
     loading: false,
+    persons: {},
     error: null
   },
   mutations: {
@@ -15,11 +16,25 @@ export default {
     setError (state, payload) {
       state.error = payload
     },
+    savePerson (state, person) {
+      state.persons[person.id] = person
+    },
     clearError (state) {
       state.error = null
     }
   },
   actions: {
+    loadPersons (store, ids) {
+      const notloaded = ids.filter(id => !store.getters.person(id))
+      if (notloaded.length === 0) return
+      firebase.functions().httpsCallable('loadPersons')(notloaded)
+      .then(res => {
+        for (let person of Object.values(res.data)) {
+          store.commit('savePerson', person)
+        }
+      })
+      .catch(console.error)
+    },
     updateFCMtoken (store) {
       const {user} = store.getters
       if (!user.id) {
@@ -65,6 +80,9 @@ export default {
     }
   },
   getters: {
+    person: (state, a, b) => id => {
+      return state.persons[id]
+    },
     loading (state) {
       return state.loading
     },

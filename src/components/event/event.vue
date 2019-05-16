@@ -109,11 +109,11 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showUsers" max-width="96%">
+    <v-dialog v-model="showUsers" max-width="96%" v-if="eventUsers()">
       <v-list subheader>
-          <template v-for="user in eventUsers">
+          <template v-for="user in eventUsers()">
             <v-divider></v-divider>
-            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user.id != loggedInUserId">
+            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user && user.id != loggedInUserId">
               <v-list-tile-avatar class="avatarImg">
                 <img :src="user.imageUrl"/>
               </v-list-tile-avatar>
@@ -210,22 +210,6 @@ export default {
     loading () {
       return this.$store.getters.loading
     },
-    eventUsers () {
-      if (!this.$store.getters.user) {
-        return []
-      }
-      if (this.event.users) {
-        let eventUsers = []
-        let userData = ''
-        const users = this.event.users
-        for (let user in users) {
-          let userId = users[user]
-          userData = this.$store.getters.getUserData(userId)
-          eventUsers.push(userData)
-        }
-        return eventUsers
-      }
-    },
     totalUserCount () {
       if (this.event.title !== 'Your subscribtion') {
         let counter = 0
@@ -247,6 +231,14 @@ export default {
     }
   },
   methods: {
+    eventUsers () {
+      if (!this.$store.getters.user || !this.event.users) {
+        return []
+      }
+      return Object.values(this.event.users).map(uid => {
+        return this.$store.getters.person(uid)
+      })
+    },
     getCarouselHeight () {
       var item = document.getElementsByClassName('v-image__image--cover')
       this.carouselHeight = item[0].clientHeight + 'px'
@@ -308,11 +300,7 @@ export default {
         return false
       }
       if (this.$store.getters.user) {
-        // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        return this.$store.getters.user.pendingFriends.findIndex(friend => {
-          return friend.id === user.id
-        }) >= 0
+        return this.$store.getters.user.pendingFriends[user.id]
       }
     },
     closeDialog () {

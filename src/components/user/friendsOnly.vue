@@ -68,10 +68,7 @@
         })
       },
       pendingFriends () {
-        if (!this.$store.getters.user || !this.$store.getters.user.pendingFriends) return []
-        if (this.$store.getters.user.pendingFriends.length > 0) {
-          return this.$store.getters.user.pendingFriends
-        }
+        return this.$store.getters.pendingFriends
       },
       friends () {
         if (!this.$store.getters.user || !this.$store.getters.user.friends) {

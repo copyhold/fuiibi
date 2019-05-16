@@ -143,25 +143,16 @@ export default {
     },
     addPendingFriendToUser(state, payload) {
       const newFriend = payload
-      if(state.user.pendingFriends.findIndex(user => user.id === newFriend.id) >= 0) {
+
+      if(state.user.pendingFriends[newFriend.id]) {
         Vue.console.log('Refused to add this friend as it already exist in the pendingFriends list!!!');
         return
       }
       Vue.console.log('[addPendingFriendToUser] state.user', state.user)
-      state.user.pendingFriends.push(newFriend)
-      // Below we use the fbKey created by firebase to give an id of the element on our store, so that it's then easy to unregister if needed.
-      // state.user.fbKeysPendingFriends[newFriend.id] = payload.fbKey
+      state.user.pendingFriends[newFriend.id] = newFriend
     },
-    removePendingFriendFromUser(state, payload) {
-      const pendingFriends = state.user.pendingFriends
-      // Below we check if we can find the friend that need to be removed from the pendingfriends. We check in the list of pendingfriends of the user if we can find it
-      // With the splice, we get back a numer of element, here only the friend.id that need to be removed
-      // Vue.console.log('[removePendingFriendFromUser] BEFORE REMOVAL pendingFriends', pendingFriends);
-      pendingFriends.splice(pendingFriends.findIndex(friend => friend.id === payload), 1)
-      // To erase this meetup from the list in the store, we need to use the reflect.deleteProperty from JS,
-      // passing where? state.user.fbKeys and what? the payload as it's the user.id
-      Reflect.deleteProperty(state.user.pendingFriends, payload)
-      // Vue.console.log('[removePendingFriendFromUser] AFTER REMOVAL pendingFriends', pendingFriends);
+    removePendingFriendFromUser(state, friendId) {
+      Reflect.deleteProperty(state.user.pendingFriends, friendId) // why Reflect? I dont' know
     },
     removePendingInvitationFromUser(state, payload) {
       const pendingInvitations = state.user.pendingInvitations
@@ -210,54 +201,52 @@ export default {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-      .then(
-        user => {
-          const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
-          const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
-          const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
-          const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
-          const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
-          const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
-          const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
-          const userData = firebase.database().ref('users/' + user.uid).once('value')
-          Vue.console.debug('[signUserIn] userData', userData);
-          Vue.console.debug('[signUserIn] userData.firstName', userData.firstName);
+      .then(user => {
+        const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
+        const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
+        const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
+        const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
+        const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
+        const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
+        const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
+        const userData = firebase.database().ref('users/' + user.uid).once('value')
+        Vue.console.debug('[signUserIn] userData', userData);
+        Vue.console.debug('[signUserIn] userData.firstName', userData.firstName);
 
-          const newUser = {
-            id: user.uid,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            imageUrl: this.imageUrl,
-            email: this.email,
-            livingIn: this.livingIn,
-            gender: this.gender,
-            dateOfBirth: this.dateOfBirth,
-            friends: [],
-            events: []
-          }
-          Vue.console.debug('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
-          commit('setUser', newUser)
-          commit('setLoading', false)
+        const newUser = {
+          id: user.uid,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          imageUrl: this.imageUrl,
+          email: this.email,
+          livingIn: this.livingIn,
+          gender: this.gender,
+          dateOfBirth: this.dateOfBirth,
+          friends: [],
+          events: []
         }
-      )
-      .catch(
-        error => {
-          commit('setLoading', false)
-          commit('setError', error)
-          Vue.console.log(error);
-        }
-      )
+        Vue.console.debug('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
+        commit('setUser', newUser)
+      })
+      .catch(error => {
+        commit('setError', error)
+        Vue.console.log(error);
+      })
+      .finally(() => {
+        commit('setLoading', false)
+      })
     },
     checkUserFromGoogle ({commit, dispatch}, payload) {
-      Vue.console.log('[checkUserFromGoogle] payload', payload)
+      Vue.console.log('[checkUserFromGoogle] payload')
       firebase.database().ref('users/' + payload.uid).once('value')
        .then( user =>{
-         Vue.console.log('[checkUserFromGoogle] user', user.val());
+         Vue.console.log('[checkUserFromGoogle] user');
          let userData = user.val()
          if (userData === null) {
            Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
            dispatch('createUserFromGoogle', payload)
          } else {
+           commit('setUser', { ...userData, imageUrl: userData.photoURL })
            Vue.console.log('[checkUserFromGoogle] this user is NOT new')
            dispatch('fetchUserData')
            dispatch('fetchUsersEvents')
@@ -280,9 +269,7 @@ export default {
           notifications: [],
           events: [],
           friends: [],
-          pendingFriends: [],
-
-          //*********************************************************
+          pendingFriends: {},
           imageUrl: payload.photoURL
         }
         Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
@@ -396,7 +383,7 @@ export default {
       let dateOfBirth = ''
       let gender = ''
       let livingIn = {}
-      let pendingFriends = []
+      let pendingFriends = {}
       let pendingInvitations = []
 
       // Here below we use promise to get the info one after the other and send everything to the local storage once everything has been received
@@ -422,7 +409,7 @@ export default {
         if (!getters.user.gender) {
           this.dateOfBirth = userData.dateOfBirth
         }
-
+        // @WHY ????
         const promises = [
           firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value'),
           firebase.database().ref('/users/' + getters.user.id + '/pendingFriends/').once('value'),
@@ -431,6 +418,9 @@ export default {
         return Promise.all(promises)
       })
       .then(data => {
+        const personsIds = Object.keys({ ...data[0].val(), ...data[1].val(), ...data[2].val() })
+        dispatch('loadPersons', personsIds)
+        // here we should create a Set of UID's and request all of them into person's store
         return Promise.all(data.map(snap  => {
           if (!snap.exists()) return []
           return Promise.all( Object.values(snap.val()).filter(val => val!==true).map( id => firebase.database().ref(`/users/${id}`).once('value')))
@@ -504,7 +494,7 @@ export default {
               key:   snap.key,
               fbKey: snap.key
             }
-            if (newEvent.event.imageUrl) {
+            if (newEvent.event && newEvent.event.imageUrl) {
               commit('addEventToMyEvents', newEvent)
               commit('addEvent', newEvent)
             }
@@ -646,24 +636,12 @@ export default {
       const user = getters.user
       commit('setLoading', true)
       // We remove the friend from the user's pending list
-      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(payload.fbKey).remove()
+      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(friendId).remove()
+      firebase.database().ref('/users/' + friendId + '/pendingInvitations').child(user.id).remove()
       // We update the store
       commit('removePendingFriendFromUser', friendId)
-      // We need to get the firebase key of the user in the friend's list to remove it from his database.
-      firebase.database().ref('/users/' + friendId + '/pendingInvitations').once('value')
-      .then( data => {
-        const dataPairs = data.val()
-        // Vue.console.log('[acceptFriendRequest] dataPairs', dataPairs);
-        for (let key in dataPairs) {
-          if (dataPairs[key] === user.id) {
-            // Vue.console.log('[acceptFriendRequest] dans le for if (dataPairs[key] === user.id)', key)
-            firebase.database().ref('/users/' + friendId + '/pendingInvitations').child(key).remove()
-          }
-        }
-        commit('setLoading', false)
-      })
       // We check if the friend already exist on the friend list of the user
-      if(getters.user.friends.findIndex(user => user.id === payload) >= 0) {
+      if(getters.user.friends.findIndex(user => user.id === friendId) >= 0) {
         Vue.console.log('Refused to add this friend as it already exist in the friends list!!!');
         commit('setLoading', false)
         return
@@ -677,7 +655,7 @@ export default {
         firebase.database().ref('/users/' + friendId + '/friends').push(user.id),
         firebase.database().ref('/users/' + friendId + '/friends/' + user.id).set(true)
       ])
-      .then(res => console.debug('added friends'))
+      .then(res => Vue.console.debug('added friends'))
       .catch(error => {
         Vue.console.log(error);
       })
@@ -709,7 +687,7 @@ export default {
       const user = getters.user
       Vue.console.log('[refuseFriend] payload', payload);
       // We remove the friend from the user's pending list
-      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(payload.fbKey).remove()
+      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(friendId).remove()
       // We update the store
       commit('removePendingFriendFromUser', friendId)
     },
@@ -737,7 +715,14 @@ export default {
   },
 
   getters: {
+    pendingFriends: (state, getters) => {
+      Vue.console.log('pendingfriends getter', state.user)
+      return []
+      if (!state.user || state.user.pendingFriends) return []
+      return Object.keys(state.user.pendingFriends)
+    },
     notification: state => evid => state.user.notifications[evid],
+    friendIsPending: state => uid => state.user.pendingFriends[uid] || false,
     user (state) {
       return state.user
     },

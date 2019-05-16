@@ -62,9 +62,6 @@
         marginTop: true
       }
     },
-    created () {
-      this.$log(this.$vuetify.breakpoint)
-    },
     computed: mapState({
       notifications: state => {
         const {notifications} = state.user.user
@@ -78,7 +75,6 @@
         this.$router.push('/event/new')
       },
       eventDetails (key) {
-        console.log('[eventDetails] key', key)
         this.$router.push('/events/' + key)
       },
       getUserPage (key) {

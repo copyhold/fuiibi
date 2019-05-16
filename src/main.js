@@ -107,7 +107,7 @@ new Vue({
     firebase.initializeApp({
       apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
       authDomain: 'iwtapplication.firebaseapp.com',
-      databaseURL: 'https://iwtapplication.firebaseio.com',
+      databaseURL: 'https://fuiibi.firebaseio.com',
       projectId: 'iwtapplication',
       messagingSenderId: '208715939086',
       storageBucket: 'gs://iwtapplication.appspot.com'
@@ -116,7 +116,6 @@ new Vue({
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$debug('[main.js] user', user)
-        this.$store.dispatch('loadUsers')
         this.$store.dispatch('autoSignIn', user)
 
         // GOOGLE
@@ -133,8 +132,5 @@ new Vue({
         }
       }
     })
-    // Here we load all the users of the app for TEST only, so that I can test friends requests
-    // this.$store.dispatch('loadUsers')
-    // this.$store.dispatch('loadNotifications')
   }
 })

@@ -32,7 +32,6 @@ export default {
       eventData.event = payload.event
     },
     setCurrentEvent (state, eventData) {
-      Vue.console.log('set event data')
       state.currentEvent = eventData
     }
   },
@@ -42,7 +41,10 @@ export default {
       .ref(`/events/${id}`)
       .once('value')
       .then(res => {
-        store.commit('setCurrentEvent', { ...res.val(), id })
+        const event = res.val()
+        event.id = id
+        store.commit('setCurrentEvent', event)
+        store.dispatch('loadPersons', Object.values(event.users))
       })
       .catch(Vue.console.debug)
     },
