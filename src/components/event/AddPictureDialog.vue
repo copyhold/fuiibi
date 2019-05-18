@@ -71,7 +71,6 @@ export default {
     },
     addedPhoto (filelist) {
       this.loadingPictures = true
-      console.log('this.loadingPictures', this.loadingPictures)
       const files = this.$refs.filesfield.files
       if (files.length === 0) {
         return
@@ -99,8 +98,6 @@ export default {
         this.files = files
       })
       .catch(this.$debug)
-      // this.loadingPictures = false
-      console.log('this.loadingPictures', this.loadingPictures)
     },
     startUpload () {
       this.picDialog = false
