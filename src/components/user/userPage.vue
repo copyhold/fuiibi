@@ -1,4 +1,4 @@
-v-img<template lang="html">
+<template lang="html">
   <v-container class="container">
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
@@ -55,10 +55,7 @@ v-img<template lang="html">
               <v-flex xs2 sm2 md2>
                 <v-btn fab large class="iwt" center v-if="!wasThere(item.key)" @click="iwtClicked(item)"></v-btn>
                 <span v-else>
-                  <v-btn fab flat large class="iwt clicked" center></v-btn>
-                  <v-badge overlap overlay color="red" class="vuBadge">
-                    <v-icon dark slot="badge">check</v-icon>
-                  </v-badge>
+                  <v-btn flat large class="iwt checked" center></v-btn>
                 </span>
               </v-flex>
             </v-layout>
@@ -82,33 +79,25 @@ export default {
   },
   computed: {
     userHasLocality () {
-      console.log('[userHasLocality] this.user', this.user)
       if (this.user.livingIn) {
-        console.log('[userHasLocality] this.user.livingIn', this.user.livingIn)
         if (this.user.livingIn.locality) {
-          console.log('[userHasLocality] this.user.livingIn.locality', this.user.livingIn.locality)
           return true
         }
       }
     },
     user () {
-      console.log('[user] id', this.id)
-      // console.log('[user] user', user)
-      console.log('[user] this.$store.getters.getEventData(this.id)', this.$store.getters.getUser(this.id))
       return this.$store.getters.getUser(this.id)
     },
     userEvents () {
       return this.user.userEvents
     },
     events () {
-      console.log('myEvents', this.user.userEvents)
       return this.user.userEvents
     },
     loading () {
       return this.$store.getters.loading
     },
     userWasThere () {
-      console.log('[userWasThere]')
       return this.$store.getters.user.events.findIndex(event => {
         return event.key === this.id
       }) >= 0
@@ -134,6 +123,7 @@ export default {
 </script>
 
 <style scoped>
+
   h2 {
     padding-left: 10px;
   }
@@ -199,6 +189,9 @@ export default {
     font-weight: 200;
     min-height: 120px;
   }
+  .checked{
+    background: url("../img/iwtChecked.png") right/95% no-repeat;
+  }
   @media only screen and (max-width: 599px) {
     .timer{
       right: 24px;
@@ -237,6 +230,9 @@ export default {
       bottom: 32px;
       right: 16px;
       position: absolute;
+    }
+    .checked{
+      background: url("../img/iwtChecked.png") right/80% no-repeat;
     }
   }
 </style>
