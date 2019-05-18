@@ -1,5 +1,5 @@
 <template>
-  <v-list-tile avatar v-bind:key="user.id">
+  <v-list-tile avatar>
     <v-list-tile-avatar class="avatarImg">
       <img :src="user.imageUrl"/>
     </v-list-tile-avatar>
@@ -23,13 +23,8 @@
 <script>
 export default {
   props: ['user'],
-  data () {
-    return {
-    }
-  },
   methods: {
     getUserPage (key) {
-      console.log('[getUserPage] clicked key', key)
       this.$store.dispatch('getUserData', {userId: key.id})
       this.$router.push('/users/' + key.id)
     },
@@ -41,29 +36,18 @@ export default {
       this.$store.dispatch('sendFriendRequest', this.user.id)
     },
     isFriend (user) {
-      if (this.$store.getters.user) {
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        return this.$store.getters.user.friends.findIndex(friend => {
-          return friend.id === user.id
-        }) >= 0
+      if (this.$store.getters.user && this.$store.getters.user.friends) {
+        return Object.values(this.$store.getters.user.friends).indexOf(user.id) > -1
       }
     },
     hasPendingInvitation (user) {
-      if (this.$store.getters.user) {
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        if (this.$store.getters.user.pendingInvitations) {
-          return this.$store.getters.user.pendingInvitations.findIndex(friend => {
-            return friend.id === user.id
-          }) >= 0
-        }
+      if (this.$store.getters.user && this.$store.getters.user.pendingInvitations) {
+        return this.$store.getters.user.pendingInvitations[user.id]
       }
     },
     isPendingFriend (user) {
-      if (this.$store.getters.user) {
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        return this.$store.getters.user.pendingFriends.findIndex(friend => {
-          return friend.id === user.id
-        }) >= 0
+      if (this.$store.getters.user && this.$store.getters.user.pendingFriends) {
+        return this.$store.getters.user.pendingFriends[user.id]
       }
     }
   }

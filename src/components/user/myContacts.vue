@@ -4,7 +4,8 @@
       <v-subheader>
         <v-btn flat @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
       </v-subheader>
-      <user-card v-for="user in emails" :user="user" key="user.id" />
+      <v-alert value="true" v-if="loading" type="info" transition="fade-transition">Checked {{loadedGContacts.length}} of {{totalGcontacts}}</v-alert>
+      <user-card v-for="user in emails" :user="user" :key="user.id" v-if="user.id!==$store.getters.user.id" />
     </v-list>
   </v-container>
 </template>
@@ -16,9 +17,10 @@ const gapi = window.gapi
 export default {
   data () {
     return {
+      loadedGContacts: [],
+      totalGcontacts: 0,
       emails: [],
       signedIn: false,
-      googleContact: [],
       loading: false
     }
   },
@@ -30,6 +32,9 @@ export default {
   },
   methods: {
     startSync () {
+      this.loadedGContacts = []
+      this.totalGcontacts = 0
+      this.emails = []
       if (!this.signedIn) return
       this.loadGContacts()
     },
@@ -53,6 +58,7 @@ export default {
       .catch(err => console.error(err))
     },
     loadGContacts (nextPageToken = null) {
+      this.loading = true
       gapi.client.people.people.connections.list({
         resourceName: 'people/me',
         pageSize: 100,
@@ -63,9 +69,9 @@ export default {
         if (response.result.nextPageToken) {
           this.loadGContacts(response.result.nextPageToken)
         }
-        // response.result: { totalItems, totalPeople, nextPageToken?, connections:[] }
-        // @todo: send emails to firebase in batch to check if exist
-        // add to list those that exist and retrieve new batch from G.
+        this.totalGcontacts = response.result.totalPeople
+        this.loadedGContacts = this.loadedGContacts.concat(response.result.connections)
+        // response.result: { totalItems, totalPeople?, nextPageToken, connections:[] }
 
         const emails = []
         for (let contact of response.result.connections) {
@@ -78,7 +84,8 @@ export default {
         return findFuiibiers({ emails: emails })
       })
       .then(res => {
-        this.emails = [ ...this.emails, ...res.data ]
+        this.emails = this.emails.concat(res.data)
+        this.loading = false
       })
       .catch(console.error)
     }

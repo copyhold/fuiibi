@@ -270,10 +270,7 @@ export default {
         return false
       }
       if (this.$store.getters.user) {
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        return this.$store.getters.user.friends.findIndex(friend => {
-          return friend.id === user.id
-        }) >= 0
+        return this.$store.getters.user.friends[user.id]
       }
     },
     getUserPage (key) {
@@ -285,21 +282,15 @@ export default {
       if (!user) {
         return false
       }
-      if (this.$store.getters.user) {
-        // this.$debug('[isPendingFriend] this.$store.getters.user', this.$store.getters.user)
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        if (this.$store.getters.user.pendingInvitations) {
-          return this.$store.getters.user.pendingInvitations.findIndex(friend => {
-            return friend.id === user.id
-          }) >= 0
-        }
+      if (this.$store.getters.user && this.$store.getters.user.pendingInvitations) {
+        return this.$store.getters.user.pendingInvitations[user.id]
       }
     },
     isPendingFriend (user) {
       if (!user) {
         return false
       }
-      if (this.$store.getters.user) {
+      if (this.$store.getters.user && this.$store.getters.user.pendingFriends) {
         return this.$store.getters.user.pendingFriends[user.id]
       }
     },

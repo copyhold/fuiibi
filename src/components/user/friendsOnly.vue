@@ -4,38 +4,31 @@
       <v-subheader>Friends invitations</v-subheader>
       <template v-for="user in pendingFriends">
         <v-divider></v-divider>
-        <v-list-tile :key="user.id" v-if="!loading && user.id != loggedInUserId" class="mt-2 mb-2">
-          <v-flex xs2 >
+        <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
             <v-list-tile-avatar>
               <img :src="user.imageUrl"/>
             </v-list-tile-avatar>
-          </v-flex>
-          <v-flex xs8 class="ml-3">
             <v-list-tile-content @click="getUserPage(user)">
               <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
             </v-list-tile-content>
-          </v-flex>
-        </v-list-tile>
-        <v-divider></v-divider>
-        <v-list-tile class="short">
-          <v-flex xs6 >
             <v-list-tile-action>
-              <v-btn small flat class="greyColors ml-1" @click="refuseFriend(user)">Ignore</v-btn>
+              <v-btn-toggle>
+                <v-btn icon flat color="" @click="$store.dispatch('acceptFriendRequest', user.id)">
+                  <v-icon>add</v-icon>
+                </v-btn>
+                <v-btn icon flat color="" @click="$store.dispatch('refuseFriend', user.id)">
+                  <v-icon>clear</v-icon>
+                </v-btn>
+              </v-btn-toggle>
             </v-list-tile-action>
-          </v-flex>
-          <v-flex xs6>
-            <v-list-tile-action>
-              <v-btn small class="primary--text" outline @click="addFriend(user)"><v-icon class="mr-1">person_add</v-icon>Accept</v-btn>
-            </v-list-tile-action>
-          </v-flex>
         </v-list-tile>
       </template>
     </v-list>
-    <v-list subheader>
-      <v-subheader><v-text-field hide-details placeholder="start typing" single-line v-model="search" full-width append-icon="search" /></v-subheader>
-      <template v-for="user in filteredFriends" >
+    <v-list subheader v-if="pendingInvitations"  xs12>
+      <v-subheader>Pending friends</v-subheader>
+      <template v-for="user in pendingInvitations">
         <v-divider></v-divider>
-        <v-list-tile avatar v-bind:key="user.id" @click="" v-if="!loading && user.id != loggedInUserId">
+        <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
           <v-list-tile-avatar>
             <img :src="user.imageUrl"/>
           </v-list-tile-avatar>
@@ -43,7 +36,34 @@
             <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-btn small flat class="greyColors" @click="removeFriend(user)"><v-icon color="lightGrey darken-2" class="pl-4">mdi-account-remove</v-icon></v-btn>
+            <v-btn icon flat color="" @click="$store.dispatch('cancelInvitation', user.id)">
+              <v-icon>cancel_presentation</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+        <v-divider></v-divider>
+      </template>
+    </v-list>
+    <v-list subheader>
+      <v-list-tile>
+        <v-list-tile-avatar>
+          <v-icon class="pl-2">search</v-icon>
+        </v-list-tile-avatar>
+        <v-list-tile-content>
+          <v-text-field hide-details placeholder="start typing" single-line v-model="search" full-width class="pl-2" />
+        </v-list-tile-content>
+      </v-list-tile>
+      <template v-for="user in filteredFriends" >
+        <v-divider></v-divider>
+        <v-list-tile avatar v-bind:key="user.id" @click="" v-if="user.id != loggedInUserId">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn icon flat @click="removeFriend(user)"><v-icon color="lightGrey darken-2">mdi-account-remove</v-icon></v-btn>
           </v-list-tile-action>
         </v-list-tile>
       </template>
@@ -67,17 +87,25 @@
           return `${friend.firstName}${friend.lastName}`.match(new RegExp(this.search, 'i'))
         })
       },
+      pendingInvitations () {
+        const user = this.$store.getters.user
+        if (!user || !user.pendingInvitations) return []
+        return Object.keys(user.pendingInvitations).map(this.$store.getters.person)
+      },
       pendingFriends () {
-        return this.$store.getters.pendingFriends
+        const user = this.$store.getters.user
+        if (!user || !user.pendingFriends) return []
+        return Object.keys(user.pendingFriends).map(this.$store.getters.person)
       },
       friends () {
         if (!this.$store.getters.user || !this.$store.getters.user.friends) {
           return []
         }
-        if (this.$store.getters.user.friends.length > 0) {
-          return this.$store.getters.user.friends
-        }
-        return []
+        const friends = Object.keys(this.$store.getters.user.friends)
+        .map(k => {
+          return this.$store.getters.person(k)
+        })
+        return friends
       },
       loading () {
         return this.$store.getters.loading
@@ -113,8 +141,6 @@
     width: 50vw;
   }
   .greyColors{
-    background-color: #f6f7f9;
-    border-color: #ced0d4;
     color: #4b4f56;
     left: 16px;
   }

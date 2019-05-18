@@ -17,7 +17,9 @@ export default {
       state.error = payload
     },
     savePerson (state, person) {
-      state.persons[person.id] = person
+      const newpersons = { ...state.persons }
+      newpersons[person.id] = person
+      state.persons = newpersons
     },
     clearError (state) {
       state.error = null
@@ -80,7 +82,7 @@ export default {
     }
   },
   getters: {
-    person: (state, a, b) => id => {
+    person: (state) => id => {
       return state.persons[id]
     },
     loading (state) {

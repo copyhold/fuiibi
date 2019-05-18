@@ -47,20 +47,12 @@
     },
     methods: {
       getUserPage (key) {
-        console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})
         this.$router.push('/users/' + key.id)
       },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
         // this.$store.dispatch('sendFriendRequest', userId)
-      },
-      addFriend (friend) {
-        this.$store.dispatch('acceptFriendRequest', friend)
-        console.log('userID from addFriend ', friend)
-      },
-      refuseFriend (user) {
-        this.$store.dispatch('refuseFriend', user)
       }
     }
   }

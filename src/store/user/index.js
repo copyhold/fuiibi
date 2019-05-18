@@ -135,9 +135,7 @@ export default {
           Vue.console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
           return
         }
-        Vue.console.log('[addPendingInvitations] b4 pushing it => state.user.pendingInvitations', state.user.pendingInvitations);
-        state.user.pendingInvitations.push(payload)
-        Vue.console.log('[addPendingInvitations] after pushing it => state.user.pendingInvitations', state.user.pendingInvitations);
+        Vue.set(state.user.pendingInvitations, payload, true)
 
       }
     },
@@ -246,9 +244,17 @@ export default {
            Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
            dispatch('createUserFromGoogle', payload)
          } else {
-           commit('setUser', { ...userData, imageUrl: userData.photoURL })
+           const friends = {}
+           for (let friendid of Object.values(userData.friends)) {
+             friends[friendid] = true
+           }
+           commit('setUser', { ...userData, imageUrl: userData.photoURL, friends })
            Vue.console.log('[checkUserFromGoogle] this user is NOT new')
-           dispatch('fetchUserData')
+           const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(userData.friends || {})])
+           dispatch('loadPersons', Array.from(ids))
+           // dispatch('fetchUserData')
+           dispatch('setupMessagingAndToken')
+           dispatch('listenToNotifications')
            dispatch('fetchUsersEvents')
            dispatch('listenToNotificationsChanges')
            dispatch('listenToInvitationRemoval')
@@ -374,6 +380,10 @@ export default {
     // ***********FETCHUSERDATA************************
     fetchUserData ({commit, getters, dispatch}) {
       commit('setLoading', true)
+
+      dispatch('setupMessagingAndToken')
+      dispatch('listenToNotifications')
+
       let events = []
       let friends = []
       let firstName = ''
@@ -418,8 +428,6 @@ export default {
         return Promise.all(promises)
       })
       .then(data => {
-        const personsIds = Object.keys({ ...data[0].val(), ...data[1].val(), ...data[2].val() })
-        dispatch('loadPersons', personsIds)
         // here we should create a Set of UID's and request all of them into person's store
         return Promise.all(data.map(snap  => {
           if (!snap.exists()) return []
@@ -471,8 +479,6 @@ export default {
         }
         Vue.console.log('[fetchUserData] updatedUser b4 commit(setUser, updatedUser)', updatedUser);
         commit('setUser', updatedUser)
-        dispatch('setupMessagingAndToken')
-        dispatch('listenToNotifications')
       })
       .catch(error => {
         Vue.console.log(error)
@@ -481,26 +487,22 @@ export default {
     },
 
     fetchUsersEvents ({commit, getters}) {
-      firebase.database()
-      .ref('/users/' + getters.user.id + '/userEvents/')
-      .on('value', function (snap) {
-        for (let evid of Object.keys(snap.val())) {
-          firebase.database()
-          .ref(`/events/${evid}`)
-          .once('value')
-          .then(snap => {
-            const newEvent = {
-              event: snap.val(),
-              key:   snap.key,
-              fbKey: snap.key
-            }
-            if (newEvent.event && newEvent.event.imageUrl) {
-              commit('addEventToMyEvents', newEvent)
-              commit('addEvent', newEvent)
-            }
-          })
-        }
-      })
+      for (let evid of Object.values(getters.user.userEvents)) {
+        firebase.database()
+        .ref(`/events/${evid}`)
+        .once('value')
+        .then(snap => {
+          const newEvent = {
+            event: snap.val(),
+            key:   snap.key,
+            fbKey: snap.key
+          }
+          if (newEvent.event && newEvent.event.imageUrl) {
+            commit('addEventToMyEvents', newEvent)
+            commit('addEvent', newEvent)
+          }
+        })
+      }
     },
 
     // ****************LOADUSERS FOR THE TESTS****************
@@ -617,45 +619,41 @@ export default {
       const friendId = payload
       const userId = getters.user.id
       // We check if the friend already exist on the pendingFriend list of the user
-      if(getters.user.pendingFriends.findIndex(user => userId === payload) >= 0) {
+      if(getters.user.pendingFriends[friendId]) {
         Vue.console.log('Refused to add this friend as it already exist in the pendingFriends list!!!');
         commit('setLoading', false)
         return
       }
       // Send the friend an invitation to accept the friendship in his pending friends.
-      firebase.database().ref('/users/' + friendId + '/pendingFriends').push(userId)
+      firebase.database().ref(`/users/${friendId}/pendingFriends/${userid}`).set(true)
       // Add the friend id in the pending invitation's user
-      firebase.database().ref('/users/' + userId + '/pendingInvitations').push(friendId)
-      // commit('addPendingInvitations', friendId)
+      firebase.database().ref(`/users/${userId}/pendingInvitations/${friendid}`).set(true)
+      commit('addPendingInvitations', friendId)
       commit('setLoading', false)
     },
 
-    acceptFriendRequest ({commit, getters}, payload) {
+    acceptFriendRequest ({commit, getters}, fid) {
       // Vue.console.log('[acceptFriendRequest] payload', payload);
-      const friendId = payload.id
       const user = getters.user
       commit('setLoading', true)
-      // We remove the friend from the user's pending list
-      firebase.database().ref('/users/' + user.id + '/pendingFriends').child(friendId).remove()
-      firebase.database().ref('/users/' + friendId + '/pendingInvitations').child(user.id).remove()
-      // We update the store
-      commit('removePendingFriendFromUser', friendId)
-      // We check if the friend already exist on the friend list of the user
-      if(getters.user.friends.findIndex(user => user.id === friendId) >= 0) {
+      firebase.database().ref(`/users/${fid}/pendingInvitations/${user.id}`).remove()
+      firebase.database().ref(`/users/${user.id}/pendingFriends/${fid}`).remove()
+      if(getters.user.friends[fid]) {
         Vue.console.log('Refused to add this friend as it already exist in the friends list!!!');
         commit('setLoading', false)
+        commit('removePendingFriendFromUser', fid)
         return
       }
-      // We push the friendID to the user's friend list
-      Vue.console.log('**********!!!!!!!!! adding friend to user');
-      Promise.all([
-        firebase.database().ref('/users/' + user.id + '/friends/' + friendId).set(true),
-        firebase.database().ref('/users/' + user.id + '/friends').push(friendId),
-        // Add user to friend
-        firebase.database().ref('/users/' + friendId + '/friends').push(user.id),
-        firebase.database().ref('/users/' + friendId + '/friends/' + user.id).set(true)
+      return Promise.all([
+        firebase.database().ref(`/users/${user.id}/friends`).push(fid),
+        firebase.database().ref(`/users/${fid}/friends`).push(user.id),
+      //firebase.database().ref('/users/' + user.id + '/friends/' + fid).set(true),
+      //firebase.database().ref('/users/' + fid + '/friends/' + user.id).set(true)
       ])
-      .then(res => Vue.console.debug('added friends'))
+      .then(res => {
+        commit('removePendingFriendFromUser', fid)
+        Vue.console.debug('added friends')
+      })
       .catch(error => {
         Vue.console.log(error);
       })
@@ -716,10 +714,10 @@ export default {
 
   getters: {
     pendingFriends: (state, getters) => {
-      Vue.console.log('pendingfriends getter', state.user)
-      return []
-      if (!state.user || state.user.pendingFriends) return []
-      return Object.keys(state.user.pendingFriends)
+      if (!state.user || !state.user.pendingFriends) return []
+      return Object.keys(state.user.pendingFriends).map(uid => {
+        return getters.person(uid)
+      })
     },
     notification: state => evid => state.user.notifications[evid],
     friendIsPending: state => uid => state.user.pendingFriends[uid] || false,
