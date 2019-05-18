@@ -12,17 +12,26 @@
         </v-toolbar>
         <v-container grid-list-s fluid>
           <v-layout row wrap>
-            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height v-for="(file, index) in files" :key="file.id">
+            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height v-for="(file, index) in files" :key="file.id" :loadingPictures='loadingPictures=false'>
               <v-card v-if="file" flat tile>
-                <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic black"><v-icon color="white">close</v-icon></v-btn>
+                <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic"><v-icon color="black">close</v-icon></v-btn>
                 <v-img :src="file.url" aspect-ratio="1" @click="selectFileForEdit(file)"></v-img>
               </v-card>
             </v-flex>
-            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height >
+            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height>
               <input accept="image/*" type="file" id="selectphotos" multiple class="d-none" @change="addedPhoto()" ref="filesfield" />
-              <v-btn for="selectphotos" center outline color="grey" class="uploadPicture" tag="label">
+              <v-btn for="selectphotos" center outline color="grey" class="uploadPicture" tag="label" v-if="!loadingPictures" >
                 <v-icon>add_a_photo</v-icon>
               </v-btn>
+            </v-flex>
+          </v-layout>
+          <v-layout row wrap v-if="loadingPictures" >
+            <v-flex xs4>
+            </v-flex>
+            <v-flex xs4>
+              <v-progress-circular :size="70" indeterminate color="primary"></v-progress-circular></v-progress-circular>
+            </v-flex>
+            <v-flex xs4>
             </v-flex>
           </v-layout>
         </v-container>
@@ -47,7 +56,8 @@ export default {
     return {
       editFile: null,
       files: [],
-      picDialog: false
+      picDialog: false,
+      loadingPictures: false
     }
   },
   methods: {
@@ -60,6 +70,8 @@ export default {
       }
     },
     addedPhoto (filelist) {
+      this.loadingPictures = true
+      console.log('this.loadingPictures', this.loadingPictures)
       const files = this.$refs.filesfield.files
       if (files.length === 0) {
         return
@@ -87,6 +99,8 @@ export default {
         this.files = files
       })
       .catch(this.$debug)
+      // this.loadingPictures = false
+      console.log('this.loadingPictures', this.loadingPictures)
     },
     startUpload () {
       this.picDialog = false
