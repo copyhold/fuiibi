@@ -39,7 +39,7 @@ $app = <<<EOA
 </article>
 EOA;
 $out = str_replace('<title>', '<title>' . $event->title . ' | ', $template);
-$out = preg_replace('~--ssr--~',$app,$out);
+$out = preg_replace('~Loading...~',$app,$out);
 $out = preg_replace_callback('~<meta property="og:(title|description|url|image)" content=""/>~', function($m) use ($event, $domain, $url) {
   switch ($m[1]) {
   case 'title':
