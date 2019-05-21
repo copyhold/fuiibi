@@ -487,6 +487,7 @@ export default {
     },
 
     fetchUsersEvents ({commit, getters}) {
+      if (!getters.user || !getters.user.userEvents) return
       for (let evid of Object.values(getters.user.userEvents)) {
         firebase.database()
         .ref(`/events/${evid}`)
