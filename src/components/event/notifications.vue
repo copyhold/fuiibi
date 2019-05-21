@@ -84,7 +84,7 @@
       },
       /* eslint-disable */
       wasThere (key) {
-        return this.$store.getters.user.events.findIndex(event => {
+        return this.$store.getters.user.events && this.$store.getters.user.events.findIndex(event => {
           return event.key === key
         }) >= 0
       },
