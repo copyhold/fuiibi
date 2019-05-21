@@ -116,20 +116,23 @@ new Vue({
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.$debug('[main.js] user', user)
-        this.$store.dispatch('autoSignIn', user)
+        this.$store.commit('setUser', {
+          id: user.uid,
+          email: user.email
+        })
 
-        // GOOGLE
-        if (user.photoURL) {
-          this.$store.dispatch('checkUserFromGoogle', user)
-          // this.$store.dispatch('getUserContacts')
-        } else {
-          this.$store.dispatch('fetchUserData')
-          this.$store.dispatch('fetchUsersEvents')
-          this.$store.dispatch('listenToNotifications')
-          this.$store.dispatch('listenToNotificationsChanges')
-          this.$store.dispatch('listenToInvitationRemoval')
-          this.$store.dispatch('listenToFriendRemoval')
-        }
+        this.$store.dispatch('checkUserFromGoogle', user)
+      // // GOOGLE
+      // if (user.photoURL) {
+      //   // this.$store.dispatch('getUserContacts')
+      // } else {
+      //   this.$store.dispatch('fetchUserData')
+      //   this.$store.dispatch('fetchUsersEvents')
+      //   this.$store.dispatch('listenToNotifications')
+      //   this.$store.dispatch('listenToNotificationsChanges')
+      //   this.$store.dispatch('listenToInvitationRemoval')
+      //   this.$store.dispatch('listenToFriendRemoval')
+      // }
       }
     })
   }
