@@ -55,7 +55,9 @@ export default {
         // Handle the initial sign-in state.
         updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get())
       })
-      .catch(err => console.error(err))
+      .catch(err => {
+        this.$debug('google contacts', err)
+      })
     },
     loadGContacts (nextPageToken = null) {
       this.loading = true

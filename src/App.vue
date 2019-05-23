@@ -110,12 +110,10 @@
     },
     computed: {
       user () {
-        if (this.$store.getters.user) {
-          return this.$store.getters.user
-        }
+        const {user} = this.$store.getters
+        return user
       },
       sideMenu () {
-        console.log('this.sideNav', this.sideNav)
         let sideMenu = [
           {icon: 'face', title: 'Sign Up', link: '/signup'},
           {icon: 'lock_open', title: 'Sign In', link: '/'}
@@ -153,8 +151,8 @@
     },
     methods: {
       onLogout () {
-        this.$router.push('/')
         this.$store.dispatch('logout')
+        this.$router.push('/')
       },
       listenToProfileUpdate () {
         console.log('[listenToProfileUpdate] triggered')

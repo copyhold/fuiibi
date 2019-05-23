@@ -90,12 +90,14 @@
       pendingInvitations () {
         const user = this.$store.getters.user
         if (!user || !user.pendingInvitations) return []
-        return Object.keys(user.pendingInvitations).map(this.$store.getters.person)
+        const friends = Object.keys(user.pendingInvitations).map(this.$store.getters.person).filter(fr => typeof fr !== 'undefined')
+        return friends
       },
       pendingFriends () {
         const user = this.$store.getters.user
         if (!user || !user.pendingFriends) return []
-        return Object.keys(user.pendingFriends).map(this.$store.getters.person)
+        const friends = Object.keys(user.pendingFriends).map(this.$store.getters.person).filter(fr => typeof fr !== 'undefined')
+        return friends
       },
       friends () {
         if (!this.$store.getters.user || !this.$store.getters.user.friends) {
@@ -111,7 +113,8 @@
         return this.$store.getters.loading
       },
       loggedInUserId () {
-        return this.$store.getters.user.id
+        const {user} = this.$store.getters
+        return user.id
       }
     },
     methods: {
