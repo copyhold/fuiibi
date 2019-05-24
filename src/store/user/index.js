@@ -152,10 +152,10 @@ export default {
     removePendingFriendFromUser(state, friendId) {
       Reflect.deleteProperty(state.user.pendingFriends, friendId) // why Reflect? I dont' know
     },
-    removePendingInvitationFromUser(state, payload) {
-      const pendingInvitations = state.user.pendingInvitations
-      pendingInvitations.splice(pendingInvitations.findIndex(friend => friend.id === payload), 1)
-      Reflect.deleteProperty(state.user.pendingInvitations, payload)
+    cancelInvitation(state, fid) {
+      const pendingInvitations = { ...state.user.pendingInvitations }
+      delete(pendingInvitations[fid])
+      state.user.pendingInvitations = pendingInvitations
     },
     removeFriendFromUser(state, payload) {
       console.log("[removeFriendFromUser] friend should be removed from user...");
@@ -506,8 +506,11 @@ export default {
 
     },
 
-    // **************ACTIONS****************
-
+    // ************** FRIENDSACTIONS****************
+    cancelInvitation ({commit, getters}, fid) {
+      commit('cancelInvitation', fid)
+      firebase.database().ref(`/users/${getters.user.id}/pendingInvitations/${fid}`).remove()
+    },
     sendFriendRequest ({commit, getters}, payload) {
       commit('setLoading', true)
       const friendId = payload

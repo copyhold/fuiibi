@@ -1,7 +1,7 @@
 <template >
   <v-container>
     <v-list subheader v-if="pendingFriends"  xs12>
-      <v-subheader>Friends invitations</v-subheader>
+      <v-subheader>Invitations sent to me</v-subheader>
       <template v-for="user in pendingFriends">
         <v-divider></v-divider>
         <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
@@ -25,7 +25,7 @@
       </template>
     </v-list>
     <v-list subheader v-if="pendingInvitations"  xs12>
-      <v-subheader>Pending friends</v-subheader>
+      <v-subheader>Invitations I sent</v-subheader>
       <template v-for="user in pendingInvitations">
         <v-divider></v-divider>
         <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
