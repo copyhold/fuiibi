@@ -36,6 +36,16 @@ export default {
     }
   },
   actions: {
+    loadUserEvents (store, uid) {
+      firebase.functions()
+      .httpsCallable('loadUserEvents')({ uid })
+      .then(response => {
+        store.commit('updatePerson', { uid, userEvents: response.data })
+      })
+      .catch(err => {
+        Vue.console.error('Can not loadUserEvents for:' , uid)
+      })
+    },
     setCurrentEvent (store, id) {
       firebase.database()
       .ref(`/events/${id}`)

@@ -108,6 +108,7 @@ new Vue({
       apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
       authDomain: 'iwtapplication.firebaseapp.com',
       databaseURL: 'https://fuiibi.firebaseio.com',
+   // databaseURL: 'ws://localhost:5000',
       projectId: 'iwtapplication',
       messagingSenderId: '208715939086',
       storageBucket: 'gs://iwtapplication.appspot.com'

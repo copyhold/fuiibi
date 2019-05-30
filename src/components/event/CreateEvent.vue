@@ -498,7 +498,7 @@
       },
       geocode_coordinates (position) {
         this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
-        if (!fetchedLocation.lat || !fetchedLocation.lng) {
+        if (!this.fetchedLocation.lat || !this.fetchedLocation.lng) {
           return
         }
         this.$log('[getLocation] this.fetchedLocation', this.fetchedLocation);
@@ -513,14 +513,18 @@
         geocoder.geocode({'location': latlng}, (results, status) => {
           this.$log('results ', results);
           this.address = {
-            administrative_area_level_1: results[4].address_components["0"].long_name,
-            country: results[4].address_components[1].long_name,
             latitude: this.lat,
             longitude: this.lon,
-            locality: results["0"].address_components[1].long_name,
-            route: results["0"].address_components["0"].long_name,
-            street_number: results["0"].address_components["0"].long_name
+            route: results[0].address_components[0].long_name,
+            street_number: results[0].address_components[0].long_name
           }
+       // for (const [ind,result] of results) {
+       //   this.address[`administrative_area_level_${ind}`] = result.address_components[0].long_name
+       //   const wherecountry = result.types.indexOf('country')
+       //   if (wherecountry>-1) {
+       //     this.address.country = result.address_components[wherecountry].long_name
+       //   }
+       // }
           this.$log('[this address nvo object]', this.address);
           this.where = results[0].formatted_address
           setTimeout(_ => {
@@ -583,9 +587,11 @@
             const imagemeta = parser.parse()
             this.$debug(imagemeta)
             const date_tag = imagemeta.tags.CreateDate || imagemeta.tags.ModifyDate
-            const create_date = new Date(date_tag * 1000)
-            component.date = component.selectingDate = create_date.toISOString().substring(0, 10)
-            component.time = component.selectingTime = this.format_time(create_date)
+            if (date_tag) {
+              const create_date = new Date(date_tag * 1000)
+              component.date = component.selectingDate = create_date.toISOString().substring(0, 10)
+              component.time = component.selectingTime = this.format_time(create_date)
+            }
             const {GPSLongitude,GPSLatitude} = imagemeta.tags
             this.geocode_coordinates({ coords: {
                 latitude: GPSLatitude,

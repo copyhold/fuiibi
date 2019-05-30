@@ -17,9 +17,12 @@ export default {
       state.error = payload
     },
     savePerson (state, person) {
-      const newpersons = { ...state.persons }
-      newpersons[person.id] = person
-      state.persons = newpersons
+      Vue.set(state.persons, person.id, person)
+    },
+    updatePerson (state, payload) {
+      const {uid, ...update} = payload
+      const newperson = { ...state.persons[uid], ...update }
+      this.commit('savePerson', newperson)
     },
     clearError (state) {
       state.error = null

@@ -80,9 +80,7 @@ export default {
     },
     updateUser (state, payload) {
       Vue.console.log('[updateUser] check the payload', payload)
-      const user = state.users.find(user => {
-        return user.id === payload.id
-      })
+      const user = this.getters.person(payload.id)
       if (user.userEvents) {
         user.userEvents = payload.userEvents
       }
@@ -127,16 +125,13 @@ export default {
       state.users.push(payload)
       Vue.console.log('in mutation create user ', payload);
     },
-    addPendingInvitations(state, payload) {
-      const newFriend = payload
-      const id = newFriend.id
+    addPendingInvitations(state, fid) {
       if (state.user.pendingInvitations) {
-        if(state.user.pendingInvitations.findIndex(friend => friend.id === payload.id) >= 0) {
+        if(state.user.pendingInvitations && state.user.pendingInvitations[fid]) {
           Vue.console.log('Refused to add this friend as it already exist in the pendingInvitations list!!!');
           return
         }
-        Vue.set(state.user.pendingInvitations, payload, true)
-
+        Vue.set(state.user.pendingInvitations, fid, true)
       }
     },
     addPendingFriendToUser(state, payload) {
@@ -164,6 +159,7 @@ export default {
       Reflect.deleteProperty(state.user.friends, payload)
     },
     setUser (state, payload) {
+      if (!payload.notifications) payload.notifications = []
       state.user = payload
       if (payload != null) {
         state.email = payload.email

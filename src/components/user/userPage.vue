@@ -8,7 +8,7 @@
     <div @click="back" class="arrowBack clickable">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-layout row wrap>
+    <v-layout row wrap v-if="!loading && user">
       <v-flex xs12>
 
         <v-card class="mb-1">
@@ -27,33 +27,33 @@
       </v-flex>
     </v-layout>
 
-    <v-layout row wrap v-for="item in userEvents" :key="item.id" class="mb-1" v-if="!loading">
+    <v-layout row wrap v-for="(item, evid) in user.userEvents" :key="item.id" class="mb-1" v-if="!loading && user">
       <v-flex xs12 sm12 md12>
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
               <v-flex xs4 sm2 md2>
-                <v-img :src="item.event.imageUrl" height="112px" style="background-color: white"></v-img>
+                <v-img :src="item.imageUrl" height="112px" style="background-color: white"></v-img>
               </v-flex>
               <v-flex xs8 sm10 md10 class="ml-3">
                 <v-layout>
                   <!-- <v-card-title primary-title > -->
                     <!-- <v-card-actions wrap> -->
-                      <div @click="eventDetails(item.key)">
-                        <h4 class="secondaryDark--text bold pt-3 pb-2"> {{ item.event.title }}</h4>
+                      <div @click="eventDetails(evid)">
+                        <h4 class="secondaryDark--text bold pt-3 pb-2"> {{ item.title }}</h4>
                       </div>
                     <!-- </v-card-actions> -->
                   <!-- </v-card-title> -->
                 </v-layout>
-                <v-layout>
+                <v-layout v-if="item.location">
                   <div offset-xs3>
-                    <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
-                    <p class="date">{{ item.event.date | date}}</p>
+                    <p class="location">{{ item.location.locality }} - {{ item.location.country }}</p>
+                    <p class="date">{{ item.date | date}}</p>
                   </div>
                 </v-layout>
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab large class="iwt" center v-if="!wasThere(item.key)" @click="iwtClicked(item)"></v-btn>
+                <v-btn fab large class="iwt" center v-if="!wasThere(evid)" @click="iwtClicked(item)"></v-btn>
                 <span v-else>
                   <v-btn flat large class="iwt checked" center></v-btn>
                 </span>
@@ -70,12 +70,11 @@ export default {
   props: ['id'],
   data () {
     return {
-      imageUrl: '',
-      image: '',
-      dialog: false,
-      carousel: false,
-      cycle: false
+      loadingEvents: true
     }
+  },
+  created () {
+    this.$store.dispatch('loadUserEvents', this.id)
   },
   computed: {
     userHasLocality () {
@@ -86,13 +85,7 @@ export default {
       }
     },
     user () {
-      return this.$store.getters.getUser(this.id)
-    },
-    userEvents () {
-      return this.user.userEvents
-    },
-    events () {
-      return this.user.userEvents
+      return this.$store.getters.person(this.id)
     },
     loading () {
       return this.$store.getters.loading
