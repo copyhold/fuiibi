@@ -1,5 +1,6 @@
 import * as firebase from 'firebase'
 import Vue from 'vue'
+import router from './../../router'
 require('firebase/functions')
 /* eslint-disable */
 // Here we are not eporting anymore a store, it's done in the index.js of the all store, so we export a normal JS object
@@ -36,7 +37,20 @@ export default {
     }
   },
   actions: {
-    loadUserEvents (store, uid) {
+    listenToNotificationsChanges () {},
+    loadUserEvents (store, who) {
+      Vue.console.log('loading events', who, store.getters.user)
+      if (who==='current user') {
+        if (store.getters.user) {
+          store.commit('setLoading', false)
+          who = store.getters.user.id
+        } else {
+          store.commit('setLoading', true)
+          setTimeout(() => store.dispatch('loadUserEvents', who), 100)
+          return
+        }
+      }
+      const uid = who
       firebase.functions()
       .httpsCallable('loadUserEvents')({ uid })
       .then(response => {
@@ -53,8 +67,8 @@ export default {
       .then(res => {
         const event = res.val()
         event.id = id
-        store.commit('setCurrentEvent', event)
         store.dispatch('loadPersons', Object.values(event.users))
+        store.commit('setCurrentEvent', event)
       })
       .catch(Vue.console.debug)
     },
@@ -157,83 +171,33 @@ export default {
     },
     reloadEvent({commit, ...store}, evid) {
       if (evid=='null') return
-      firebase.database().ref(`/events/${evid}`).once('value').then(data => {
-        const noti = store.rootGetters.notification(data.key)
-        if (!noti) return
-        noti.event = data.val()
-        commit('updateNotifications', noti)
-      })
-      .catch(Vue.console.error)
+        firebase.database().ref(`/events/${evid}`).once('value').then(data => {
+          const noti = store.rootGetters.notification(data.key)
+          if (!noti) return
+            noti.event = data.val()
+          commit('updateNotifications', noti)
+        })
+        .catch(Vue.console.error)
     },
     listenToNotifications ({commit, getters, dispatch}) {
       function updateNotifications(data) {
         const evid = data.key
         const notifData = data.val()
         if (evid=='null' || notifData==null) return
-        const newNotif = {
-          key:          evid,
-          clickerName:  notifData.clickerName,
-          userId:       notifData.userId,
-          dateToRank:   notifData.dateToRank,
-          friendsCount: data.child('users').numChildren(),
-          event:        null
-        }
-        commit('updateNotifications', newNotif)
-        dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
+          const newNotif = {
+            key:          evid,
+            clickerName:  notifData.clickerName,
+            userId:       notifData.userId,
+            dateToRank:   notifData.dateToRank,
+            friendsCount: data.child('users').numChildren(),
+            event:        null
+          }
+          commit('updateNotifications', newNotif)
+          dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
       }
       const ref = firebase.database().ref(`users/${getters.user.id}/notifications/`)
       ref.on('child_added', updateNotifications)
       ref.on('child_changed', updateNotifications)
-    },
-
-    listenToNotificationsChanges ({commit, getters}) {
-      return
-      // I listen to any new notifications received by the user.
-      //
-   // firebase.database().ref(`users/${getters.user.id}/notifications/`)
-   // .on('child_changed')
-   //   const key = data.key
-   //   const notifData = data.val()
-   //   var thisEvent;
-   //   var counter;
-   //   // var eventUserCounter;
-
-   //   firebase.database().ref('/events/' + key).once('value')
-   //   .then( data => {
-   //     this.thisEvent = data.val()
-   //     Vue.console.log('[listenToNotificationsChanges] this.thisEvent', this.thisEvent);
-   //     //
-   //     // I add a setTimeout, otherwise, the userFriends has no time to get updated and it keep the same amount of chiuldren
-   //     setTimeout( _=> {
-   //       firebase.database().ref('users/' + getters.user.id + '/notifications/' + key + '/users/').once('value')
-   //       .then( data => {
-   //         this.counter = data.numChildren()
-   //         console.log('[listenToNotificationsChanges] counter changed!!!!!!', this.counter);
-   //       })
-   //     }, 8000)
-   //   })
-   //   .then( _ => {
-   //     firebase.database().ref('/events/' + key).once('value')
-   //     .then(data => {
-   //       const fbKey = data.key
-   //       const userEvents =  getters.user.events
-   //       const event = data.val()
-   //       const newNotif = {
-   //         key: key,
-   //         clickerName : notifData.clickerName,
-   //         userId: notifData.userId,
-   //         dateToRank : notifData.dateToRank,
-   //         friendsCount : this.counter
-   //         // eventUserCounter: this.eventUserCounter
-   //       }
-
-   //       // Here update firebase
-   //       console.log('[listenToNotificationsChanges] newNotif avant de le faire le commit de updateNotification', newNotif);
-   //       commit('updateNotification', newNotif)
-   //       commit('setLoading', false)
-   //     })
-   //   })
-   // })
     },
 
     iwtClicked ({commit, getters}, payload) {
@@ -243,10 +207,10 @@ export default {
       const clickerName = payload.firstName
       Vue.console.debug('[iwtClicked] clickerId', userId);
       Promise.all([
-      // I push the new event key in the events array of the clicker user
-      firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key),
-      // Then I push the userId in the users array of the event
-      firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
+        // I push the new event key in the events array of the clicker user
+        firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key),
+        // Then I push the userId in the users array of the event
+        firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
       ])
       .then(res => {
         const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
@@ -255,28 +219,6 @@ export default {
           uid: getters.user.id
         })
       })
-      /**
-      // I get the friend's list of the user in order to send them notifications
-        const friends = res.val()[2];
-        for (let item in friends) {
-          // const userId = dataPairs[item]
-          const friendId = dataPairs[item]
-          Vue.console.log('[iwtClicked] friendId', friendId);
-          // I send notifications to each friend of the user about the clicked event
-          firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
-          Vue.console.log('[iwtClicked] after push userId');
-          Vue.console.log('[iwtClicked] clickerName', clickerName);
-          Vue.console.log('[iwtClicked] userId', userId);
-
-          // I update the clickerId and the dateToRank
-          // QUAND JE CLIQUE SUR UN USER, C'EST LA PAGE DE CELUI QUI EST LOADER QUI APPARAIT CAR IL EST COMME CA DANS FIREBASE
-          firebase.database().ref('/users/' + friendId + '/notifications/' + key).update({
-            clickerName: clickerName,
-            userId: userId,
-            dateToRank: - Date.now()
-          });
-        }
-        */
       .catch(Vue.console.log)
       .finally(() => commit('setLoading', false))
     },
@@ -290,73 +232,54 @@ export default {
         duration: payload.duration,
         creatorId: getters.user.id,
         creationDate: Date(),
+        users: {[getters.user.id]: getters.user.id},
         dateToRank: - payload.date.getTime()
       }
       Vue.console.log('[createEvent] eventData', eventData);
       let imageUrl
       let key
       let userEvents = []
-      let users = []
+      let users = [getters.user.id]
       let fbKey
       let pictures
+      this.users = {[getters.user.id]: getters.user.id}
+
       //Reach out to firebase and store it
       firebase.database().ref('events/').push(eventData)
       .then((data) => {
         key = data.key
+        eventData.id = data.key
+        this.fbKey = key
+
         // Here I'm getting the key of the new event created.
         // Push the new event key in the events array of the creator user
-        firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key)
-        .then( data => {
-          this.fbKey = data.key
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        // Push the userId in the users array of the event
-        firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
-        .then(() => {
-          firebase.database().ref('events/' + key + '/users/').once('value')
-          .then(data => {
-            this.users = data.val()
-            // console.log('[createEvent] data.val() de users', this.users);
-            })
-          })
-          return key
-        })
-        .then(key => {
-          // I stock the event's image in FB storage
-          const filename = payload.image.name
-          // const ext = filename.slice(filename.lastIndexOf('.'))
-          const ext = 'png'
-          return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
-        })
-        .then(fileData => {
-          imageUrl = fileData.metadata.downloadURLs[0]
-          // QUAND ON RECOIT UNE NOUVELLE NOTIFICATION QUI VIENT D'ETRE CREE, ON N E VOIT PAS CETTE PHOTO
-          // IL FAUT RELOADER LA PAGE POUR LA VOIR
-          // dispatch('addPicture', {image:payload.image, key: key})
+        firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
+        // I stock the event's image in FB storage
+        const filename = payload.image.name
+        // const ext = filename.slice(filename.lastIndexOf('.'))
+        const ext = 'png'
+        return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
+      })
+      .then(fileData => {
+        imageUrl = fileData.metadata.downloadURLs[0]
+        // QUAND ON RECOIT UNE NOUVELLE NOTIFICATION QUI VIENT D'ETRE CREE, ON N E VOIT PAS CETTE PHOTO
+        // IL FAUT RELOADER LA PAGE POUR LA VOIR
+        // dispatch('addPicture', {image:payload.image, key: key})
 
 
-          // to reach the specific item with the key in the events array and set the imageUrl stored above:
-          // Here we set the picture as the event picture
-          return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
-        })
-        // .then( _=> {
-        //   dispatch('addPicture', {image:payload.image, key: key})
-        // })
-        .then( _=> {
-          return firebase.database().ref('events/' + key + '/pictures/' + key).update({imageUrl: imageUrl})
-        })
-        .then( _ => {
-          // return firebase.database().ref('events/' + key + '/pictures/' + key).once('value')
-          return firebase.database().ref('events/' + key + '/pictures/').once('value')
-        })
-        .then( data => {
-          console.log('create Event picture => data.val()', data.val());
-          this.pictures = data.val()
-          console.log('create Event picture => this.pictures', this.pictures);
-        })
-        .then(() => {
+        // to reach the specific item with the key in the events array and set the imageUrl stored above:
+        // Here we set the picture as the event picture
+        return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
+      })
+      .then( _=> {
+        return firebase.database().ref('events/' + key + '/pictures/' + key).update({uid: getters.user.id, imageUrl: imageUrl})
+      })
+      .then( () => {
+        return firebase.database().ref('events/' + key + '/pictures/').once('value')
+      })
+      .then( data => {
+        this.pictures = data.val()
+        Vue.console.log('create Event picture => this.pictures', this.pictures);
         // here we commit that to my local store
         const newEventData = {
           title: payload.title,
@@ -368,53 +291,44 @@ export default {
           creationDate: new Date(),
           imageUrl: imageUrl,
           users: this.users,
-          dateToRank: - Date.now(),
+          dateToRank: 0 - Date.now(),
+          id: eventData.id,
           pictures: this.pictures
-          }
-          console.log('newEventData', newEventData);
-
-          const newEvent = {
-            event: newEventData,
-            key: key,
-            fbKey: this.fbKey
-          }
-          // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
-          commit('addEvent', newEvent)
-          commit('addEventToMyEvents', newEvent)
-          // I get the friend's list of the user in order to send them notifications
-          firebase.database().ref('/users/' + getters.user.id + '/friends/').once('value')
-          .then(data => {
-            const dataPairs = data.val()
-            for (let friendId in dataPairs) {
-              friendId = dataPairs[friendId] === true ? friendId : dataPairs[friendId]
-              // I send notifications to each friend of the user on the newly created event
-              firebase.database().ref('/users/' + friendId + '/notifications/' + key + '/users/').push(getters.user.id)
-              // I set the clickerId and the dateToRank
-              console.log('[createEvent] just b4 .set clickerName etc');
-              firebase.database().ref('/users/' + friendId + '/notifications/' + key).update({
-                clickerName: getters.user.firstName,
-                userId: getters.user.id,
-                dateToRank: - Date.now()
-              });
-            }
-            commit('setLoading', false)
-          })
-        })
-        .catch((error) => {
-          console.log(error)
-          commit('setLoading', false)
-        })
-      },
-    },
-    getters: {
-      getCurrentEvent: state => state.currentEvent,
-      getEventData (state) {
-        return (key) => {
-          return state.events.find(event => event.key === key )
         }
-      },
-      loadedNotifications (state) {
-        return state.loadedNotifications.sort((notificationA, notificationB) => notificationA.date - notificationB.date)
+        Vue.console.log('newEventData', newEventData);
+
+        const newEvent = {
+          event: newEventData,
+          key: key,
+          fbKey: this.fbKey
+        }
+        // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
+        commit('addEvent', newEvent)
+        commit('addEventToMyEvents', newEvent)
+        router.push(`/events/${key}`)
+
+        firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
+          evid: key,
+          uid: getters.user.id
+        })
+
+      })
+      .catch(Vue.console.error)
+      .finally(() => {
+        commit('setLoading', false)
+      })
+    },
+  },
+  getters: {
+    events: state => state.events,
+    getCurrentEvent: state => state.currentEvent,
+    getEventData (state) {
+      return (key) => {
+        return state.events.find(event => event.key === key )
       }
+    },
+    loadedNotifications (state) {
+      return state.loadedNotifications.sort((notificationA, notificationB) => notificationA.date - notificationB.date)
     }
+  }
 }

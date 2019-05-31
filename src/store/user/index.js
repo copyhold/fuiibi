@@ -159,13 +159,13 @@ export default {
       Reflect.deleteProperty(state.user.friends, payload)
     },
     setUser (state, payload) {
+      if (payload === null) {
+        state.user = payload
+        return
+      }
+      state.email = payload.email
       if (!payload.notifications) payload.notifications = []
       state.user = payload
-      if (payload != null) {
-        state.email = payload.email
-        Vue.console.debug('state.email', state.email);
-        Vue.console.debug('payload of the state.user in the setUser', payload);
-      }
     }
   },
   actions: {
@@ -288,28 +288,28 @@ export default {
       commit('setLoading', true)
       commit('clearError')
       firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-      .then(
-        user => {
-          //Here we got our user, so we are not loading anymore and we change the status of setLoading
-          commit('setLoading', false)
-          const newUser = {
-            id: user.uid,
-            email: user.email,
-            firstName: payload.firstName,
-            lastName: payload.lastName,
-            notifications: [],
-            events: [],
-            friends: [],
-            //*********************************************************
-            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/default_avatar.png?alt=media&token=245e435c-c87b-4af3-8688-a6469500b7de'
-          }
-          Vue.console.log('[signUserUp] setUser - newUser', newUser);
-          commit('setUser', newUser)
-          let id = user.uid
-          // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-          firebase.database().ref('users/' + id).set(newUser)
+      .then(user => {
+        //Here we got our user, so we are not loading anymore and we change the status of setLoading
+        const newUser = {
+          id: user.uid,
+          email: user.email,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          notifications: [],
+          events: [],
+          friends: [],
+          //*********************************************************
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/default_avatar.png?alt=media&token=245e435c-c87b-4af3-8688-a6469500b7de'
         }
-      )
+        Vue.console.log('[signUserUp] setUser - newUser', newUser);
+        commit('setUser', newUser)
+        debugger
+        // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
+        return firebase.database().ref(`users/${user.uid}`).set(newUser)
+      })
+      .then(() => {
+        commit('setLoading', false)
+      })
       .catch(
         error => {
           //Here we got an error, so we are not loading anymore and we change the status of setLoading
@@ -370,8 +370,13 @@ export default {
     },
 
     logout ({commit}) {
-      firebase.auth().signOut()
-      commit('setUser', null)
+      firebase.auth()
+      .signOut()
+      .then(() => {
+        commit('setUser', null)
+        router.push('/')
+      })
+      .catch(console.error)
     },
 
     fetchUsersEvents ({commit, getters}) {
@@ -512,15 +517,15 @@ export default {
       const friendId = payload
       const userId = getters.user.id
       // We check if the friend already exist on the pendingFriend list of the user
-      if(getters.user.pendingFriends[friendId]) {
+      if(getters.user.pendingFriends && getters.user.pendingFriends[friendId]) {
         Vue.console.log('Refused to add this friend as it already exist in the pendingFriends list!!!');
         commit('setLoading', false)
         return
       }
       // Send the friend an invitation to accept the friendship in his pending friends.
-      firebase.database().ref(`/users/${friendId}/pendingFriends/${userid}`).set(true)
+      firebase.database().ref(`/users/${friendId}/pendingFriends/${userId}`).set(true)
       // Add the friend id in the pending invitation's user
-      firebase.database().ref(`/users/${userId}/pendingInvitations/${friendid}`).set(true)
+      firebase.database().ref(`/users/${userId}/pendingInvitations/${friendId}`).set(true)
       commit('addPendingInvitations', friendId)
       commit('setLoading', false)
     },

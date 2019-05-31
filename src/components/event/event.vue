@@ -232,7 +232,7 @@ export default {
   },
   methods: {
     eventUsers () {
-      if (!this.$store.getters.user || !this.event.users) {
+      if (!this.event.users) {
         return []
       }
       return Object.values(this.event.users).map(uid => {

@@ -66,12 +66,12 @@
         this.right = !val
       }
     },
-
+    created () {
+      this.$store.dispatch('loadUserEvents', 'current user')
+    },
     computed: {
       events () {
-        if (this.$store.getters.user) {
-          return this.$store.getters.user.events
-        }
+        return this.$store.getters.events
       },
       loading () {
         return this.$store.getters.loading

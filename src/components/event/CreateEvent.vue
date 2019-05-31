@@ -15,10 +15,10 @@
 
           <v-layout row class="mb-2">
             <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
-              <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Upload Image</v-btn>
-              <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
-            the accept image is in order to accept image and nothing else-->
-              <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
+              <v-btn tag="label" block flat class="secondary--text" style="height: 100%; margin: 0;" >
+                <v-icon class="mr-2">file_upload</v-icon>Upload Image
+                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
+              </v-btn>
             </v-flex>
           </v-layout>
 

@@ -105,7 +105,7 @@
     watch: {
       user (value) {
         if (value !== null && value !== undefined) {
-          console.log('dans watch du signup avant le push')
+          this.$log('dans watch du signup avant le push')
           this.$router.push('/welcome')
         }
       }

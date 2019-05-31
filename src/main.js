@@ -122,7 +122,7 @@ new Vue({
 
         this.$store.dispatch('checkUserFromGoogle', user)
       } else {
-        this.$router.push('/')
+     // this.$router.push('/')
       }
     })
   }
