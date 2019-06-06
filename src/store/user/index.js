@@ -303,7 +303,6 @@ export default {
         }
         Vue.console.log('[signUserUp] setUser - newUser', newUser);
         commit('setUser', newUser)
-        debugger
         // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
         return firebase.database().ref(`users/${user.uid}`).set(newUser)
       })

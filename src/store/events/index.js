@@ -200,7 +200,7 @@ export default {
       ref.on('child_changed', updateNotifications)
     },
 
-    iwtClicked ({commit, getters}, payload) {
+    iwtClicked ({commit, getters, dispatch}, payload) {
       Vue.console.debug('[iwtClicked] notification - payload', payload);
       const key = payload.notification.id
       const userId = payload.userId
@@ -213,6 +213,8 @@ export default {
         firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
       ])
       .then(res => {
+        dispatch('loadUserEvents', 'current user')
+        dispatch('setCurrentEvent', key)
         const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
         return LFKnow({
           evid: key,

@@ -230,6 +230,7 @@
   export default {
     data () {
       return {
+        usedDeviceLocation: false,
         showVueAutoComplete: true,
         alert: false,
         valid: true,
@@ -290,22 +291,25 @@
     },
     computed: {
       formIsValid () {
+        let location_valid
         if (this.address) {
-          if (this.address.administrative_area_level_1) {
-            if (this.address.country && this.address.route && this.address.longitude && this.address.latitude) {
-              this.$log('[formIsValid] this.address', this.address);
-              this.$log('[formIsValid] this.where', this.where);
-              return this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
+          if (this.usedDeviceLocation) {
+            if (this.address.longitude) {
+              location_valid = true
             } else {
-              this.$log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
+              location_valid = false ; //but how???
             }
           } else {
-            this.$log('[formIsValid] INVALID!!!!!!!!!!!!!!!!!!!', this.address);
-            this.$log('no address.administrative_area_level_1')
+            if (this.address.administrative_area_level_1) {
+              if (this.address.country && this.address.route && this.address.longitude && this.address.latitude) {
+                location_valid = true
+              }
+            }
           }
         } else {
-          this.$log('no address yet');
+          location_valid = false
         }
+        return location_valid && this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
       },
       locationInNavigator() {
         if (!navigator.geolocation && !this.showLocationButton) {
@@ -485,7 +489,9 @@
           }
           this.fetchedLocation = {lat: 0, lng: 0}
         }, 7000);
+        this.usedDeviceLocation = true
         navigator.geolocation.getCurrentPosition( this.geocode_coordinates, err => {
+          this.usedDeviceLocation = false
           this.$log(err);
           this.searchingForLocation = false;
           // this.showLocationButton = true
@@ -513,6 +519,7 @@
         geocoder.geocode({'location': latlng}, (results, status) => {
           this.$log('results ', results);
           this.address = {
+            place_id: results[0].place_id,
             latitude: this.lat,
             longitude: this.lon,
             route: results[0].address_components[0].long_name,

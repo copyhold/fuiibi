@@ -71,7 +71,11 @@
     },
     computed: {
       events () {
-        return this.$store.getters.events
+        return Object.values(this.$store.getters.events).sort((a, b) => {
+          const adate = new Date(a.event.date)
+          const bdate = new Date(b.event.date)
+          return adate < bdate
+        })
       },
       loading () {
         return this.$store.getters.loading

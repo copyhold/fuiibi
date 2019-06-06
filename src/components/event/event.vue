@@ -224,10 +224,10 @@ export default {
     },
     userWasThere () {
       const user = this.$store.getters.user
-      if (!user || !user.events) {
+      if (!user) {
         return false
       }
-      return (user.events.findIndex(event => event.key === this.id) >= 0)
+      return Object.values(this.event.users).indexOf(user.id) > -1
     }
   },
   methods: {
