@@ -12,6 +12,9 @@ export default {
     events: []
   },
   mutations: {
+    emptyEvents () {
+      state.events = []
+    },
     addEvent (state, payload) {
       // IL FAUT VOIR POURQUOI IL NE LES VOIS PAS DANS STATE.EVENTS
       if (state.events.findIndex(events => events.key === payload.key) < 0) {
@@ -50,11 +53,13 @@ export default {
           return
         }
       }
+      store.commit('setLoading', true)
       const uid = who
       firebase.functions()
       .httpsCallable('loadUserEvents')({ uid })
       .then(response => {
         store.commit('updatePerson', { uid, userEvents: response.data })
+        store.commit('setLoading', false)
       })
       .catch(err => {
         Vue.console.error('Can not loadUserEvents for:' , uid)
@@ -109,7 +114,7 @@ export default {
         return Promise.all(
           storedfiles.map(storedFile => {
             const imageUrl = storedFile.metadata.downloadURLs[0]
-            return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ imageUrl: imageUrl })
+            return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
           })
         )
       })
@@ -204,17 +209,17 @@ export default {
       Vue.console.debug('[iwtClicked] notification - payload', payload);
       const key = payload.notification.id
       const userId = payload.userId
-      const clickerName = payload.firstName
       Vue.console.debug('[iwtClicked] clickerId', userId);
       Promise.all([
         // I push the new event key in the events array of the clicker user
-        firebase.database().ref('users/' + getters.user.id + '/userEvents').push(key),
+        firebase.database().ref(`users/${userId}/userEvents/${key}`).set(key),
         // Then I push the userId in the users array of the event
-        firebase.database().ref('events/' + key + '/users/').push(getters.user.id)
+        firebase.database().ref(`events/${key}/users/${userId}`).set(getters.user.id)
+
       ])
       .then(res => {
-        dispatch('loadUserEvents', 'current user')
-        dispatch('setCurrentEvent', key)
+      // dispatch('loadUserEvents', 'current user')
+        dispatch('reloadMyEvents')
         const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
         return LFKnow({
           evid: key,

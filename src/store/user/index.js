@@ -230,6 +230,15 @@ export default {
         commit('setLoading', false)
       })
     },
+    reloadMyEvents ({commit, state, getters}) {
+      if (!getters.user) return
+      firebase.database().ref(`users/${getters.user.id}/userEvents`).once('value')
+      .then(snap => {
+        if (!snap.exists()) return
+        commit('setUser', { ...getters.user, userEvents: snap.val() })
+      })
+      .catch(this.$debug)
+    },
     checkUserFromGoogle ({commit, dispatch}, payload) {
       Vue.console.log('[checkUserFromGoogle] payload')
       firebase.database().ref('users/' + payload.uid).once('value')

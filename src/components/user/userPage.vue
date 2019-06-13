@@ -27,7 +27,7 @@
       </v-flex>
     </v-layout>
 
-    <v-layout row wrap v-for="(item, evid) in user.userEvents" :key="item.id" class="mb-1" v-if="!loading && user">
+    <v-layout row wrap v-for="(item,index) in events" :key="index" class="mb-1" v-if="!loading && user">
       <v-flex xs12 sm12 md12>
         <v-card height="120px">
           <v-container fluid>
@@ -39,7 +39,7 @@
                 <v-layout>
                   <!-- <v-card-title primary-title > -->
                     <!-- <v-card-actions wrap> -->
-                      <div @click="eventDetails(evid)">
+                      <div @click="eventDetails(item.id)">
                         <h4 class="secondaryDark--text bold pt-3 pb-2"> {{ item.title }}</h4>
                       </div>
                     <!-- </v-card-actions> -->
@@ -53,7 +53,9 @@
                 </v-layout>
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab large class="iwt" center v-if="!wasThere(evid)" @click="iwtClicked(item)"></v-btn>
+                <v-btn fab large class="iwt" center v-if="!wasThere(item.id)" @click="iwtClicked(index)">
+                  <v-icon v-if="loadingEvent[item.id]">loop</v-icon>
+                </v-btn>
                 <span v-else>
                   <v-btn flat large class="iwt checked" center></v-btn>
                 </span>
@@ -66,15 +68,20 @@
   </v-container>
 </template>
 <script>
+import Vue from 'vue'
+import * as firebase from 'firebase'
+require('firebase/functions')
 export default {
   props: ['id'],
   data () {
     return {
+      events: [],
+      loadingEvent: {},
       loadingEvents: true
     }
   },
   created () {
-    this.$store.dispatch('loadUserEvents', this.id)
+    this.fetchEvents()
   },
   computed: {
     userHasLocality () {
@@ -97,19 +104,35 @@ export default {
     }
   },
   methods: {
+    fetchEvents () {
+      this.loadingEvents = true
+      firebase.functions()
+      .httpsCallable('loadUserEvents')({ uid: this.id })
+      .then(response => {
+        this.events = response.data
+        this.loadingEvents = false
+      })
+      .catch(this.$error)
+    },
     eventDetails (key) {
       this.$router.push('/events/' + key)
     },
     wasThere (key) {
-      return this.$store.getters.user.events.findIndex(event => {
-        return event.key === key
-      }) >= 0
+      const {user} = this.$store.getters
+      if (!user || !user.userEvents) return false
+      return Object.values(user.userEvents).indexOf(key) > -1
     },
     back () {
       this.$router.go(-1)
     },
-    iwtClicked (notification) {
+    iwtClicked (index) {
+      const notification = this.events[index]
+      Vue.set(this.loadingEvent, notification.id, true)
       this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+      .then(() => {
+        Vue.set(this.loadingEvent, notification.id, false)
+      })
+      .catch(this.$error)
     }
   }
 }

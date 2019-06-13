@@ -8,19 +8,19 @@
     <v-container grid-list-sm fluid>
 
     <v-layout row wrap >
-      <v-flex xs12 sm6 md6 v-for="item in events" :key="item.id" class="mb-1" v-if="!loading">
+      <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1" v-if="!loading">
         <v-card height="120px">
           <v-container fluid>
-            <v-layout col xs12 @click="eventDetails(item.key)">
+            <v-layout col xs12>
               <v-flex xs4 sm4 md4 >
-                <v-img :src="item.event.imageUrl" height="112px" style="background-color: white" class="clickable" />
+                <v-img :src="item.imageUrl" height="112px" style="background-color: white" class="clickable" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout column full-height style="height: 100%;">
-                  <p class="bold  mt-2">{{ item.event.title }}</p>
-                  <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
-                  <p class="date">{{ item.event.date | date}}</p>
-                  <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(item)" end>Remove</v-btn>
+                  <p class="bold  mt-2" @click="eventDetails(item.id)">{{ item.title }}</p>
+                  <p class="location">{{ item.location.locality }} - {{ item.location.country }}</p>
+                  <p class="date">{{ item.date | date}}</p>
+                  <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(index)" end>Remove</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -39,69 +39,79 @@
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      direction: 'left',
-      fab: false,
-      fling: false,
-      hover: false,
-      tabs: null,
-      top: false,
-      right: true,
-      bottom: true,
-      left: false,
-      transition: 'slide-y-reverse-transition'
-    }),
-    watch: {
-      top (val) {
-        this.bottom = !val
-      },
-      right (val) {
-        this.left = !val
-      },
-      bottom (val) {
-        this.top = !val
-      },
-      left (val) {
-        this.right = !val
-      }
+import * as firebase from 'firebase'
+require('firebase/functions')
+export default {
+  data: () => ({
+    direction: 'left',
+    fab: false,
+    fling: false,
+    hover: false,
+    tabs: null,
+    top: false,
+    right: true,
+    bottom: true,
+    left: false,
+    transition: 'slide-y-reverse-transition',
+    events: [],
+    loadingEvents: false
+  }),
+  watch: {
+    top (val) {
+      this.bottom = !val
     },
-    created () {
-      this.$store.dispatch('loadUserEvents', 'current user')
+    right (val) {
+      this.left = !val
     },
-    computed: {
-      events () {
-        return Object.values(this.$store.getters.events).sort((a, b) => {
-          const adate = new Date(a.event.date)
-          const bdate = new Date(b.event.date)
-          return adate < bdate
-        })
-      },
-      loading () {
-        return this.$store.getters.loading
-      },
-      activeFab () {
-        switch (this.tabs) {
-          case 'one': return { 'class': 'purple', icon: 'account_circle' }
-          case 'two': return { 'class': 'red', icon: 'edit' }
-          case 'three': return { 'class': 'green', icon: 'keyboard_arrow_up' }
-          default: return {}
-        }
-      }
+    bottom (val) {
+      this.top = !val
     },
-    methods: {
-      eventDetails (key) {
-        this.$router.push('/events/' + key)
-      },
-      newEvent () {
-        this.$router.push('/event/new')
-      },
-      alertB4remove (event) {
-        // console.log('[alertB4remove] methods payload', event)
-        this.$store.dispatch('removeEventFromUser', event)
+    left (val) {
+      this.right = !val
+    }
+  },
+  created () {
+    this.loadingEvents = true
+    firebase.functions()
+    .httpsCallable('loadUserEvents')({ uid: this.$store.getters.user.id })
+    .then(response => {
+      this.$log('found events', response.data)
+      this.events = response.data
+      this.loadingEvents = false
+    })
+    .catch(this.$error)
+  },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
+    },
+    activeFab () {
+      switch (this.tabs) {
+        case 'one': return { 'class': 'purple', icon: 'account_circle' }
+        case 'two': return { 'class': 'red', icon: 'edit' }
+        case 'three': return { 'class': 'green', icon: 'keyboard_arrow_up' }
+        default: return {}
       }
     }
+  },
+  methods: {
+    eventDetails (key) {
+      this.$router.push('/events/' + key)
+    },
+    newEvent () {
+      this.$router.push('/event/new')
+    },
+    alertB4remove (index) {
+      const event = this.events[index]
+      if (!confirm('Event remove you would like?')) return
+      const events = [...this.events]
+      events.splice(index, 1)
+      this.events = events
+      firebase.database().ref(`/users/${this.$store.getters.user.id}/userEvents/${event.id}`).remove()
+      // this.$store.dispatch('removeEventFromUser', event)
+    }
   }
+}
 </script>
 
 <style>
