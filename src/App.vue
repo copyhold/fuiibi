@@ -197,7 +197,6 @@
   }
   .marginTop {
     margin-top: 60px;
-    background-color: rgb(239, 238, 236)
   }
   .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
     margin-left: 5%;

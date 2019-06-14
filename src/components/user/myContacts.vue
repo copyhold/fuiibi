@@ -1,11 +1,16 @@
 <template >
   <v-container>
-    <v-list subheader>
-      <v-subheader>
-        <v-btn flat @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
-      </v-subheader>
-      <v-alert value="true" v-if="loading" type="info" transition="fade-transition">Checked {{loadedGContacts.length}} of {{totalGcontacts}}</v-alert>
-      <user-card v-for="user in emails" :user="user" :key="user.id" v-if="user.id!==$store.getters.user.id" />
+    <v-layout v-if="!loading" row>
+      <v-flex text-xs-center xs10 offset-xs1 mt-3 pa-3>
+          <p>we want to scan your Google contacts. we believe that we can find something interesting there</p>
+          <p>Don't worry, it will be fast and will cost nothing to you.</p>
+          <h3>so click the button and be patient</h3>
+          <v-btn color="info" @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
+      </v-flex>
+    </v-layout>
+    <v-list subheader v-else>
+      <v-alert value="true" type="info" transition="fade-transition">Checked {{loadedGContacts.length}} of {{totalGcontacts}}</v-alert>
+      <user-card v-for="user in emails" :user="user" :key="user.id" />
     </v-list>
   </v-container>
 </template>
@@ -87,7 +92,6 @@ export default {
       })
       .then(res => {
         this.emails = this.emails.concat(res.data)
-        this.loading = false
       })
       .catch(console.error)
     }

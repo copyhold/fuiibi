@@ -1,9 +1,9 @@
 <template >
   <v-container class="container">
     <v-tabs fixed grow>
-      <v-tab href="#friends">My friends</v-tab>
-      <v-tab href="#contacts">My contacts</v-tab>
-      <v-tab href="#swarm">Swarm</v-tab>
+      <v-tab href="#friends">Friends</v-tab>
+      <v-tab href="#contacts">Contacts</v-tab>
+      <v-tab href="#swarm">Search</v-tab>
       <v-tab-item :value="'friends'">
         <friends-only></friends-only>
       </v-tab-item>
