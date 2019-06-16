@@ -107,8 +107,7 @@ export default {
       const events = [...this.events]
       events.splice(index, 1)
       this.events = events
-      firebase.database().ref(`/users/${this.$store.getters.user.id}/userEvents/${event.id}`).remove()
-      // this.$store.dispatch('removeEventFromUser', event)
+      this.$store.dispatch('removeEventFromUser', event)
     }
   }
 }

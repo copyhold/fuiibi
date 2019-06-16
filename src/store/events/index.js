@@ -90,12 +90,11 @@ export default {
       .catch(Vue.console.log);
     },
     removeEventFromUser ({commit, getters}, payload) {
-      const eventId = payload.key
+      const eventId = payload.id
       const user = getters.user
       commit('setLoading', true)
       // We remove the event from the user's list
-      firebase.database().ref('/users/' + user.id + '/userEvents').child(payload.fbKey).remove()
-      // We update the store
+      firebase.functions().httpsCallable('removeEventFromUser')({ evid: eventId, uid: user.id })
       commit('removeEventFromUser', eventId)
       commit('setLoading', false)
     },
