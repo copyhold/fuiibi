@@ -4,12 +4,12 @@
   <v-container class="fullscreen-bg">
 
   <video playsinline loop muted autoplay class="hidden-sm-and-up">
-    <source src="./static/videos/Media4.webm" type="video/webm">
-    <source src="./static/videos/Media4.mp4" type="video/mp4">
+    <source :src="`./static/videos/Media4.webm`" type="video/webm">
+    <source :src="`./static/videos/Media4.mp4`" type="video/mp4">
   </video>
 
    <video playsinline loop muted autoplay class="hidden-xs-only">
-     <source src="./static/videos/videoFullScreen.mp4" type="video/mp4">
+     <source :src="`./static/videos/videoFullScreen.mp4`" type="video/mp4">
    </video>
 
    <v-layout row class="fuiibiHomePage white--text">
