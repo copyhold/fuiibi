@@ -20,7 +20,6 @@
                   <p class="bold  mt-2">{{ item.event.title }}</p>
                   <p class="location">{{ item.event.location.locality }} - {{ item.event.location.country }}</p>
                   <p class="date">{{ item.event.date | date}}</p>
-                  <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(item)" end>Remove</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>

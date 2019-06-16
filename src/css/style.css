@@ -1,0 +1,185 @@
+.fullscreen-bg {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+}
+
+.fullscreen-bg video {
+  min-width: 100%;
+  min-height: 100%;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.fuiibiHomePage {
+  position: relative;
+  bottom: -22vh;
+  text-align: center;
+}
+
+.fuiibiTextHomePage {
+  font-size: 22vh;
+  font-family: 'Marck Script', cursive;
+  margin: 0 auto;
+}
+
+.helpIcon {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: white
+}
+
+.slogan {
+  position: relative;
+  bottom: -16vh;
+  font-family: 'Nunito', sans-serif;
+}
+
+.keep {
+  color: white;
+  font-size: 3.8vh;
+  margin-bottom: 56px;
+  font-family: 'Raleway', sans-serif;
+  font-family: 'Nunito', sans-serif;
+  text-align: center;
+}
+
+.alive {
+  color: white;
+  font-size: 20vw;
+  top: -12vw;
+  position: relative;
+  font-family: 'Raleway', sans-serif;
+  font-family: 'Nunito', sans-serif;
+}
+
+.oneClick {
+  font-size: 24px;
+  color: white;
+  text-align: center;
+  width: 100%;
+}
+
+
+.signInGoogle {
+  position: absolute;
+  left: calc(5% - 7px);
+  width: 90%;
+}
+
+.textAboveButtons {
+  position: relative;
+  bottom: -13vh;
+  color: #fff;
+  text-align: center;
+}
+
+.loginGoogleButton {
+  width: 40%;
+  max-width: 450px;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.titleMainPage {
+  color: blue;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.9vw;
+  font-weight: 200;
+}
+
+@media only screen and (max-width: 599px) {
+  .fullscreen-bg video {
+    min-width: 100%;
+    min-height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    transform: translate(0%, 0%);
+  }
+
+  .fuiibiTextHomePage {
+    font-size: 15vh;
+    font-family: 'Marck Script', cursive;
+    top: 11vh;
+    position: absolute;
+  }
+
+  .fullscreen-bg {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    left: 0px;
+  }
+  .loginGoogleButton {
+    width: 80%;
+  }
+
+  .textAboveButtons {
+    position: fixed;
+    top: 70vh;
+    left: 2vw;
+    color: #fff;
+    text-align: center;
+    width: 100vw;
+  }
+
+  .signInGoogle {
+    position: absolute;
+    left: calc(5% - 7px);
+    width: 90%;
+  }
+
+  .fuiibiHomePage {
+    position: absolute;
+    top: 1vh;
+    text-align: center;
+    margin-left: 15%;
+  }
+
+  .oneClick {
+    color: white;
+    font-size: 4vw;
+    margin-bottom: 3vw;
+    text-align: center;
+    width: 100%;
+    left: -7px;
+    position: relative;
+  }
+
+  .slogan {
+    position: absolute;
+    top: 30vh;
+    left: 10vw;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .alive {
+    color: white;
+    font-size: 27vw;
+    top: -12vw;
+    position: relative;
+    font-family: 'Raleway', sans-serif;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  .keep {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 8vw;
+    font-family: 'Raleway', sans-serif;
+    font-family: 'Nunito', sans-serif;
+    text-align: left;
+  }
+}

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:200,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Marck+Script" rel="stylesheet">
+  <link rel="stylesheet" href="./src/css/style.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>Fuiibi</title>
+</head>
+
+<body>
+  <div class="container" style="background-color: black">
+    <div class="row" style="height: 98vh">
+      <div class="fullscreen-bg col-xs-12 col-">
+        <video playsinline loop muted autoplay class="d-block d-sm-none">
+          <source src="./src/videos/Media4.mp4" type="video/mp4">
+          <source src="./src/videos/Media4.webm" type="video/webm">
+          <!-- <source src="../../videos/Media4.ogv" type="video/ogg"> -->
+        </video>
+
+        <video playsinline loop muted autoplay class="d-none d-sm-block">
+          <source src="./src/videos/videoFullScreen.mp4" type="video/mp4">
+          <!-- <source src="../../videos/Media4.webm" type="video/webm"> -->
+          <!-- <source src="../../videos/Media4.ogv" type="video/ogg"> -->
+        </video>
+        <!-- <div class="container" stlye="position: absolute">
+               <div class="row justify-content-center"> -->
+        <div class=" fuiibiHomePage d-none d-sm-block">
+          <!-- <div class="container fuiibiHomePage d-none d-sm-block"> -->
+          <div class="row">
+            <div class="fuiibiTextHomePage" style="color: white">Fuiibi</div>
+          </div>
+        </div>
+        <div class="fuiibiHomePage d-block d-sm-none">
+          <div class="fuiibiTextHomePage" style="color: white">Fuiibi</div>
+        </div>
+
+        <button type="button" class="btn btn-primary d-block d-sm-none" data-toggle="modal" data-target="#information">
+          <i class="material-icons helpIcon" id="informationIcon">
+            help_outline
+          </i>
+        </button>
+        <div class=" slogan d-block d-sm-none">
+          <!-- <div class="container slogan d-block d-sm-none"> -->
+
+          <div>
+            <p class="keep">KEEP YOUR EVENTS</p>
+            <p class="alive">ALIVE</p>
+          </div>
+        </div>
+        <div class=" slogan d-none d-sm-block">
+          <!-- <div class="container slogan d-none d-sm-block"> -->
+
+          <div>
+            <p class="keep">KEEP YOUR EVENTS ALIVE</p>
+          </div>
+        </div>
+        <div class=" textAboveButtons">
+
+          <!-- <div class="container textAboveButtons"> -->
+          <p class="oneClick d-block d-sm-none">Get started with just one click</p>
+          <div class="row">
+            <div class="signInGoogle">
+              <button type="button" class="btn btn-danger mb-3 loginGoogleButton">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-2">
+                      <svg style="width:24px;height:24px;position: absolute;left:0px" viewBox="0 0 24 24">
+                        <path fill="white" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.2,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.1,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.25,22C17.6,22 21.5,18.33 21.5,12.91C21.5,11.76 21.35,11.1 21.35,11.1V11.1Z" />
+                      </svg>
+                    </div>
+                    <div class="col-10">
+                      <span>Sign in with Google</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              <div>
+                <p class="withEmail">Or continue with email</p>
+              </div>
+              <div class="container d-block d-sm-none">
+                <div class="row">
+                  <div class="col-4">
+                    Login
+                  </div>
+                  <div class="col-4">
+                    |
+                  </div>
+                  <div class="col-4">
+                    Sign up
+                  </div>
+                </div>
+              </div>
+              <div class="container d-none d-sm-block">
+                <div class="row">
+                  <div class="col-4">
+
+                  </div>
+                  <div class="col-4">
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-5">
+                          Login
+                        </div>
+                        <div class="col-2">
+                          |
+                        </div>
+                        <div class="col-5">
+                          Sign up
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="col-4">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="red white--text" block>
+                  <span slot="loader" class="custom-loader">
+                    <v-icon light>cached</v-icon>
+                  </span>
+                </v-btn> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+  <div class="container d-none d-sm-block mt-5" style="font-size: 1.5vw; color: grey">
+    <div class="row mb-5 mt-5">
+      <div class="col-6 mt-5">
+        <img src="./src/images/mobileImage1.png" class="center" alt="Mobile phone">
+      </div>
+      <div class="col-5 mt-5 align-middle">
+        <p>
+          <span class="titleMainPage">Fuiibi put events in the center</span>
+          <br />
+          <br />
+          Share your pictures with other attendees of the event.
+          <br />
+          <br />
+
+          Create a new event at anytime.
+          <br />
+          <br />
+
+          Invite your friends to share their pictures related to the event.
+        </p>
+      </div>
+      <div class="col-1 mt-5 align-middle">
+      </div>
+    </div>
+    <div class="row mb-5 pt-5">
+      <div class="col-1 mt-5 align-middle">
+      </div>
+      <div class="col-5 mt-5 align-middle">
+        <p>
+          <span class="titleMainPage">Fuiibi makes things much easier</span>
+          <br />
+          <br />
+          Sorting, sharing and finding photos become very easy!
+          <br />
+          <br />
+          With all the photos on the clouds, no more storage issues, just enjoy!
+          <br />
+          <br />
+          Click the 'I was there' button, your friends will be informed and the event will be saved in your events list.
+          <br />
+        </p>
+      </div>
+      <div class="col-6 mt-5">
+        <img src="./src/images/mobileImage2.png" class="img-fluid center" alt="Mobile phone">
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="information" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">What's Fuiibi ???</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            For the short story, Fuiibi means in Latin "I have been there"
+            <br />
+            <br />
+            Fuiibi is an application that allow attendees of a specific event to share his photos with
+            the other attendees of the event.
+            <br />
+            <br />
+            You can open new event and invite your friends to share their photos linked to the event.
+            <br />
+            <br />
+            Sharing photos become much easier and every thing is on the cloud, no more storage issue on your mobile,
+            and in a second you can find your and your friends pictures of a specific event.
+            <br />
+            <br />
+            And now just enjoy!
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="./index.js"></script>
+  <script type="text/javascript">
+    $('#informationIcon').on('shown.bs.modal', function() {
+      $('#myInput').trigger('focus')
+    })
+  </script>
+
+</body>
+
+</html>

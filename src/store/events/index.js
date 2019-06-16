@@ -143,7 +143,7 @@ export default {
       .then(data => { // new picture snapshot
         const picture = data.val()
       })
-      .catch(Vue.console.error) 
+      .catch(Vue.console.error)
     },
     reloadEvent({commit, ...store}, evid) {
       if (evid=='null') return
