@@ -304,6 +304,10 @@ export default {
     iwtClicked () {
       if (this.$store.getters.user) {
         this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+        .then(() => {
+          this.$store.dispatch('setCurrentEvent', this.$route.params.id)
+          this.$store.dispatch('reloadMyEvents')
+        })
       } else {
         this.$router.push('/')
       }
