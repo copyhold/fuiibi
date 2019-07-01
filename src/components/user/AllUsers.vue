@@ -5,7 +5,7 @@
         <v-text-field hide-details placeholder="start typing" :change="loading=false" single-line v-model="search" full-width />
         <v-btn @click="searchUsers" flat :disabled="loading"><v-icon>search</v-icon></v-btn>
       </v-subheader>
-      <user-card v-for="user in users" :user="user" key="user.id" />
+      <user-card v-for="user in users" :user="user" :key="user.id" />
     </v-list>
   </v-container>
 </template>
@@ -25,12 +25,17 @@
       searchUsers () {
         this.loading = true
         this.users = []
-        firebase.database().ref('/users')
-        .orderByChild('email')
-        .startAt(this.search)
-        .endAt(this.search + 'z')
-        .on('child_added', snap => {
-          this.users.push(snap.val())
+        firebase.functions().httpsCallable('findUsersBy')({
+          s: this.search
+        })
+        .then(res => {
+          if (res.data) {
+            this.users = Object.values(res.data)
+            this.$store.dispatch('loadPersons', Object.keys(res.data))
+          }
+        })
+        .catch(this.$error)
+        .finally(() => {
           this.loading = false
         })
       }
