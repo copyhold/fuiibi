@@ -124,7 +124,7 @@
         this.$router.push('/users/' + key.id)
       },
       removeFriend (user) {
-        console.log('removeFriend', user)
+        if (!confirm('Please, don`t remove me , I want be your friend. Sure?')) return
         this.$store.dispatch('removeFriend', user)
       },
       messageFriend (userId) {
