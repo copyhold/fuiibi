@@ -2,7 +2,7 @@
   <v-container>
     <v-list subheader v-if="pendingFriends"  xs12>
       <v-subheader>Invitations sent to me</v-subheader>
-      <template v-for="user in pendingFriends">
+      <template v-for="(user,i) in pendingFriends">
         <v-divider></v-divider>
         <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
             <v-list-tile-avatar>
@@ -53,9 +53,9 @@
           <v-text-field hide-details placeholder="start typing" single-line v-model="search" full-width class="pl-2" />
         </v-list-tile-content>
       </v-list-tile>
-      <template v-for="user in filteredFriends" >
+      <template v-for="user,i in filteredFriends" >
         <v-divider></v-divider>
-        <v-list-tile avatar v-bind:key="user.id" @click="" v-if="user.id != loggedInUserId">
+        <v-list-tile avatar v-bind:key="i" @click="" v-if="user.id != loggedInUserId">
           <v-list-tile-avatar>
             <img :src="user.imageUrl"/>
           </v-list-tile-avatar>
@@ -83,6 +83,7 @@
     computed: {
       filteredFriends () {
         return this.friends.filter(friend => {
+          if (!friend) return false
           if (this.search.length < 3) return true
           return `${friend.firstName}${friend.lastName}`.match(new RegExp(this.search, 'i'))
         })
@@ -114,6 +115,7 @@
       },
       loggedInUserId () {
         const {user} = this.$store.getters
+        if (!user) return false
         return user.id
       }
     },

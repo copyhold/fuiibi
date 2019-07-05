@@ -153,10 +153,9 @@ export default {
       state.user.pendingInvitations = pendingInvitations
     },
     removeFriendFromUser(state, payload) {
-      console.log("[removeFriendFromUser] friend should be removed from user...");
-      const friends = state.user.friends
-      friends.splice(friends.findIndex(friend => friend.id === payload), 1)
-      Reflect.deleteProperty(state.user.friends, payload)
+      const friends = { ...state.user.friends }
+      delete(friends[payload])
+      Vue.set(state.user, 'friends', friends)
     },
     setUser (state, payload) {
       if (payload === null) {
@@ -568,23 +567,23 @@ export default {
     removeFriend ({commit, getters}, payload) {
       const friendId = payload.id
       const user = getters.user
-      Vue.console.log('[removeFriend] payload', payload);
-      // We remove the friend from the user's pending list
-      firebase.database().ref('/users/' + user.id + '/friends').child(payload.fbKey).remove()
-      // We update the store
+      Vue.console.debug('[removeFriend] payload', payload);
+      firebase.database().ref('/users/' + user.id + '/friends').child(friendId).remove()
       commit('removeFriendFromUser', friendId)
-      // We need to get the firebase key of the user in the friend's list to remove it from his database.
-      firebase.database().ref('/users/' + friendId + '/friends').once('value')
-      .then( data => {
-        const dataPairs = data.val()
-        Vue.console.log('[removeFriend] dataPairs', dataPairs);
-        for (let key in dataPairs) {
-          if (dataPairs[key] === user.id) {
-            Vue.console.log('[removeFriend] dans le for if (dataPairs[key] === user.id)', key)
-            firebase.database().ref('/users/' + friendId + '/friends').child(key).remove()
-          }
-        }
-      })
+
+   // We need to get the firebase key of the user in the friend's list to remove it from his database.
+   // this code removes me from removed friends' friends list , do we need it?
+   // firebase.database().ref('/users/' + friendId + '/friends').once('value')
+   // .then( data => {
+   //   const dataPairs = data.val()
+   //   Vue.console.log('[removeFriend] dataPairs', dataPairs);
+   //   for (let key in dataPairs) {
+   //     if (dataPairs[key] === user.id) {
+   //       Vue.console.log('[removeFriend] dans le for if (dataPairs[key] === user.id)', key)
+   //       firebase.database().ref('/users/' + friendId + '/friends').child(key).remove()
+   //     }
+   //   }
+   // })
     },
     refuseFriend ({commit, getters}, payload) {
       const friendId = payload.id
