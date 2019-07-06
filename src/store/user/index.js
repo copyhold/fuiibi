@@ -261,10 +261,8 @@ export default {
           // dispatch('fetchUserData')
           dispatch('setupMessagingAndToken')
           dispatch('listenToNotifications')
-          dispatch('fetchUsersEvents')
-          dispatch('listenToNotificationsChanges')
-          dispatch('listenToInvitationRemoval')
-          dispatch('listenToFriendRemoval')
+          dispatch('listenToProfileUpdate')
+       // dispatch('fetchUsersEvents')
         }
       })
     },
@@ -387,6 +385,7 @@ export default {
     },
 
     fetchUsersEvents ({commit, getters}) {
+      return
       const events = getters.user.userEvents
       if (!events) return
       for (let evid of Object.values(events)) {
@@ -409,25 +408,6 @@ export default {
 
     // ****************LOADUSERS FOR THE TESTS****************
 
-    loadUsers ({commit}) {
-      commit('setLoading', true)
-      firebase.database().ref('users').on('child_added', data => {
-        // const users = []
-        const userData = data.val()
-        const fbKey = data.key
-        const newUser = {
-          id: userData.id,
-          imageUrl: userData.imageUrl,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          fbKey: fbKey,
-          userEvents: userData.userEvents
-        }
-        commit('addUser', newUser)
-        commit('setLoading', false)
-        commit('addEmail', {email: userData.email, id: userData.id})
-      })
-    },
 
     getUserData ({commit, getters}, payload) {
       commit('setLoading', true)
@@ -469,10 +449,12 @@ export default {
       })
     },
 
-    listenToProfileUpdate ({commit, getters}) {
-      firebase.database().ref('users/' + getters.user.id).on('child_changed', data => {
-        Vue.console.log('[listenToProfileUpdate] child_changed => data', data)
-
+    listenToProfileUpdate ({commit, getters, state}) {
+      firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
+        Vue.console.log('[listenToProfileUpdate] ', child_snap, child_snap.key)
+        const copy = { ...state.user }
+        copy[child_snap.key] = child_snap.val()
+        commit('setUser', { ...state.user, [child_snap.key]: child_snap.val()} )
       })
     },
 
@@ -597,15 +579,6 @@ export default {
 
     // ****************** REMOVE ITEMS FROM LOCAL STORE *********************
 
-    listenToInvitationRemoval ({commit, getters}) {
-      const userId = getters.user.id
-      // Vue.console.log('[listenToInvitationRemoval] avant d ecouter le child_removed');
-      firebase.database().ref('/users/' + userId + '/pendingInvitations').on('child_removed', data => {
-        const friendId = data.val()
-        // Vue.console.log('[listenToInvitationRemoval] data.val() du .on(child_removed before the removePendingInvitationFromUser', data.val())
-        commit('removePendingInvitationFromUser', friendId)
-      })
-    },
     listenToFriendRemoval ({commit, getters}) {
       const userId = getters.user.id
       // Vue.console.log('[listenToFriendRemoval] avant d ecouter le child_removed');

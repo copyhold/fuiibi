@@ -75,7 +75,7 @@
             {{ item.title}}
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile v-if="userIsAuthenticated" @click="listenToProfileUpdate">
+        <v-list-tile v-if="userIsAuthenticated" @click="$router.push('/profile')">
           <v-list-tile-action>
             <v-icon>person</v-icon>
           </v-list-tile-action>
@@ -127,7 +127,6 @@
         } else {
           this.userLoggedIn = false
         }
-        // {icon: 'person', title: 'My profile', link: '/profile', click: 'listenToProfileUpdate'},
 
         return sideMenu
       },
@@ -153,11 +152,6 @@
       onLogout () {
         this.$store.dispatch('logout')
         this.$router.push('/')
-      },
-      listenToProfileUpdate () {
-        console.log('[listenToProfileUpdate] triggered')
-        this.$store.dispatch('listenToProfileUpdate')
-        this.$router.push('/profile')
       }
     }
   }
