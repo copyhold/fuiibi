@@ -1,29 +1,5 @@
 <template>
-<!-- <v-container class="allPage"> -->
-  <!-- <v-container class="container "> -->
   <v-container class="fullscreen-bg">
-
-  <video playsinline loop muted autoplay class="hidden-sm-and-up">
-    <source :src="`./static/videos/Media4.webm`" type="video/webm">
-    <source :src="`./static/videos/Media4.mp4`" type="video/mp4">
-  </video>
-
-   <video playsinline loop muted autoplay class="hidden-xs-only">
-     <source :src="`./static/videos/videoFullScreen.mp4`" type="video/mp4">
-   </video>
-
-   <v-layout row class="fuiibiHomePage white--text">
-     <v-flex>
-       <p class="fuiibiTextHomePage">Fuiibi</p>
-     </v-flex>
-   </v-layout>
-   <v-layout row class="slogan white--text">
-     <v-flex xs12 sm12 md12>
-       <p class="keep">KEEP YOUR EVENTS</p>
-       <p class="alive">ALIVE</p>
-     </v-flex>
-   </v-layout>
-
    <v-dialog v-model="showError" persistent max-width="96%">
      <v-layout row v-if="error">
        <v-flex sx12 sm6 offset-sm3>
@@ -31,155 +7,159 @@
        </v-flex>
      </v-layout>
    </v-dialog>
+   <v-layout row class="fuiibiHomePage">
+     <v-flex>
+       <p class="fuiibiTextHomePage">Fuiibi</p>
+     </v-flex>
+   </v-layout>
+   <v-layout row class="slogan">
+     <v-flex xs12 sm12 md12>
+       <p class="keep">KEEP YOUR EVENTS</p>
+       <p class="alive">ALIVE</p>
+     </v-flex>
+   </v-layout>
+   <v-layout class="textAboveButtons" xs12>
+     <p class="oneClick">Get started with just one click</p>
+   </v-layout>
+   <v-layout row>
+     <v-flex xs12 class="signInGoogle">
+       <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="red white--text" block>
+         <v-icon dark class="leftIcon" small>mdi-google</v-icon>
+         S<span class="lowercase pr-1">ign in with</span>G<span class="lowercase">oogle</span>
+         <span slot="loader" class="custom-loader">
+           <v-icon light>cached</v-icon>
+         </span>
+       </v-btn>
+     </v-flex>
+    </v-layout>
+    <v-layout row class="continueEmail">
+      <p class="withEmail">Or continue with email</p>
+    </v-layout>
+    <v-layout row>
+     <v-dialog v-model="signUpForm" persistent max-width="96%" lazy width="400px">
+      <v-btn flat slot="activator" class="simpleSignUp">Sign Up</v-btn>
+      <v-card>
+        <v-card-text>
+            <v-container grid-list-md>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field name="firstName" label="First name" id="firstNameSignUp" v-model="firstName" type="text" required>
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field name="lastName" label="Last name" id="lastNameSignUp" v-model="lastName" type="text" required>
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
-     <v-layout class="textAboveButtons" xs12>
-       <p class="oneClick">Get started with just one click</p>
-     </v-layout>
-     <v-layout row>
-       <v-flex xs12 class="signInGoogle">
-         <v-btn @click="signInWithGoogle" :disabled="loading" :loading="loading" class="red white--text" block>
-           <v-icon dark class="leftIcon" small>mdi-google</v-icon>
-           S<span class="lowercase pr-1">ign in with</span>G<span class="lowercase">oogle</span>
-           <span slot="loader" class="custom-loader">
-             <v-icon light>cached</v-icon>
-           </span>
-         </v-btn>
-       </v-flex>
-      </v-layout>
-      <v-layout row class="continueEmail">
-        <p class="withEmail">Or continue with email</p>
-      </v-layout>
-      <v-layout row>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field name="email" label="Mail" id="emailSignUp" v-model="email" type="email" required>
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field name="password" label="Password" id="passwordSignUp" v-model="password" type="password" required>
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
-       <v-dialog v-model="signUpForm" persistent max-width="96%" lazy width="400px">
-        <v-btn flat slot="activator" class="simpleSignUp">Sign Up</v-btn>
-        <v-card>
-          <v-card-text>
-              <v-container grid-list-md>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-text-field name="confirmPassword" label="Confirm password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]">
+                  </v-text-field>
+                </v-flex>
+              </v-layout>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="firstName" label="First name" id="firstNameSignUp" v-model="firstName" type="text" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+              <v-layout row>
+                <v-flex xs12>
+                  <v-btn @click="onSignup" @click.native="signUpForm = false" :disabled="loading || !signUpFormIsValid" :loading="loading" class="orange white--text" block>
+                    Sign up
+                    <span slot="loader" class="custom-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+                  </v-btn>
+                </v-flex>
+                <v-flex xs12>
+                  <v-btn @click.native="signUpForm = false" :disabled="loading" :loading="loading" flat class="black--text" block>
+                    Cancel
+                    <span slot="loader" class="custom-loader">
+                      <v-icon light>cached</v-icon>
+                    </span>
+                  </v-btn>
+                </v-flex>
+              </v-layout>
+            </v-container>
+            <!-- </form> -->
+        </v-card-text>
+      </v-card>
+    </v-dialog>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="lastName" label="Last name" id="lastNameSignUp" v-model="lastName" type="text" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+    <v-dialog v-model="signInForm" persistent max-width="96%" lazy width="400px">
+     <v-btn flat slot="activator" class="simpleSignIn">Log in</v-btn>
+     <v-card>
+       <v-card-text>
+           <v-container grid-list-md>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="email" label="Mail" id="emailSignUp" v-model="email" type="email" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="password" label="Password" id="passwordSignUp" v-model="password" type="password" required>
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+             <v-layout row>
+               <v-flex xs12>
+                 <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
+                 </v-text-field>
+               </v-flex>
+             </v-layout>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-text-field name="confirmPassword" label="Confirm password" id="confirmPassword" v-model="confirmPassword" type="password" :rules="[comparePasswords]">
-                    </v-text-field>
-                  </v-flex>
-                </v-layout>
+             <v-layout row>
+               <v-flex xs12>
+                 <v-btn @click="onSignin" @click.native="signInForm = false" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
+                   Log in
+                   <span slot="loader" class="custom-loader">
+                     <v-icon light>cached</v-icon>
+                   </span>
+                 </v-btn>
+               </v-flex>
+               <v-flex xs12>
+                 <v-btn @click.native="signInForm = false" :disabled="loading" :loading="loading" flat class="black--text" block>
+                   Cancel
+                   <span slot="loader" class="custom-loader">
+                     <v-icon light>cached</v-icon>
+                   </span>
+                 </v-btn>
+               </v-flex>
+             </v-layout>
+           </v-container>
+           <!-- </form> -->
+       </v-card-text>
+     </v-card>
+   </v-dialog>
 
-                <v-layout row>
-                  <v-flex xs12>
-                    <v-btn @click="onSignup" @click.native="signUpForm = false" :disabled="loading || !signUpFormIsValid" :loading="loading" class="orange white--text" block>
-                      Sign up
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                    </v-btn>
-                  </v-flex>
-                  <v-flex xs12>
-                    <v-btn @click.native="signUpForm = false" :disabled="loading" :loading="loading" flat class="black--text" block>
-                      Cancel
-                      <span slot="loader" class="custom-loader">
-                        <v-icon light>cached</v-icon>
-                      </span>
-                    </v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-              <!-- </form> -->
-          </v-card-text>
-        </v-card>
-      </v-dialog>
+     <v-flex xs2 class="separation">
+       <p>|</p>
+     </v-flex>
 
-      <v-dialog v-model="signInForm" persistent max-width="96%" lazy width="400px">
-       <v-btn flat slot="activator" class="simpleSignIn">Log in</v-btn>
-       <v-card>
-         <v-card-text>
-             <v-container grid-list-md>
-
-               <v-layout row>
-                 <v-flex xs12>
-                   <v-text-field name="email" label="Mail" id="email" v-model="email" type="email" required>
-                   </v-text-field>
-                 </v-flex>
-               </v-layout>
-
-               <v-layout row>
-                 <v-flex xs12>
-                   <v-text-field name="password" label="Password" id="password" v-model="password" type="password" required>
-                   </v-text-field>
-                 </v-flex>
-               </v-layout>
-
-               <v-layout row>
-                 <v-flex xs12>
-                   <v-btn @click="onSignin" @click.native="signInForm = false" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
-                     Log in
-                     <span slot="loader" class="custom-loader">
-                       <v-icon light>cached</v-icon>
-                     </span>
-                   </v-btn>
-                 </v-flex>
-                 <v-flex xs12>
-                   <v-btn @click.native="signInForm = false" :disabled="loading" :loading="loading" flat class="black--text" block>
-                     Cancel
-                     <span slot="loader" class="custom-loader">
-                       <v-icon light>cached</v-icon>
-                     </span>
-                   </v-btn>
-                 </v-flex>
-               </v-layout>
-             </v-container>
-             <!-- </form> -->
-         </v-card-text>
-       </v-card>
-     </v-dialog>
-
-       <v-flex xs2 class="separation">
-         <p>|</p>
-       </v-flex>
-
-     </v-layout>
+   </v-layout>
 </v-container>
 </template>
 
 
 <script>
+  import Vue from 'vue'
   export default {
     data () {
       return {
         email: '',
         password: '',
-        // showSignInForm: true,
-        // SignInIsHidden: true,
-        // SignUpIsHidden: true,
         confirmPassword: '',
         imageUrl: '',
         image: '',
@@ -195,7 +175,7 @@
         if (this.email && this.password) {
           return this.email && this.password
         } else {
-          this.$log('this form is not valid!')
+          this.$log('sign in form is not valid!')
         }
       },
       signUpFormIsValid () {
@@ -229,6 +209,19 @@
         if (value !== null && value !== undefined) {
           this.$router.push('/notifications')
         }
+      }
+    },
+    created () {
+      switch (location.hash) {
+        case '#sign-in-google':
+          this.$store.dispatch('signInWithGoogle')
+          break
+        case '#sign-up-email':
+          Vue.nextTick(() => { this.signUpForm = true })
+          break
+        case '#sign-in-email':
+          Vue.nextTick(() => { this.signInForm = true })
+          break
       }
     },
     methods: {
@@ -271,7 +264,6 @@
       position: fixed;
       bottom: 10vh;
       left: 2vw;
-      color: #fff;
       text-align: center;
       width: 100vw;
     }
@@ -279,7 +271,6 @@
       position: fixed;
       bottom: 22vh;
       left: 2vw;
-      color: #fff;
       text-align: center;
       width: 100vw;
     }
@@ -311,21 +302,18 @@
       position: fixed;
       bottom: 3vh;
       left: 20vw;
-      color: #fff;
     }
     .separation{
       position: fixed;
       font-size: 54px;
       font-weight: 100;
       left: 50vw;
-      color: #fff;
       bottom: 0px;
     }
     .simpleSignUp {
       position: fixed;
       bottom: 3vh;
       right: 20vw;
-      color: #fff;
     }
     .slogan {
       position: absolute;
@@ -477,7 +465,6 @@
           position: fixed;
           bottom: 10vh;
           left: 2vw;
-          color: #fff;
           text-align: center;
           width: 100vw;
         }
@@ -485,7 +472,6 @@
           position: fixed;
           bottom: 22vh;
           left: 2vw;
-          color: #fff;
           text-align: center;
           width: 100vw;
         }
@@ -517,7 +503,6 @@
           position: fixed;
           bottom: 29px;
           left: 10vw;
-          color: #fff;
         }
         .separation{
           position: fixed;
@@ -525,13 +510,11 @@
           font-size: 9vw;
           font-weight: 100;
           left: 50vw;
-          color: #fff;
         }
         .simpleSignUp {
           position: fixed;
           bottom: 29px;
           right: 10vw;
-          color: #fff;
         }
         .slogan {
           position: absolute;
