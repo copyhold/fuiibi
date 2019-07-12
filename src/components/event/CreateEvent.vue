@@ -1,6 +1,6 @@
 <template >
   <v-container class="container">
-    <div @click="back" class="arrowBack">
+    <div @click="$router.go(-1)" class="arrowBack">
         <v-icon class="secondary--text">arrow_back</v-icon>
     </div>
     <v-layout row>
@@ -66,7 +66,6 @@
               </v-flex>
               <div class="mdl-spinner mdl-js-spinner is-active" id="location-loader"></div>
               </div>
-              <!-- <v-btn raised outline class="primaryLight primaryLight--text" @click="showMap">Map </v-btn> -->
             </v-flex>
           </v-layout>
 
@@ -89,35 +88,18 @@
               </v-flex>
               <v-flex xs11>
                 <vue-google-autocomplete
-                    id="map"
-                    ref="where"
-                    placeholder="Location*"
-                    v-on:no-results-found="alertNoResultFound"
-                    v-on:placechanged="getAddressData"
-                    v-model="where"
-                    types= ''
-                    class="vueGoogleInput"
-                    :rules="locationRules"
-                    required
-                >
-                <!-- :rules="[rules.locationRules, rules.required]" -->
-                </vue-google-autocomplete>
+                  id="create-event-google-autocomplete"
+                  ref="map"
+                  placeholder="Location*"
+                  v-on:no-results-found="alertNoResultFound"
+                  v-on:placechanged="getAddressData"
+                  v-on:inputChange="updateWhereFromInput"
+                  v-model="where"
+                  class="vueGoogleInput"></vue-google-autocomplete>
               </v-flex>
           </v-layout>
 
           <v-flex xs12 sm12 offset-sm3 v-else>
-            <!-- <vuetify-google-autocomplete
-                id="map"
-                prepend-icon="place"
-                placeholder="Location"
-                v-on:no-results-found="alertNoResultFound"
-                v-on:placechanged="getAddressData"
-                v-model="where"
-                types= ''
-                :rules="locationRules"
-                :required="true"
-            >
-            </vuetify-google-autocomplete> -->
             <v-flex xs12>
               <v-text-field
                 prepend-icon="place"
@@ -188,9 +170,6 @@
               <v-card-text v-if="this.where === ''">
                 * Location is required
               </v-card-text>
-              <v-card-text v-if="this.address.locality === '' || this.address.locality === undefined">
-                * Locality in location is required
-              </v-card-text>
               <v-card-text v-if="this.durationInput === ''">
                 * Duration is required
               </v-card-text>
@@ -249,8 +228,9 @@
           v => !!v || 'Name is required'],
         showUploadImage: true,
         showCanvas: false,
-        where: '',
-        fetchedLocation: {lat: 0, lng: 0},
+        where: null,
+        lat: null,
+        lng: null,
         showLocationButton: true,
         searchingForLocation: false,
         durationInput: '2 Hours',
@@ -289,26 +269,10 @@
         ]
       }
     },
+
     computed: {
       formIsValid () {
-        let location_valid
-        if (this.address) {
-          if (this.usedDeviceLocation) {
-            if (this.address.longitude) {
-              location_valid = true
-            } else {
-              location_valid = false ; //but how???
-            }
-          } else {
-            if (this.address.administrative_area_level_1) {
-              if (this.address.country && this.address.route && this.address.longitude && this.address.latitude) {
-                location_valid = true
-              }
-            }
-          }
-        } else {
-          location_valid = false
-        }
+        const location_valid = this.lat && this.lng && this.where
         return location_valid && this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
       },
       locationInNavigator() {
@@ -335,6 +299,9 @@
       }
     },
     methods: {
+      updateWhereFromInput ({newVal,oldVal}) {
+        this.where = newVal 
+      },
       closeAlertValidation () {
         this.$log('[closeAlertValidation]');
       },
@@ -347,12 +314,6 @@
         this.showLocationButton = true
         this.$log('[hideChangeButton] clicked');
       },
-      // gotFocused () {
-      //   // setTimeout( _ => {
-      //     this.showVueAutoComplete = false
-      //     this.$log('[gotFocused] this.showVueAutoComplete', this.showVueAutoComplete);
-      //   // }, 10000)
-      // },
       rotateRight () {
         let context = this.$refs.canvas.getContext('2d')
         let image = this.$refs.imageToCanvas
@@ -391,9 +352,6 @@
           this.alert = false
         }, 2000)
       },
-      back () {
-        this.$router.go(-1)
-      },
       /**
       * When the location found
       * @param {Object} addressData Data of the found location
@@ -401,151 +359,28 @@
       * @param {String} id Input container ID
       */
       // getAddressData (addressData, placeResultData, id) {
-      getAddressData (addressData) {
-        this.$log('[getAddressData] => addressData', addressData);
-        if (addressData) {
-          if (addressData.route) {
-            this.address = {
-              country: addressData.country,
-              locality: addressData.locality,
-              route: addressData.route,
-              administrative_area_level_1: addressData.administrative_area_level_1,
-              latitude: addressData.latitude,
-              longitude: addressData.longitude,
-              // postal_code: addressData.postal_code,
-              street_number: addressData.street_number
-            }
-        } else if (!addressData.locality) {
-          this.address = {
-            country: addressData.country,
-            locality: addressData.administrative_area_level_1,
-            route: 'Unnamed road',
-            administrative_area_level_1: addressData.administrative_area_level_1,
-            latitude: addressData.latitude,
-            longitude: addressData.longitude,
-            // postal_code: addressData.postal_code,
-            // street_number: addressData.street_number
-            street_number: '-'
-          }
-        } else {
-          this.address = {
-            country: addressData.country,
-            locality: addressData.locality,
-            route: 'Unnamed road',
-            administrative_area_level_1: addressData.administrative_area_level_1,
-            latitude: addressData.latitude,
-            longitude: addressData.longitude,
-            // postal_code: addressData.postal_code,
-            // street_number: addressData.street_number
-            street_number: '-'
-          }
-        }
-        }
-        this.$log('[getAddressData], this.address', this.address);
-        if (addressData) {
-          if (this.address.street_number && this.address.route && this.address.route != 'Unnamed road') {
-            setTimeout(_ => {
-              this.where = this.address.route + ' ' + this.address.street_number + ', ' + this.address.locality + ', ' + this.address.country
-              this.$debug('this.were this.address.street_number && this.address.route', this.where);
-            }, 1)
-          } else if (this.address.route && this.address.route != 'Unnamed road') {
-            setTimeout(_ => {
-              this.where = this.address.route + ', ' + this.address.locality + ', ' + this.address.country
-              this.$debug('this.were this.address.route', this.where);
-            }, 1)
-          } else {
-            setTimeout(_ => {
-              this.where = this.address.locality + ', ' + this.address.country
-              this.$debug('this.were', this.where);
-            }, 1)
-          }
-        }
+      getAddressData (addressData, placeResultData) {
+        this.lat = addressData.latitude, this.lng = addressData.longitude
+        this.where = placeResultData.formatted_address
       },
       alertNoResultFound () {
         this.$log('[alertNoResultFound], alertNoResultFound');
       },
       getLocation () {
-        this.$log('[getLocation] this.showVueAutoComplete', this.showVueAutoComplete);
-        this.$log('getLocation')
-        if (!navigator.geolocation) {
-          this.$log('no geolocation in browser');
-          return;
-        }
-        // this.$log('after if navigator');
-        this.where = ''
-        let sawAlert = false
-        // We hide the button and show the spinner
-        this.searchingForLocation = true;
-        this.showLocationButton = false;
-        // this.$log('just before navigator.geolocation.getCurrentPosition');
-        setTimeout( _=> {
-          this.showVueAutoComplete = false
-          this.searchingForLocation = false;
-          this.showLocationButton = false
-          // this.showLocationButton = true
-          if (sawAlert === false && this.fetchedLocation === {lat: 0, lng: 0}) {
-            alert('Couldn\'t load location, please try mannually')
-            sawAlert = true
-          }
-          this.fetchedLocation = {lat: 0, lng: 0}
-        }, 7000);
-        this.usedDeviceLocation = true
-        navigator.geolocation.getCurrentPosition( this.geocode_coordinates, err => {
-          this.usedDeviceLocation = false
-          this.$log(err);
-          this.searchingForLocation = false;
-          // this.showLocationButton = true
-          if (!sawAlert) {
-            alert('Couldn\'t load location, please try mannually')
-            sawAlert = true
-          }
-          this.fetchedLocation = {lat: 0, lng: 0}
-        })
-      },
-      geocode_coordinates (position) {
-        this.fetchedLocation = {lat: position.coords.latitude, lng: position.coords.longitude}
-        if (!this.fetchedLocation.lat || !this.fetchedLocation.lng) {
-          return
-        }
-        this.$log('[getLocation] this.fetchedLocation', this.fetchedLocation);
-        this.lat = position.coords.latitude;
-        this.lon = position.coords.longitude;
-        var geocoder = new google.maps.Geocoder();
-        let myPlace = new google.maps.LatLng(this.lat,this.lon);
-        let geopos = `${this.lat},${this.lon}`;
-        let latlngStr = geopos.split(',', 2);
-        var latlng = {lat: parseFloat(latlngStr[0]), lng: parseFloat(latlngStr[1])};
-        // this.$log(latlng)
-        geocoder.geocode({'location': latlng}, (results, status) => {
-          this.$log('results ', results);
-          this.address = {
-            place_id: results[0].place_id,
-            latitude: this.lat,
-            longitude: this.lon,
-            route: results[0].address_components[0].long_name,
-            street_number: results[0].address_components[0].long_name
-          }
-       // for (const [ind,result] of results) {
-       //   this.address[`administrative_area_level_${ind}`] = result.address_components[0].long_name
-       //   const wherecountry = result.types.indexOf('country')
-       //   if (wherecountry>-1) {
-       //     this.address.country = result.address_components[wherecountry].long_name
-       //   }
-       // }
-          this.$log('[this address nvo object]', this.address);
-          this.where = results[0].formatted_address
-          setTimeout(_ => {
+        navigator.geolocation.getCurrentPosition(position => {
+          const {latitude: lat, longitude: lng} = position.coords
+          this.lat = lat
+          this.lng = lng
+          const geocoder = new global.google.maps.Geocoder()
+          geocoder.geocode({location: {lat, lng}}, (results, status) => {
+            this.$log('results ', results)
             this.where = results[0].formatted_address
-            this.$log('[getLocation] in the setTimeout this.where', this.where);
-          }, 1)
+            this.$refs.map.update(this.where)
+          })
+        }, err => {
+          this.$debug(err)
+          this.usedDeviceLocation = false
         })
-        this.showVueAutoComplete = false
-        this.searchingForLocation = false
-        this.showLocationButton = false
-
-      },
-      showMap () {
-        this.$log('showMap')
       },
       onCreateEvent () {
         if (!this.formIsValid) {
@@ -600,10 +435,15 @@
               component.time = component.selectingTime = this.format_time(create_date)
             }
             const {GPSLongitude,GPSLatitude} = imagemeta.tags
-            this.geocode_coordinates({ coords: {
-                latitude: GPSLatitude,
-                longitude: GPSLongitude
-            }})
+            if (GPSLongitude) {
+              this.lat = GPSLatitude, this.lng = GPSLongitude
+              this.$refs.map.updateCoordinates({lat: GPSLatitude, lng: GPSLongitude})
+              const geocoder = new global.google.maps.Geocoder()
+              geocoder.geocode({location: {lat: this.lat, lng: this.lng}}, (results, status) => {
+                this.where = results[0].formatted_address
+                this.$refs.map.update(this.where)
+              })
+            }
           } catch (err) {
             component.$error(err)
           }
