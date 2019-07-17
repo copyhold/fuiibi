@@ -1,14 +1,8 @@
 <template >
   <v-container class="container">
-    <v-layout row>
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
-        </v-flex>
-    </v-layout>
     <v-container grid-list-sm fluid>
-
     <v-layout row wrap >
-      <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1" v-if="!loading">
+      <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1">
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
@@ -39,8 +33,7 @@
 </template>
 
 <script>
-import * as firebase from 'firebase'
-require('firebase/functions')
+import {mapState} from 'vuex'
 export default {
   data: () => ({
     direction: 'left',
@@ -52,9 +45,7 @@ export default {
     right: true,
     bottom: true,
     left: false,
-    transition: 'slide-y-reverse-transition',
-    events: [],
-    loadingEvents: false
+    transition: 'slide-y-reverse-transition'
   }),
   watch: {
     top (val) {
@@ -71,20 +62,9 @@ export default {
     }
   },
   created () {
-    this.loadingEvents = true
-    firebase.functions()
-    .httpsCallable('loadUserEvents')({ uid: this.$store.getters.user.id })
-    .then(response => {
-      this.$log('found events', response.data)
-      this.events = response.data
-      this.loadingEvents = false
-    })
-    .catch(this.$error)
+    this.$store.dispatch('load_my_events')
   },
   computed: {
-    loading () {
-      return this.$store.getters.loading
-    },
     activeFab () {
       switch (this.tabs) {
         case 'one': return { 'class': 'purple', icon: 'account_circle' }
@@ -92,7 +72,10 @@ export default {
         case 'three': return { 'class': 'green', icon: 'keyboard_arrow_up' }
         default: return {}
       }
-    }
+    },
+    ...mapState({
+      events: state => state.events.myevents
+    })
   },
   methods: {
     eventDetails (key) {

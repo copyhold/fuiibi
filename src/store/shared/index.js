@@ -85,6 +85,11 @@ export default {
     }
   },
   getters: {
+    iam (state, getters) {
+      const iam = getters.user
+      if (!iam) return null
+      return state.persons[iam.uid || iam.id]
+    },
     person: (state) => id => {
       return state.persons[id]
     },

@@ -9,9 +9,13 @@ export default {
   state: {
     loadedNotifications: [],
     currentEvent: null,
+    myevents: [],
     events: []
   },
   mutations: {
+    my_events_updated (state, events) {
+      state.myevents = events
+    },
     emptyEvents () {
       state.events = []
     },
@@ -40,7 +44,15 @@ export default {
     }
   },
   actions: {
-    listenToNotificationsChanges () {},
+    load_my_events (store) {
+      if (!store.getters.user) return
+      firebase.functions()
+      .httpsCallable('loadUserEvents')({ uid: store.getters.user.id })
+      .then(response => {
+        store.commit('my_events_updated', response.data)
+      })
+      .catch(Vue.console.$error)
+    },
     loadUserEvents (store, who) {
       Vue.console.log('loading events', who, store.getters.user)
       if (who==='current user') {
@@ -175,38 +187,39 @@ export default {
     },
     reloadEvent({commit, ...store}, evid) {
       if (evid=='null') return
-        firebase.database().ref(`/events/${evid}`).once('value').then(data => {
-          const noti = store.rootGetters.notification(data.key)
-          if (!noti) return
-            noti.event = data.val()
-          commit('updateNotifications', noti)
-        })
-        .catch(Vue.console.error)
+      const noti = store.rootGetters.notification(evid)
+      if (!noti) return
+      firebase.database().ref(`/events/${evid}`).once('value')
+      .then(data => {
+        noti.event = data.val()
+        commit('updateNotifications', noti)
+      })
+      .catch(Vue.console.error)
     },
     listenToNotifications ({commit, getters, dispatch}) {
       function updateNotifications(data) {
         const evid = data.key
         const notifData = data.val()
-        if (evid=='null' || notifData==null) return
-          const newNotif = {
-            key:          evid,
-            clickerName:  notifData.clickerName,
-            userId:       notifData.userId,
-            dateToRank:   notifData.dateToRank,
-            friendsCount: data.child('users').numChildren(),
-            event:        null
-          }
-          commit('updateNotifications', newNotif)
-          dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
+        if (data.empty) return
+        const newNotif = {
+          key:          evid,
+          clickerName:  notifData.clickerName,
+          userId:       notifData.userId,
+          dateToRank:   notifData.dateToRank,
+          friendsCount: data.child('users').numChildren(),
+          event:        null
+        }
+        commit('updateNotifications', newNotif)
+        dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
       }
-      const ref = firebase.database().ref(`users/${getters.user.id}/notifications/`)
+      const ref = firebase.database().ref(`users/${getters.user.id}/notifications/`).orderByChild('dateToRank')
       ref.on('child_added', updateNotifications)
       ref.on('child_changed', updateNotifications)
     },
 
     iwtClicked ({commit, getters, dispatch}, payload) {
       Vue.console.debug('[iwtClicked] notification - payload', payload);
-      const key = payload.notification.id
+      const key = payload.notification.id || payload.notification.key
       const userId = payload.userId
       Vue.console.debug('[iwtClicked] clickerId', userId);
       Promise.all([

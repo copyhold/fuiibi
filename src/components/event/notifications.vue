@@ -85,9 +85,9 @@
       },
       /* eslint-disable */
       wasThere (key) {
-        return this.$store.getters.user.events && this.$store.getters.user.events.findIndex(event => {
-          return event.key === key
-        }) >= 0
+        const uid = this.$store.getters.user.id
+        const noti = this.notifications.findIndex(noti => noti.event.users && noti.event.users[uid])
+        return noti > -1
       },
       iwtClicked (notification) {
         this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
