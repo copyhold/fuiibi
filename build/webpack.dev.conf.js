@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const FriendlyErrorsPlugin = require('friendly-errors-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const portfinder = require('portfinder')
+const HtmlWebpackInlineSVGPlugin = require('html-webpack-inline-svg-plugin');
 
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -42,13 +43,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
+    new BundleAnalyzerPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'index.html',
-      inject: true
+      inject: false,
+      template: 'src/home.ejs',
+      filename: 'index.html'
     }),
-    new BundleAnalyzerPlugin()
+    new HtmlWebpackInlineSVGPlugin({
+      runPreEmit: true,
+    }),
+ // new HtmlWebpackPlugin({
+ //   filename: 'index.html',
+ //   template: 'index.html',
+ //   inject: false
+ // })
   ]
 })
 

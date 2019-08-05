@@ -47,10 +47,10 @@
     <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4&libraries=places'></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://apis.google.com/js/client.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
 
     <script>
     Promise.all([
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js",
@@ -58,32 +58,14 @@
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-database.js"].map(url => {
         const scr = document.createElement('script')
         scr.src = url
-        scr.setAttribute('defer', 'defer')
+        scr.defer = 'defer'
         scr.type = 'application/javascript'
         document.head.appendChild(scr)
         return new Promise((resolve, reject) => {
           scr.onload = resolve
         })
-      }))
+    }))
     .then(res => {
-      firebase.initializeApp({
-        apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
-        authDomain: 'iwtapplication.firebaseapp.com',
-        databaseURL: 'https://fuiibi.firebaseio.com',
-     // databaseURL: 'ws://localhost:5000',
-        projectId: 'iwtapplication',
-        messagingSenderId: '208715939086',
-        storageBucket: 'gs://iwtapplication.appspot.com'
-      })
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          firebase.messaging().useServiceWorker(registration)
-        })
-        .catch(function (err) {
-          console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
-        })
-      }
       const app = document.createElement('script')
       app.src = "<%= htmlWebpackPlugin.files.js[0] %>"
       document.head.appendChild(app)
@@ -91,16 +73,59 @@
     .catch(console.error)
     </script>
   </head>
-  <body>
+  <body class=not-signed>
+    <main id="homepage">
+      <link rel="stylesheet" href="/static/site.css">
+      <figure class="hero">
+        <video playsinline loop muted autoplay>
+          <source src="./static/videos/videoFullScreen.mp4" type="video/mp4"  media="screen and (max-width: 480px)">
+            <source src="./static/videos/Media4.mp4"          type="video/mp4">
+              <source src="./static/videos/Media4.webm"         type="video/webm">
+        </video>
+        <figcaption class=brand>
+          <img inline src="./static/fuibii.svg" alt="">
+          <p>keep your events <strong>alive</strong></p>
+        </figcaption>
+        <figcaption class="sign">
+          <p>Get started with just one click</p>
+          <img class="googlesign" src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png" alt="">
+          <p>Or continue with email</p>
+          <button class="signin">Login</button>
+          <hr>
+          <button class="signup">Sign up</button>
+        </figcaption>
+      </figure>
+      <section class="text-image">
+        <figure>
+          <img src="./static/mobileImage1.png" alt="">
+        </figure>
+        <div>
+          <h3>Fuiibi put events in the center</h3>
+          <p>Share your pictures with other attendees of the event.</p>
+          <p>Create a new event at anytime.</p>
+          <p>Invite your friends to share their pictures related to the event.</p>
+        </div>
+      </section>
+      <section class="text-image">
+        <div>
+          <h3>Fuiibi makes things much easier</h3>
+          <p>Sorting, sharing and finding photos become very easy!</p>
+          <p>With all the photos on the clouds, no more storage issues, just enjoy!</p>
+          <p>Click the 'I was there' button, your friends will be informed and the event will be saved in your events list.</p>
+        </div>
+        <figure>
+          <img src="./static/mobileImage2.png" alt="">
+        </figure>
+      </section>
+    </main>
+    <footer>
+      <nav>
+        <a href="/privacy-policy.html">Privacy policy</a>
+        <a href="terms-of-use.html">Terms of use</a>
+      </nav>
+    </footer>
+    <div id="app" :class="{ greyBackground: userLoggedIn }">Loading...</div>
     <div id="fb-root"></div>
-      <script>(function(d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s); js.id = id;
-        js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.1';
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));</script>
-      <div id="app" :class="{ greyBackground: userLoggedIn }">Loading...</div>
-    <!-- built files will be auto injected -->
+    <script>(function(d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js = d.createElement(s); js.id = id; js.src = 'https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.1'; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'facebook-jssdk'));</script>
   </body>
 </html>

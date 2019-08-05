@@ -1,10 +1,9 @@
-import * as firebase from 'firebase'
 import Vue from 'vue'
 import router from './../../router'
-require('firebase/functions')
 /* eslint-disable */
 // Here we are not eporting anymore a store, it's done in the index.js of the all store, so we export a normal JS object
 // export const store = new Vuex.Store({
+const firebase = global.firebase
 export default {
   state: {
     loadedNotifications: [],

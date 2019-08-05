@@ -1,0 +1,138 @@
+body {
+  margin: 0;
+  font-family: Roboto, sans-serif;
+}
+.hero {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column ;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.hero video {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  top: 0;
+}
+.hero p {
+  margin: 0;
+}
+.hero figcaption {
+  text-align: center;
+}
+.hero figcaption.brand {
+  margin: auto 0 0 0;
+}
+.hero figcaption.sign {
+  margin: 0 0 auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+.hero .brand svg {
+  display: inline-block;
+  width: 300px;
+  fill: #fff;
+  object-fit: contain;
+  margin-bottom: 1em;
+}
+.hero .brand p {
+  font-family: 'Nunito', sans-serif;
+  font-size: 3.8vh;
+  text-transform: uppercase;
+  text-align: center;
+}
+.hero .brand p strong {
+  font-weight: normal;
+}
+.hero .sign {
+  width: 500px;
+  max-width: 80vw;
+}
+.hero .sign p {
+  flex: 1 100%;
+  font-size: 16px;
+}
+.hero .sign .googlesign {
+  margin: 1em 0;
+}
+.hero .sign .googlesign + p {
+  margin-bottom: 1.0em;
+}
+.hero .sign hr {
+  flex: 0 0 1px;
+  background: #fff;
+  border: none;
+  height: 10px;
+  margin: 0 auto;
+}
+section.text-image {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 1.3em;
+  width: 960px;
+  margin: 2em auto;
+  max-width: 100%;
+}
+section.text-image > * {
+  flex: 0 1 480px;
+}
+section.text-image > div {
+  padding: 0 3em;
+  box-sizing: border-box;
+}
+section.text-image > figure {
+  text-align: center;
+}
+section.text-image h3 {
+  color: blue;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 34px;
+  font-weight: 200;
+  margin: 0 0 1em 0;
+  line-height: 1.5em;
+}
+section.text-image p {
+  margin-bottom: 1.5em;
+}
+footer {
+  border-top: 1px solid #eee;
+  margin: 60px 0 0 0;
+  padding: 2em 0;
+}
+footer nav {
+  text-align: center;
+}
+footer nav a {
+  padding: 0 1em;
+  display: inline-block;
+  color: #555;
+}
+.not-signed #app {display: none;}
+@media screen and (max-width: 480px) {
+  .hero .brand p {
+    font-size: 8vw;
+  }
+  .hero .brand p strong {
+    font-size: 27vw;
+    display: block;
+    font-weight: 700;
+  }
+}
+@media screen and (min-width: 481px) {
+}
+

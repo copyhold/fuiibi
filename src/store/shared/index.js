@@ -1,4 +1,3 @@
-import * as firebase from 'firebase'
 import Vue from 'vue'
 export default {
   state: {
@@ -32,7 +31,7 @@ export default {
     loadPersons (store, ids) {
       const notloaded = ids.filter(id => !store.getters.person(id))
       if (notloaded.length === 0) return
-      firebase.functions().httpsCallable('loadPersons')(notloaded)
+      window.firebase.functions().httpsCallable('loadPersons')(notloaded)
       .then(res => {
         for (let person of Object.values(res.data)) {
           store.commit('savePerson', person)
@@ -45,13 +44,13 @@ export default {
       if (!user.id) {
         return false
       }
-      const messaging = firebase.messaging()
+      const messaging = window.firebase.messaging()
       return messaging.getToken()
       .then(fcmtoken => {
         if (user.fcmtokens && user.fcmtokens[fcmtoken]) {
           return
         }
-        return firebase.database().ref(`/users/${user.id}/fcmtokens/${fcmtoken}`).set(true)
+        return window.firebase.database().ref(`/users/${user.id}/fcmtokens/${fcmtoken}`).set(true)
       })
       .catch(err => {
         console.error(err)
@@ -62,7 +61,7 @@ export default {
       if (!user.id) {
         return false
       }
-      const messaging = firebase.messaging()
+      const messaging = window.firebase.messaging()
       messaging.usePublicVapidKey('BGMmgv-N2qcvFyT0Uek_21rxK1xpoRZOsUB4OnKNFxsHyETOYxv2x3YfhGqHnZQP55IJjgORd6-fn9he6JiOlVI')
       messaging.onMessage(message => {
         Vue.console.log(message)

@@ -1,7 +1,6 @@
-import * as firebase from 'firebase'
 import Vue from 'vue'
 import router from './../../router'
-
+const firebase = window.firebase
 /* eslint-disable */
 export default {
   state: {

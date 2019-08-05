@@ -69,8 +69,6 @@
 </template>
 <script>
 import Vue from 'vue'
-import * as firebase from 'firebase'
-require('firebase/functions')
 export default {
   props: ['id'],
   data () {
@@ -106,7 +104,7 @@ export default {
   methods: {
     fetchEvents () {
       this.loadingEvents = true
-      firebase.functions()
+      global.firebase.functions()
       .httpsCallable('loadUserEvents')({ uid: this.id })
       .then(response => {
         this.events = response.data
