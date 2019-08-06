@@ -192,7 +192,8 @@ export default {
     signUserIn ({commit}, payload) {
       commit('setLoading', true)
       commit('clearError')
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+      return firebase.auth()
+      .signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
         const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
         const email = firebase.database().ref('users/' + user.uid + 'email').once('value')

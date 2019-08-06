@@ -64,6 +64,8 @@ body {
   font-size: 16px;
 }
 .hero .sign .googlesign {
+  z-index: 0;
+  position: relative;
   margin: 1em 0;
 }
 .hero .sign .googlesign + p {
@@ -122,7 +124,22 @@ footer nav a {
   display: inline-block;
   color: #555;
 }
-.not-signed #app {display: none;}
+.not-signed #app {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  z-index: -1;
+  background: transparent;
+}
+.signed-in > footer ,
+.signed-in #homepage {
+  display: none;
+}
+.not-signed.popup-show #app {
+  z-index: 100;
+}
 @media screen and (max-width: 480px) {
   .hero .brand p {
     font-size: 8vw;
