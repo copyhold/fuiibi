@@ -50,6 +50,11 @@
     <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
 
     <script>
+    var installPromptEvent;
+    window.addEventListener('beforeinstallprompt', function(event) {
+      event.preventDefault();
+      installPromptEvent = event;
+    });
     Promise.all([
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js",
@@ -75,24 +80,24 @@
   </head>
   <body class=not-signed>
     <main id="homepage">
-      <link rel="stylesheet" href="/static/site.css">
+      <link rel="stylesheet" href="/static/site.css?12">
       <figure class="hero">
         <video playsinline loop muted autoplay>
           <source src="./static/videos/videoFullScreen.mp4" type="video/mp4"  media="screen and (max-width: 480px)">
-            <source src="./static/videos/Media4.mp4"          type="video/mp4">
-              <source src="./static/videos/Media4.webm"         type="video/webm">
+          <source src="./static/videos/Media4.mp4"          type="video/mp4">
+          <source src="./static/videos/Media4.webm"         type="video/webm">
         </video>
         <figcaption class=brand>
           <img inline src="./static/fuibii.svg" alt="">
           <p>keep your events <strong>alive</strong></p>
         </figcaption>
-        <figcaption class="sign">
+        <figcaption class="sign" style="opacity: 0;">
           <p>Get started with just one click</p>
-          <img class="googlesign" src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png" alt="">
+          <img onclick="signInWithGoogle()" class="googlesign" src="https://developers.google.com/identity/images/btn_google_signin_light_normal_web.png" alt="">
           <p>Or continue with email</p>
-          <button class="signin">Login</button>
+          <button class="signin" onclick="signInWithEmail()">Login</button>
           <hr>
-          <button class="signup">Sign up</button>
+          <button class="signup" onclick="signUpWithEmail()">Sign up</button>
         </figcaption>
       </figure>
       <section class="text-image">

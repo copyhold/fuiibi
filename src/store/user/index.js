@@ -218,12 +218,12 @@ export default {
           friends: [],
           events: []
         }
-        Vue.console.debug('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
         commit('setUser', newUser)
+        return Promise.resolve(newUser)
       })
       .catch(error => {
         commit('setError', error)
-        Vue.console.log(error);
+        return Promise.reject(error)
       })
       .finally(() => {
         commit('setLoading', false)
@@ -379,7 +379,7 @@ export default {
       .signOut()
       .then(() => {
         commit('setUser', null)
-        router.push('/')
+        location.href = '/'
       })
       .catch(console.error)
     },

@@ -85,6 +85,7 @@ new Vue({
   template: '<App/>',
   components: { App },
   created () {
+    document.body.classList.add('appinitialized')
     window.firebase.initializeApp({
       apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
       authDomain: 'iwtapplication.firebaseapp.com',
@@ -106,6 +107,7 @@ new Vue({
     this.$log('we are here in vue')
     window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        if (document.getElementById('homepage')) document.getElementById('homepage').remove()
         this.$store.commit('setUser', {
           id: user.uid,
           email: user.email

@@ -1,5 +1,8 @@
 <template>
   <v-container class="fullscreen-bg">
+    <v-alert type="error" v-show="error">
+      {{error}}
+    </v-alert>
     <v-dialog v-model="signUpForm" persistent max-width="96%" lazy width="400px">
       <v-card>
         <v-card-text>
@@ -84,7 +87,7 @@
 
             <v-layout row>
               <v-flex xs12>
-                <v-btn @click="onSignin" @click.native="signInForm = false" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
+                <v-btn @click="onSignin" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
                   Log in
                   <span slot="loader" class="custom-loader">
                     <v-icon light>cached</v-icon>
@@ -92,7 +95,7 @@
                 </v-btn>
               </v-flex>
               <v-flex xs12>
-                <v-btn @click.native="signInForm = false" :disabled="loading" :loading="loading" flat class="black--text" block>
+                <v-btn @click.native="signInForm = false;error=null" :disabled="loading" :loading="loading" flat class="black--text" block>
                   Cancel
                   <span slot="loader" class="custom-loader">
                     <v-icon light>cached</v-icon>
@@ -121,17 +124,14 @@ export default {
       lastName: '',
       signInForm: false,
       signUpForm: false,
-      showError: false
+      error: false
     }
   },
-  created () {
-    document.querySelector('#homepage .googlesign').addEventListener('click', evt => this.signInWithGoogle())
-    document.querySelector('#homepage .signin').addEventListener('click', evt => {
-      this.signInForm = true
-    })
-    document.querySelector('#homepage .signup').addEventListener('click', evt => {
-      this.signUpForm = true
-    })
+  mounted () {
+    /* ---- forgive me 🤦 ------- */
+    window.signInWithGoogle = this.signInWithGoogle
+    window.signInWithEmail = () => { this.signInForm = true }
+    window.signUpWithEmail = () => { this.signUpForm = true }
   },
   computed: {
     signInFormIsValid () {
@@ -151,14 +151,6 @@ export default {
     comparePasswords () {
       return this.password !== this.confirmPassword ? 'Password do not match' : ''
     },
-    error () {
-      if (this.$store.getters.error) {
-        this.showError = true
-        return this.$store.getters.error
-      } else {
-        this.showError = false
-      }
-    },
     user () {
       this.$log('SignInIsHidden', this.SignInIsHidden)
       return this.$store.getters.user
@@ -171,6 +163,9 @@ export default {
     user (value) {
       if (value !== null && value !== undefined) {
         this.$router.push('/notifications')
+        if (window.installPromptEvent) {
+          window.installPromptEvent.prompt()
+        }
       }
     },
     signUpForm (value) {
@@ -188,19 +183,27 @@ export default {
       this.$store.dispatch('signInWithGoogle')
     },
     onSignin () {
-      // Vuex
       this.$store.dispatch('signUserIn', {email: this.email, password: this.password})
-      .then(() => {
-        document.body.classList.remove('not-signed', 'popup-show')
-        document.body.classList.add('signed-in')
+      .then(user => {
+        if (document.getElementById('homepage')) document.getElementById('homepage').remove()
       })
-      .catch(this.$error)
+      .catch(err => {
+        this.error = err.message
+        this.$error('error in login', err)
+      })
     },
     onDismissed () {
       this.$store.dispatch('clearError')
     },
     onSignup () {
       this.$store.dispatch('signUserUp', {firstName: this.firstName, lastName: this.lastName, email: this.email, password: this.password})
+      .then(user => {
+        if (document.getElementById('homepage')) document.getElementById('homepage').remove()
+      })
+      .catch(err => {
+        this.error = err.message
+        this.$error('error in login', err)
+      })
     }
   }
 }

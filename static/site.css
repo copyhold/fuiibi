@@ -39,6 +39,10 @@ body {
   justify-content: center;
   align-items: center;
 }
+.appinitialized .hero figcaption.sign {
+  opacity: 1!important;
+  transition: opacity .4s;
+}
 .hero .brand svg {
   display: inline-block;
   width: 300px;
