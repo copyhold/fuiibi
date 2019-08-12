@@ -47,7 +47,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     // https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       inject: false,
-      template: 'src/home.ejs',
+      template: '!!ejs-webpack-loader!src/home.ejs',
       filename: 'index.html'
     }),
     new HtmlWebpackInlineSVGPlugin({

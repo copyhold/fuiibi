@@ -43,6 +43,9 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Kaushan+Script|Marck+Script" rel="stylesheet">
+    <% htmlWebpackPlugin.files.css.forEach(function(url) { %>
+    <link href="<%= url %>" rel=stylesheet>
+    <% }) %>
 
     <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4&libraries=places'></script>
     <script src="https://apis.google.com/js/api.js"></script>
@@ -71,9 +74,12 @@
         })
     }))
     .then(res => {
-      const app = document.createElement('script')
-      app.src = "<%= htmlWebpackPlugin.files.js[0] %>"
+      let app
+      <% htmlWebpackPlugin.files.js.forEach(function(url) { %>
+      app = document.createElement('script')
+      app.src = "<%= url %>"
       document.head.appendChild(app)
+      <% }) %>
     })
     .catch(console.error)
     </script>
@@ -88,7 +94,7 @@
           <source src="./static/videos/Media4.webm"         type="video/webm">
         </video>
         <figcaption class=brand>
-          <img inline src="./static/fuibii.svg" alt="">
+          <%- include ../static/fuibii.svg %>
           <p>keep your events <strong>alive</strong></p>
         </figcaption>
         <figcaption class="sign" style="opacity: 0;">
