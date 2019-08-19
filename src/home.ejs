@@ -47,7 +47,7 @@
     <link href="<%= url %>" rel=stylesheet>
     <% }) %>
 
-    <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4&libraries=places'></script>
+    <script async defer type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4&libraries=places&callback=googleMapLibLoaded'></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://apis.google.com/js/client.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
@@ -58,9 +58,13 @@
       event.preventDefault();
       installPromptEvent = event;
     });
+    function googleMapLibLoaded() {
+      // yes it is
+    }
     Promise.all([
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-storage.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-functions.js",
       "https://www.gstatic.com/firebasejs/6.3.4/firebase-database.js"].map(url => {
@@ -86,7 +90,7 @@
   </head>
   <body class=not-signed>
     <main id="homepage">
-      <link rel="stylesheet" href="/static/site.css?12">
+      <link rel="stylesheet" href="/static/site.css?13">
       <figure class="hero">
         <video playsinline loop muted autoplay>
           <source src="./static/videos/videoFullScreen.mp4" type="video/mp4"  media="screen and (max-width: 480px)">

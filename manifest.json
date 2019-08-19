@@ -9,8 +9,8 @@
   "description": "Mark your history through events with the Fuiibi application",
   "dir": "ltr",
   "lang": "en-US",
-  "gcm_sender_id": "103953800507",
   "orientation": "portrait-primary",
+  "gcm_sender_id": "103953800507",
   "icons": [
             {
               "src": "/src/images/icons/icon-48x48.png",

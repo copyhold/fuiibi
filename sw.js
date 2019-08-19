@@ -79,13 +79,13 @@ self.addEventListener('install', function(event) {
   )
 });
 self.addEventListener('fetch', (event) => {
-  if (!event.request.url.match(/^http/) || event.request.method !== 'GET') return
+  if (!event.request.url.match(/^http/) || event.request.method !== 'GET' || event.request.url.match(/sockjs/)) return
   event.respondWith(
     caches.match(event.request)
     .then((resp) => {
       return resp || fetch(event.request)
       .then((response) => {
-        return caches.open('v1')
+        return caches.open(CACHE)
         .then((cache) => {
           cache.put(event.request, response.clone());
           return response;
