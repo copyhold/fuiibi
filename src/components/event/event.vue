@@ -6,15 +6,6 @@
     <v-btn absolute class="ml-2 mt-3" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
     </v-btn>
-    <!-- <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
-    <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
-        <img :src="imageUrl" ref="imageToCanvas" style="display: none">
-        <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
-        <v-btn v-if="showCanvas" right @click="onPickFile2" class="above">Change</v-btn>
-        <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
-      </v-flex>
-    </v-layout> -->
     <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>

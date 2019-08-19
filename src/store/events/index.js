@@ -195,6 +195,11 @@ export default {
       })
       .catch(Vue.console.error)
     },
+    listenToEvents ({commit, getters, dispatch}) {
+      const ref = firebase.database().ref(`users/${getters.user.id}/userEvents/`)
+      ref.on('child_added', () => dispatch('load_my_events'))
+      ref.on('child_removed', () => dispatch('load_my_events'))
+    },
     listenToNotifications ({commit, getters, dispatch}) {
       function updateNotifications(data) {
         const evid = data.key
@@ -264,7 +269,7 @@ export default {
 
       //Reach out to firebase and store it
       firebase.database().ref('events/').push(eventData)
-      .then((data) => {
+      .then(data  => {
         key = data.key
         eventData.id = data.key
         this.fbKey = key
@@ -273,29 +278,22 @@ export default {
         // Push the new event key in the events array of the creator user
         firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
         // I stock the event's image in FB storage
-        const filename = payload.image.name
+        const filename = payload.filename
         // const ext = filename.slice(filename.lastIndexOf('.'))
         const ext = 'png'
         return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
       })
-      .then(fileData => {
-        imageUrl = fileData.metadata.downloadURLs[0]
-        // QUAND ON RECOIT UNE NOUVELLE NOTIFICATION QUI VIENT D'ETRE CREE, ON N E VOIT PAS CETTE PHOTO
-        // IL FAUT RELOADER LA PAGE POUR LA VOIR
-        // dispatch('addPicture', {image:payload.image, key: key})
-
-
-        // to reach the specific item with the key in the events array and set the imageUrl stored above:
-        // Here we set the picture as the event picture
-        return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
+      .then(fileData => fileData.ref.getDownloadURL())
+      .then(url => {
+        imageUrl = url
+        return Promise.all([
+          firebase.database().ref(`events/${key}/imageUrl`).set(imageUrl),
+          firebase.database().ref(`events/${key}/pictures/${key}`).set({uid: getters.user.id, imageUrl: imageUrl}),
+          firebase.database().ref('events/' + key + '/pictures/').once('value')
+        ])
       })
-      .then( _=> {
-        return firebase.database().ref('events/' + key + '/pictures/' + key).update({uid: getters.user.id, imageUrl: imageUrl})
-      })
-      .then( () => {
-        return firebase.database().ref('events/' + key + '/pictures/').once('value')
-      })
-      .then( data => {
+      .then(res => {
+        const data = res[2]
         this.pictures = data.val()
         Vue.console.log('create Event picture => this.pictures', this.pictures);
         // here we commit that to my local store

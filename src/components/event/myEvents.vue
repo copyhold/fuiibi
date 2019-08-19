@@ -61,9 +61,6 @@ export default {
       this.right = !val
     }
   },
-  created () {
-    this.$store.dispatch('load_my_events')
-  },
   computed: {
     activeFab () {
       switch (this.tabs) {

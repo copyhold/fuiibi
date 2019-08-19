@@ -262,7 +262,7 @@ export default {
           dispatch('setupMessagingAndToken')
           dispatch('listenToNotifications')
           dispatch('listenToProfileUpdate')
-       // dispatch('fetchUsersEvents')
+          dispatch('listenToEvents')
         }
       })
     },
