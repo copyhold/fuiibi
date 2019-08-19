@@ -319,8 +319,8 @@ export default {
           fbKey: this.fbKey
         }
         // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
-        commit('addEvent', newEvent)
-        commit('addEventToMyEvents', newEvent)
+        // commit('addEvent', newEvent)
+        // commit('addEventToMyEvents', newEvent)
         router.push(`/events/${key}`)
 
         firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
