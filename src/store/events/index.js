@@ -109,29 +109,17 @@ export default {
       commit('removeEventFromUser', eventId)
       commit('setLoading', false)
     },
-    uploadPictures (store, {files}) {
+    uploadPictures: async function (store, {files}) {
       const currentEvent = store.state.currentEvent
       if (!currentEvent) {
         return null
       }
-      Promise.all(
-        files.map(file => {
-          const filename = Math.round(Math.random() * 10000) + '-' + file.name;
-          return firebase.storage().ref(`events/${filename}`).put(file)
-        })
-      )
-      .then(storedfiles => {
-        return Promise.all(
-          storedfiles.map(storedFile => {
-            const imageUrl = storedFile.metadata.downloadURLs[0]
-            return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
-          })
-        )
-      })
-      .then(() => {
-        store.dispatch('setCurrentEvent', currentEvent.id)
-      })
-      .catch(this.$debug)
+      for (let file of files) {
+        const storedFile = await firebase.storage().ref(`events/${Math.round(Math.random() * 10000)}-${file.name}`).put(file)
+        const imageUrl = await storedFile.ref.getDownloadURL()
+        await firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
+      }
+      store.dispatch('setCurrentEvent', currentEvent.id)
     },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
@@ -312,6 +300,7 @@ export default {
           pictures: this.pictures
         }
         Vue.console.log('newEventData', newEventData);
+        dispatch('load_my_events')
 
         const newEvent = {
           event: newEventData,
