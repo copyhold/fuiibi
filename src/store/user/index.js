@@ -9,7 +9,12 @@ export default {
     emails: []
   },
   mutations: {
-    removeEventFromUser(state, payload) {
+    AddNewNotification (state, payload) {
+      const notifications = [ ...state.user.notifications]
+      notifications.push(payload)
+      state.user.notifications = notifications
+    },
+    removeEventFromUser (state, payload) {
       const events = state.user.events
       events.splice(events.findIndex(event => event.key === payload), 1)
       Reflect.deleteProperty(state.user.events, payload)
@@ -258,9 +263,9 @@ export default {
           Vue.console.log('[checkUserFromGoogle] this user is NOT new')
           const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(userData.friends || {})])
           dispatch('loadPersons', Array.from(ids))
-          // dispatch('fetchUserData')
           dispatch('setupMessagingAndToken')
-          dispatch('listenToNotifications')
+          // dispatch('listenToNotifications')
+          dispatch('listenToMyFeed')
           dispatch('listenToProfileUpdate')
           dispatch('listenToEvents')
         }
@@ -448,9 +453,22 @@ export default {
         commit('setLoading', false)
       })
     },
+    listenToMyFeed ({commit, getters, state}) {
+      return firebase.firestore().collection(`/notifications/${getters.user.id}/list`)
+      .orderBy('d', 'desc').limit(10)
+      .onSnapshot(snap => {
+        if (snap.empty) return;
+        snap.docChanges().forEach(change => {
+          commit('AddNewNotification', change.doc.data())
+        })
+      })
+    },
+    userObjectChanged (key, val) {
 
-    listenToProfileUpdate ({commit, getters, state}) {
+    },
+    listenToProfileUpdate ({commit, dispatch, getters, state}) {
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
+        dispatch('userObjectChanged', child_snap.key, child_snap.val())
         Vue.console.log('[listenToProfileUpdate] ', child_snap, child_snap.key)
         const copy = { ...state.user }
         copy[child_snap.key] = child_snap.val()
@@ -532,10 +550,8 @@ export default {
         return
       }
       return Promise.all([
-        firebase.database().ref(`/users/${user.id}/friends`).push(fid),
-        firebase.database().ref(`/users/${fid}/friends`).push(user.id),
-      //firebase.database().ref('/users/' + user.id + '/friends/' + fid).set(true),
-      //firebase.database().ref('/users/' + fid + '/friends/' + user.id).set(true)
+        firebase.database().ref(`/users/${user.id}/friends/${fid}`).set(fid),
+        firebase.database().ref(`/users/${fid}/friends/${user.id}`).set(user.id),
       ])
       .then(res => {
         commit('removePendingFriendFromUser', fid)
@@ -552,20 +568,6 @@ export default {
       Vue.console.debug('[removeFriend] payload', payload);
       firebase.database().ref('/users/' + user.id + '/friends').child(friendId).remove()
       commit('removeFriendFromUser', friendId)
-
-   // We need to get the firebase key of the user in the friend's list to remove it from his database.
-   // this code removes me from removed friends' friends list , do we need it?
-   // firebase.database().ref('/users/' + friendId + '/friends').once('value')
-   // .then( data => {
-   //   const dataPairs = data.val()
-   //   Vue.console.log('[removeFriend] dataPairs', dataPairs);
-   //   for (let key in dataPairs) {
-   //     if (dataPairs[key] === user.id) {
-   //       Vue.console.log('[removeFriend] dans le for if (dataPairs[key] === user.id)', key)
-   //       firebase.database().ref('/users/' + friendId + '/friends').child(key).remove()
-   //     }
-   //   }
-   // })
     },
     refuseFriend ({commit, getters}, payload) {
       const friendId = payload.id

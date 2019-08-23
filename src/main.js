@@ -104,7 +104,7 @@ new Vue({
         console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
       })
     }
-    this.$log('we are here in vue')
+    this.$debug('we are here in vue')
     window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         if (document.getElementById('homepage')) document.getElementById('homepage').remove()

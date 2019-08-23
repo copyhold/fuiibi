@@ -1,6 +1,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js');
 
 if (workbox) {
+  workbox.setConfig({ debug: false })
   console.log(`Yay! Workbox is loaded 🎉`);
 } else {
   console.log(`Boo! Workbox didn't load 😬`);
@@ -82,9 +83,9 @@ self.addEventListener('push', function(event) {
     self.registration.showNotification(notification.title, {
       icon: '/static/icons/icon-192x192.png',
       icon: ICON,
-      image: data.image,
+      image: notification.image,
       tag:  notification.tag,
-      body: notification.body + data['gcm.notification.data'],
+      body: notification.body + JSON.stringify(data),
       data,
     })
   )

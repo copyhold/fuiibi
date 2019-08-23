@@ -224,11 +224,11 @@ export default {
       .then(res => {
       // dispatch('loadUserEvents', 'current user')
         dispatch('reloadMyEvents')
-        const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
-        return LFKnow({
-          evid: key,
-          uid: getters.user.id
-        })
+     // const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
+     // return LFKnow({
+     //   evid: key,
+     //   uid: getters.user.id
+     // })
       })
       .catch(Vue.console.log)
       .finally(() => commit('setLoading', false))
