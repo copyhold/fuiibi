@@ -28,16 +28,18 @@ export default {
     }
   },
   actions: {
-    loadPersons (store, ids) {
+    loadPersons: async function (store, ids) {
       const notloaded = ids.filter(id => !store.getters.person(id))
       if (notloaded.length === 0) return
-      window.firebase.functions().httpsCallable('loadPersons')(notloaded)
-      .then(res => {
+      try {
+        debugger
+        const res = await window.firebase.functions().httpsCallable('loadPersons')(notloaded)
         for (let person of Object.values(res.data)) {
           store.commit('savePerson', person)
         }
-      })
-      .catch(console.error)
+      } catch (e) {
+        Vue.console.error(e)
+      }
     },
     updateFCMtoken (store) {
       const {user} = store.getters

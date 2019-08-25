@@ -255,13 +255,11 @@ export default {
         } else {
           const friends = {}
           for (let friendid of Object.values(userData.friends || {})) {
-            if (friendid!==true) {
-              friends[friendid] = true
-            }
+            friends[friendid] = friendid
           }
           commit('setUser', { ...userData, photoUrl: userData.imageURL, friends })
           Vue.console.log('[checkUserFromGoogle] this user is NOT new')
-          const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(userData.friends || {})])
+          const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
           dispatch('loadPersons', Array.from(ids))
           dispatch('setupMessagingAndToken')
           // dispatch('listenToNotifications')
@@ -469,7 +467,7 @@ export default {
     listenToProfileUpdate ({commit, dispatch, getters, state}) {
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
         dispatch('userObjectChanged', child_snap.key, child_snap.val())
-        Vue.console.log('[listenToProfileUpdate] ', child_snap, child_snap.key)
+        Vue.console.log('[listenToProfileUpdate] ', child_snap.val(), child_snap.key)
         const copy = { ...state.user }
         copy[child_snap.key] = child_snap.val()
         commit('setUser', { ...state.user, [child_snap.key]: child_snap.val()} )
