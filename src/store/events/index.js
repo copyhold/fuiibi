@@ -12,6 +12,14 @@ export default {
     events: []
   },
   mutations: {
+    add_event_to_collection (state, eventData) {
+      const eventscopy  = [ ...state.myevents ]
+      eventscopy.push(eventData)
+      eventscopy.sort((a,b) => (new Date(b.date)).getTime() - (new Date(a.date)).getTime())
+      state.myevents = eventscopy
+    },
+    remove_event_from_collection (state, eventData) {
+    },
     my_events_updated (state, events) {
       state.myevents = events
     },
@@ -45,8 +53,8 @@ export default {
   actions: {
     load_my_events (store) {
       if (!store.getters.user) return
-      firebase.functions()
-      .httpsCallable('loadUserEvents')({ uid: store.getters.user.id })
+      const fb_function = firebase.functions().httpsCallable('loadUserEvents')
+      fb_function({ uid: store.getters.user.id })
       .then(response => {
         store.commit('my_events_updated', response.data)
       })
@@ -185,8 +193,15 @@ export default {
     },
     listenToEvents ({commit, getters, dispatch}) {
       const ref = firebase.database().ref(`users/${getters.user.id}/userEvents/`)
-      ref.on('child_added', () => dispatch('load_my_events'))
-      ref.on('child_removed', () => dispatch('load_my_events'))
+      ref.on('child_added', async snap => {
+        const eventSnap = await firebase.database().ref(`events/${snap.val()}`).once('value')
+        if (!eventSnap.exists()) return
+        commit('add_event_to_collection', { ...eventSnap.val(), id: eventSnap.key })
+        return Promise.resolve()
+      })
+      ref.on('child_removed', snap => {
+        commit('remove_event_from_collection', snap.val())
+      })
     },
     listenToNotifications ({commit, getters, dispatch}) {
       function updateNotifications(data) {

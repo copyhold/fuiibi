@@ -60,12 +60,7 @@
       }
     },
     computed: mapState({
-      notifications: state => {
-        if (!state.user.user) return []
-        const {notifications} = state.user.user
-        if (!notifications) return []
-        return Object.values(notifications).sort((a, b) => a.d - b.d)
-      },
+      notifications: state => state.user.user.notifications,
       loading: state => state.loading
     }),
     methods: {
@@ -90,7 +85,7 @@
         this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
       },
       timeStamp (notification) {
-        let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
+        let diff = Math.round(Math.abs(Date.now() - notification.d) / 60 / 1000)
         if (diff < 60) {
           return diff + 'min'
         }

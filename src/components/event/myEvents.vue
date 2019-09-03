@@ -12,7 +12,7 @@
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout column full-height style="height: 100%;">
                   <p class="bold  mt-2" @click="eventDetails(item.id)">{{ item.title }}</p>
-                  <p class="location">{{ item.location.locality }} - {{ item.location.country }}</p>
+                  <p class="location" v-if="item.location">{{ item.location.locality }} - {{ item.location.country }}</p>
                   <p class="date">{{ item.date | date}}</p>
                   <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(index)" end>Remove</v-btn>
                 </v-layout>

@@ -1,7 +1,11 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js');
 
 if (workbox) {
-  workbox.setConfig({ debug: false })
+  workbox.setConfig({ 
+    debug: false, 
+    skipWaiting: true, 
+    clientsClaim: true 
+  })
   console.log(`Yay! Workbox is loaded 🎉`);
 } else {
   console.log(`Boo! Workbox didn't load 😬`);

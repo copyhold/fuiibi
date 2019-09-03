@@ -32,7 +32,6 @@ export default {
       const notloaded = ids.filter(id => !store.getters.person(id))
       if (notloaded.length === 0) return
       try {
-        debugger
         const res = await window.firebase.functions().httpsCallable('loadPersons')(notloaded)
         for (let person of Object.values(res.data)) {
           store.commit('savePerson', person)

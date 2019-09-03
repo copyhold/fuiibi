@@ -10,6 +10,7 @@ export default {
   },
   mutations: {
     AddNewNotification (state, payload) {
+      Vue.console.log('addnewnoti', payload.d)
       const notifications = [ ...state.user.notifications]
       notifications.push(payload)
       state.user.notifications = notifications
