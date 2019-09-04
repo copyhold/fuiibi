@@ -180,6 +180,12 @@ export default {
   created () {
     this.$store.dispatch('setCurrentEvent', this.$route.params.id)
   },
+  beforeDestroy () {
+    document.body.classList.remove('event-page')
+  },
+  mounted () {
+    document.body.classList.add('event-page')
+  },
   computed: {
     event () {
       return this.$store.getters.getCurrentEvent
@@ -413,6 +419,10 @@ export default {
 }
 </script>
 
+<style>
+.event-page #homepage, 
+.event-page > footer { display: none; }
+</style>
 <style scoped>
   .shareButton {
     position: absolute;
@@ -540,49 +550,3 @@ export default {
     }
   }
 </style>
-
-
-
-
-// if (screenWidth < 700) {
-//   context.translate(this.$refs.canvas.height / 2, screenWidth)
-// } else {
-//   context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
-// }
-// context.rotate(270 * Math.PI / 180)
-// if (screenWidth < 700) {
-//   // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-//   context.drawImage(image, -this.$refs.canvas.height / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// } else {
-//   context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
-// }
-// if (image.width > image.height) {
-// if (screenWidth < 700) {
-//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-// } else {
-//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-// }
-// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
-// if (image.width > image.height) {
-// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// if (this.$refs.canvas.width > this.$refs.canvas.height) {
-//   console.log('this.$refs.canvas.width > this.$refs.canvas.height')
-//   // context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
-//   // context.translate(screenWidth, screenWidth - 6)
-//   context.translate(0, screenWidth * 2)
-// } else {
-//   // if (this.$refs.canvas.height / this.$refs.canvas.width < 1.34) {
-//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height  < 1.34 ', this.$refs.canvas.height / this.$refs.canvas.width)
-//     // context.translate((screenWidth / 2) - 6, screenWidth)
-//   context.translate(0, screenWidth * 2)
-//   // } else {
-//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height', this.$refs.canvas.height / this.$refs.canvas.width)
-//     // context.translate((screenWidth / 2) + (screenWidth - this.$refs.canvas.width - (screenWidth / 10)) / 2, screenWidth)
-//   //   context.translate(0, screenWidth * 2)
-//   // }
-// }
-// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// context.translate(0, 700 * 2)
-// this.$refs.canvas.width = imageWidth
-// this.$refs.canvas.height = imageWidth * image.width / image.height
-// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)

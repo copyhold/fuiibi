@@ -226,8 +226,8 @@ export default {
 
     iwtClicked ({commit, getters, dispatch}, payload) {
       Vue.console.debug('[iwtClicked] notification - payload', payload);
-      const key = payload.notification.id || payload.notification.key
-      const userId = payload.userId
+      const key = payload.notification.e[0]
+      const userId = getters.user.id
       Vue.console.debug('[iwtClicked] clickerId', userId);
       Promise.all([
         // I push the new event key in the events array of the clicker user
@@ -237,13 +237,11 @@ export default {
 
       ])
       .then(res => {
-      // dispatch('loadUserEvents', 'current user')
-        dispatch('reloadMyEvents')
-     // const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
-     // return LFKnow({
-     //   evid: key,
-     //   uid: getters.user.id
-     // })
+        const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
+        return LFKnow({
+          evid: key,
+          uid: getters.user.id
+        })
       })
       .catch(Vue.console.log)
       .finally(() => commit('setLoading', false))
@@ -280,11 +278,11 @@ export default {
 
       // Here I'm getting the key of the new event created.
       // Push the new event key in the events array of the creator user
-      await firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
-      firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
-        evid: key,
-        uid: getters.user.id
-      })
+   // await firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
+   // firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
+   //   evid: key,
+   //   uid: getters.user.id
+   // })
       Vue.console.log('newEventData', eventData);
       dispatch('load_my_events')
       commit('setLoading', false)
