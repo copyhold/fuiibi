@@ -16,9 +16,10 @@ export default {
       state.user.notifications = notifications
     },
     removeEventFromUser (state, payload) {
-      const events = state.user.events
+      // @TODO remove me later - events sync
+      const events = state.user.userEvents
       events.splice(events.findIndex(event => event.key === payload), 1)
-      Reflect.deleteProperty(state.user.events, payload)
+      Reflect.deleteProperty(state.user.userEvents, payload)
     },
     addProfilePicture (state, payload) {
       const user = payload.user
@@ -528,12 +529,17 @@ export default {
         commit('setLoading', false)
         return
       }
+      return Promise.all([
       // Send the friend an invitation to accept the friendship in his pending friends.
-      firebase.database().ref(`/users/${friendId}/pendingFriends/${userId}`).set(true)
+      firebase.database().ref(`/users/${friendId}/pendingFriends/${userId}`).set(true),
       // Add the friend id in the pending invitation's user
       firebase.database().ref(`/users/${userId}/pendingInvitations/${friendId}`).set(true)
+      ])
+      .then(() => {
       commit('addPendingInvitations', friendId)
       commit('setLoading', false)
+      })
+      .catch(Vue.console.error)
     },
 
     acceptFriendRequest ({commit, getters}, fid) {

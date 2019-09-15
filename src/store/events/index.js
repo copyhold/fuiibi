@@ -19,6 +19,7 @@ export default {
       state.myevents = eventscopy
     },
     remove_event_from_collection (state, eventData) {
+      state.myevents = state.myevents.filter(event => event.id !== eventData)
     },
     my_events_updated (state, events) {
       state.myevents = events
@@ -109,13 +110,7 @@ export default {
       .catch(Vue.console.log);
     },
     removeEventFromUser ({commit, getters}, payload) {
-      const eventId = payload.id
-      const user = getters.user
-      commit('setLoading', true)
-      // We remove the event from the user's list
-      firebase.functions().httpsCallable('removeEventFromUser')({ evid: eventId, uid: user.id })
-      commit('removeEventFromUser', eventId)
-      commit('setLoading', false)
+      return firebase.functions().httpsCallable('removeEventFromUser')({ evid: payload.id, uid: getters.user.id })
     },
     uploadPictures: async function (store, {files}) {
       const currentEvent = store.state.currentEvent
@@ -299,6 +294,7 @@ export default {
     },
   },
   getters: {
+    myevents: state => state.myevents,
     events: state => state.events,
     getCurrentEvent: state => state.currentEvent,
     getEventData (state) {

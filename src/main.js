@@ -17,7 +17,6 @@ import AllUsers from './components/user/AllUsers.vue'
 import MyContacts from './components/user/myContacts.vue'
 import UserCard from './components/user/userCard.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
-import FriendsSearch from './components/user/friendsSearch.vue'
 import '@mdi/font/css/materialdesignicons.css'
 
 if (!window.Promise) {
@@ -72,7 +71,6 @@ Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
 Vue.component('my-contacts', MyContacts)
 Vue.component('friends-only', FriendsOnly)
-Vue.component('friends-search', FriendsSearch)
 Vue.component('user-card', UserCard)
 
 Vue.config.productionTip = false
