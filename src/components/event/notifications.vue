@@ -23,14 +23,14 @@
                     </v-layout>
                     <v-layout>
                       <div offset-xs3>
-                        <p v-if="notification.e[5] === 1" @click="getUserPage(notification)"><span class="bold clickable">{{ notification.u[1] }}</span> was there!</p>
-                        <p v-else-if="notification.e[5] === 2"><span class="bold clickable" @click="getUserPage(notification)">{{ notification.u[1] }}</span> & 1 friend were there!</p>
-                        <p v-else><span class="bold clickable" @click="getUserPage(notification)">{{ notification.u[1] }}</span> & {{ notification.e[5] - 1}} friends were there!</p>
+                        <p v-if="notification.e[5] === 1" @click="getUserPage(notification.u[0])"><span class="bold clickable">{{ notification.u[1] }}</span> was there!</p>
+                        <p v-else-if="notification.e[5] === 2"><span class="bold clickable" @click="getUserPage(notification.u[0])">{{ notification.u[1] }}</span> & 1 friend were there!</p>
+                        <p v-else><span class="bold clickable" @click="getUserPage(notification.u[0])">{{ notification.u[1] }}</span> &amp; {{ notification.e[5] - 1}} friends were there!</p>
                       </div>
                     </v-layout>
                   </v-flex>
                   <v-flex xs3 align-self-end text-xs-center v-if="!wasThere(notification.e[0])">
-                    <v-btn fab large class="iwt" @click="iwtClicked(notification)"></v-btn>
+                    <v-btn fab large class="iwt" @click="iwtClicked(notification.e[0])"></v-btn>
                   </v-flex>
                   <v-flex xs3 align-self-end text-xs-center v-else>
                     <v-btn flat large class="iwt checked" center></v-btn>
@@ -60,7 +60,23 @@
       }
     },
     computed: mapState({
-      notifications: state => state.user.user.notifications,
+      notifications: state => {
+        const idsmap = {}
+        const result = []
+
+        for (const noti of state.user.user.notifications) {
+          const sameeventnoti = idsmap[noti.e[0]]
+          if (sameeventnoti >= 0) {
+            noti.totalnotis = result[sameeventnoti].totalnotis + 1
+            result[sameeventnoti] = null
+          } else {
+            noti.totalnotis = 1
+          }
+          result.push(noti)
+          idsmap[noti.e[0]] = result.length - 1
+        }
+        return result.filter(noti => !!noti)
+      },
       loading: state => state.loading
     }),
     methods: {
@@ -70,10 +86,11 @@
       eventDetails (key) {
         this.$router.push('/events/' + key)
       },
-      getUserPage (key) {
-        this.$log('[getUserPage] clicked key', key)
-        this.$store.dispatch('getUserData', {userId: key.userId})
-        this.$router.push('/users/' + key.userId)
+      getUserPage (uid) {
+        this.$log('[getUserPage] clicked key', uid)
+        this.$store.dispatch('loadPersons', [uid])
+     // this.$store.dispatch('getUserData', {userId: uid})
+        this.$router.push('/users/' + uid)
       },
       /* eslint-disable */
       wasThere (evid) {
@@ -81,8 +98,8 @@
         const myevents = new Set(Object.keys(this.$store.getters.user.userEvents))
         return myevents.has(evid)
       },
-      iwtClicked (notification) {
-        this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
+      iwtClicked (evid) {
+        this.$store.dispatch('iwtClicked', evid)
       },
       timeStamp (notification) {
         let diff = Math.round(Math.abs(Date.now() - notification.d) / 60 / 1000)

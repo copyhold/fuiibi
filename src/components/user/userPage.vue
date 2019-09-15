@@ -53,7 +53,7 @@
                 </v-layout>
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab large class="iwt" center v-if="!wasThere(item.id)" @click="iwtClicked(index)">
+                <v-btn fab large class="iwt" center v-if="!wasThere(item.id)" @click="iwtClicked(item.id)">
                   <v-icon v-if="loadingEvent[item.id]">loop</v-icon>
                 </v-btn>
                 <span v-else>
@@ -123,12 +123,11 @@ export default {
     back () {
       this.$router.go(-1)
     },
-    iwtClicked (index) {
-      const notification = this.events[index]
-      Vue.set(this.loadingEvent, notification.id, true)
-      this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+    iwtClicked (evid) {
+      Vue.set(this.loadingEvent, evid, true)
+      this.$store.dispatch('iwtClicked', evid)
       .then(() => {
-        Vue.set(this.loadingEvent, notification.id, false)
+        Vue.set(this.loadingEvent, evid, false)
       })
       .catch(this.$error)
     }

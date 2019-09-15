@@ -272,7 +272,8 @@ export default {
     },
     getUserPage (key) {
       this.$debug('[getUserPage] clicked key', key)
-      this.$store.dispatch('getUserData', {userId: key.id})
+      this.$store.dispatch('loadPersons', [key.id])
+   // this.$store.dispatch('getUserData', {userId: key.id})
       this.$router.push('/users/' + key.id)
     },
     hasPendingInvitation (user) {
@@ -300,7 +301,7 @@ export default {
     },
     iwtClicked () {
       if (this.$store.getters.user) {
-        this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+        this.$store.dispatch('iwtClicked', this.event.id)
         .then(() => {
           this.$store.dispatch('setCurrentEvent', this.$route.params.id)
           this.$store.dispatch('reloadMyEvents')
