@@ -9,6 +9,7 @@
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1" v-if="!loading">
               <v-card v-if="notification.e">
                 <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="212px" style="background-color: white" />
+                <mark v-if="notification.totalnotis>1" class="noti-group-counter"> {{notification.totalnotis}} </mark>
                 <v-layout col align-end ml-3 mt-3>
                   <v-flex xs9 tag="h4" @click="eventDetails(notification.e[0])" class="secondaryDark--text bold bigger"> {{ notification.e[2] }}</v-flex>
                   <time class="xs3 flex timer text-xs-center">{{ timeStamp(notification) }} ago</time>
@@ -61,6 +62,7 @@
     },
     computed: mapState({
       notifications: state => {
+        if (!state.user.user.notifications) return null
         const idsmap = {}
         const result = []
 
@@ -122,6 +124,20 @@
 }
 </style>
 <style scoped>
+.noti-group-counter {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  z-index: 20;
+  border-radius: 50%;
+  color: #fff;
+  background: #20b050;
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+}
 .container.grid-list-sm .layout .flex {
   padding: 2px;
 }
