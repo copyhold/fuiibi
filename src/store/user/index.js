@@ -174,6 +174,11 @@ export default {
     }
   },
   actions: {
+    installApp () {
+      if (window.installPromptEvent) {
+        window.installPromptEvent.prompt()
+      }
+    },
 
     // ***************SINGIN********************
     signInWithGoogle ({commit, getters}) {
@@ -196,12 +201,13 @@ export default {
       });
     },
 
-    signUserIn ({commit}, payload) {
+    signUserIn ({commit, dispatch}, payload) {
       commit('setLoading', true)
       commit('clearError')
       return firebase.auth()
       .signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
+        dispatch('installApp')
         const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
         const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
         const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
@@ -249,6 +255,7 @@ export default {
       Vue.console.log('[checkUserFromGoogle] payload')
       firebase.database().ref('users/' + payload.uid).once('value')
       .then( user =>{
+        dispatch('installApp')
         Vue.console.log('[checkUserFromGoogle] user');
         let userData = user.val()
         if (userData === null) {
@@ -290,6 +297,7 @@ export default {
       Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
       commit('setUser', newUser)
       commit('setLoading', false)
+      dispatch('installApp')
       // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
       firebase.database().ref('users/' + payload.id).set(newUser)
       router.push('/welcome')
@@ -319,6 +327,8 @@ export default {
       })
       .then(() => {
         commit('setLoading', false)
+        dispatch('installApp')
+        router.push('/welcome')
       })
       .catch(
         error => {
@@ -328,7 +338,6 @@ export default {
           Vue.console.log(error);
         }
       )
-      router.push('/welcome')
     },
 
     //*****************************************************
