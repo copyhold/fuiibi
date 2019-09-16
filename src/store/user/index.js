@@ -6,14 +6,15 @@ export default {
   state: {
     user: null,
     users: [],
+    feed: [],
     emails: []
   },
   mutations: {
     AddNewNotification (state, payload) {
       Vue.console.log('addnewnoti', payload.d)
-      const notifications = [ ...state.user.notifications]
+      const notifications = [ ...state.feed]
       notifications.push(payload)
-      state.user.notifications = notifications
+      state.feed = notifications
     },
     removeEventFromUser (state, payload) {
       // @TODO remove me later - events sync
@@ -467,13 +468,11 @@ export default {
       .orderBy('d', 'desc').limit(10)
       .onSnapshot(snap => {
         if (snap.empty) return;
+        this.lastNotiSnap = snap
         snap.docChanges().forEach(change => {
           commit('AddNewNotification', change.doc.data())
         })
       })
-    },
-    userObjectChanged (key, val) {
-
     },
     listenToProfileUpdate ({commit, dispatch, getters, state}) {
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {

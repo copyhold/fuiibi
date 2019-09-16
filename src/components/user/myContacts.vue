@@ -91,7 +91,9 @@ export default {
       .then(res => {
         this.emails = this.emails.concat(res.data)
       })
-      .catch(console.error)
+      .catch(err => {
+        this.$error('load google contacts', err)
+      })
     }
   }
 }
