@@ -7,7 +7,6 @@ import 'vuetify/dist/vuetify.css'
 import vuelogger from 'vue-logger'
 
 import App from './App'
-import * as firebase from 'firebase'
 import router from './router'
 import { store } from './store'
 import DateFilter from './filters/date'
@@ -18,29 +17,10 @@ import AllUsers from './components/user/AllUsers.vue'
 import MyContacts from './components/user/myContacts.vue'
 import UserCard from './components/user/userCard.vue'
 import FriendsOnly from './components/user/friendsOnly.vue'
-import FriendsSearch from './components/user/friendsSearch.vue'
-// import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@mdi/font/css/materialdesignicons.css'
-// import Typewriter from 'vue-typewriter'
-
-// import Router from 'vue-router'
-// import { routerHistory, writeHistory } from 'vue-router-back-button'
-
-// eslint-disable-next-line
-//************************ SERVICE WORKER *************************
 
 if (!window.Promise) {
   window.Promise = Promise
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-  .then(registration => {
-    firebase.messaging().useServiceWorker(registration)
-  })
-  .catch(function (err) {
-    console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
-  })
 }
 
 // Below we don't want chrome to propose to install the banner only if the user visit our page twice within 5 minutes, but we
@@ -91,7 +71,6 @@ Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)
 Vue.component('all-users', AllUsers)
 Vue.component('my-contacts', MyContacts)
 Vue.component('friends-only', FriendsOnly)
-Vue.component('friends-search', FriendsSearch)
 Vue.component('user-card', UserCard)
 
 Vue.config.productionTip = false
@@ -104,7 +83,8 @@ new Vue({
   template: '<App/>',
   components: { App },
   created () {
-    firebase.initializeApp({
+    document.body.classList.add('appinitialized')
+    window.firebase.initializeApp({
       apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
       authDomain: 'iwtapplication.firebaseapp.com',
       databaseURL: 'https://fuiibi.firebaseio.com',
@@ -113,8 +93,19 @@ new Vue({
       messagingSenderId: '208715939086',
       storageBucket: 'gs://iwtapplication.appspot.com'
     })
-    firebase.auth().onAuthStateChanged((user) => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        window.firebase.messaging().useServiceWorker(registration)
+      })
+      .catch(function (err) {
+        console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
+      })
+    }
+    this.$debug('we are here in vue')
+    window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        if (document.getElementById('homepage')) document.getElementById('homepage').remove()
         this.$store.commit('setUser', {
           id: user.uid,
           email: user.email

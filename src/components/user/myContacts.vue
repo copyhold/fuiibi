@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import * as firebase from 'firebase'
-require('firebase/functions')
 const gapi = window.gapi
 export default {
   data () {
@@ -87,7 +85,7 @@ export default {
             emails.push(addresses[0].value)
           }
         }
-        const findFuiibiers = firebase.app().functions().httpsCallable('findFuiibiers')
+        const findFuiibiers = global.firebase.app().functions().httpsCallable('findFuiibiers')
         return findFuiibiers({ emails: emails })
       })
       .then(res => {

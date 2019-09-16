@@ -11,7 +11,6 @@
 </template>
 
 <script>
-  const firebase = require('firebase')
   export default {
     props: [],
     data () {
@@ -25,7 +24,7 @@
       searchUsers () {
         this.loading = true
         this.users = []
-        firebase.functions().httpsCallable('findUsersBy')({
+        global.firebase.functions().httpsCallable('findUsersBy')({
           s: this.search
         })
         .then(res => {

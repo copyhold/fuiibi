@@ -209,6 +209,7 @@
   export default {
     data () {
       return {
+        filename: null,
         usedDeviceLocation: false,
         showVueAutoComplete: true,
         alert: false,
@@ -256,14 +257,6 @@
           postal_code: '',
           street_number: '-'
         },
-        items: [
-          { text: 'State 1' },
-          { text: 'State 2' },
-          { text: 'State 3' },
-          { text: 'State 4' },
-          { text: 'State 5' },
-          { text: 'State 6' },
-        ],
         states: [
           'Les than one hour', '1 hour', '2 Hours','Half day','Full day','More than one day'
         ]
@@ -391,8 +384,13 @@
         }
         const eventData = {
           title: this.title,
-          location: this.address,
+          location: {
+            locality: this.where,
+            latitude: this.lat,
+            longitude: this.lng
+          },
           image: this.image,
+          filename: this.filename,
           description: this.description,
           date: this.submittableDateTime,
           users: [],
@@ -455,9 +453,9 @@
         const files = event.target.files
         this.fillEventDataFromImage(files[0])
         // As we can choose only one file, we take the first one in the array
-        let filename = files[0].name
+        this.filename = files[0].name
         // Simple chack if the file is valid
-        if (filename.lastIndexOf('.') <= 0) {
+        if (this.filename.lastIndexOf('.') <= 0) {
           return alert('Please enter a valid image')
         }
         // Turn it into base64

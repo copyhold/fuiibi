@@ -1,7 +1,7 @@
 {
   "name": "Fuiibi - keep your events alive",
   "short_name": "Fuiibi",
-  "start_url": "/index.html",
+  "start_url": "/",
   "scope": ".",
   "display": "standalone",
   "background_color": "#000",
@@ -9,8 +9,8 @@
   "description": "Mark your history through events with the Fuiibi application",
   "dir": "ltr",
   "lang": "en-US",
-  "gcm_sender_id": "103953800507",
   "orientation": "portrait-primary",
+  "gcm_sender_id": "103953800507",
   "icons": [
             {
               "src": "/src/images/icons/icon-48x48.png",

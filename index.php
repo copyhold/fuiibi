@@ -18,7 +18,7 @@ if (!preg_match('~^/events/(.+)$~', $url, $m)) {
 ini_set('display_errors', true);
 error_reporting(E_ALL);
 
-$ch = curl_init('https://iwtapplication.firebaseio.com' . $url . '.json');
+$ch = curl_init('https://fuiibi.firebaseio.com' . $url . '.json');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 $res = curl_exec($ch);
 $event = json_decode($res);

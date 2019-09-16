@@ -6,15 +6,6 @@
     <v-btn absolute class="ml-2 mt-3" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
     </v-btn>
-    <!-- <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
-    <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
-        <img :src="imageUrl" ref="imageToCanvas" style="display: none">
-        <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
-        <v-btn v-if="showCanvas" right @click="onPickFile2" class="above">Change</v-btn>
-        <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
-      </v-flex>
-    </v-layout> -->
     <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
@@ -189,6 +180,12 @@ export default {
   created () {
     this.$store.dispatch('setCurrentEvent', this.$route.params.id)
   },
+  beforeDestroy () {
+    document.body.classList.remove('event-page')
+  },
+  mounted () {
+    document.body.classList.add('event-page')
+  },
   computed: {
     event () {
       return this.$store.getters.getCurrentEvent
@@ -275,7 +272,8 @@ export default {
     },
     getUserPage (key) {
       this.$debug('[getUserPage] clicked key', key)
-      this.$store.dispatch('getUserData', {userId: key.id})
+      this.$store.dispatch('loadPersons', [key.id])
+   // this.$store.dispatch('getUserData', {userId: key.id})
       this.$router.push('/users/' + key.id)
     },
     hasPendingInvitation (user) {
@@ -303,7 +301,7 @@ export default {
     },
     iwtClicked () {
       if (this.$store.getters.user) {
-        this.$store.dispatch('iwtClicked', {notification: this.event, userId: this.$store.getters.user.id, firstName: this.$store.getters.user.firstName})
+        this.$store.dispatch('iwtClicked', this.event.id)
         .then(() => {
           this.$store.dispatch('setCurrentEvent', this.$route.params.id)
           this.$store.dispatch('reloadMyEvents')
@@ -422,6 +420,10 @@ export default {
 }
 </script>
 
+<style>
+.event-page #homepage, 
+.event-page > footer { display: none; }
+</style>
 <style scoped>
   .shareButton {
     position: absolute;
@@ -549,49 +551,3 @@ export default {
     }
   }
 </style>
-
-
-
-
-// if (screenWidth < 700) {
-//   context.translate(this.$refs.canvas.height / 2, screenWidth)
-// } else {
-//   context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
-// }
-// context.rotate(270 * Math.PI / 180)
-// if (screenWidth < 700) {
-//   // context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-//   context.drawImage(image, -this.$refs.canvas.height / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// } else {
-//   context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
-// }
-// if (image.width > image.height) {
-// if (screenWidth < 700) {
-//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-// } else {
-//   context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
-// }
-// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
-// if (image.width > image.height) {
-// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// if (this.$refs.canvas.width > this.$refs.canvas.height) {
-//   console.log('this.$refs.canvas.width > this.$refs.canvas.height')
-//   // context.translate(screenWidth + this.$refs.canvas.width - this.$refs.canvas.height - 6, screenWidth - 6)
-//   // context.translate(screenWidth, screenWidth - 6)
-//   context.translate(0, screenWidth * 2)
-// } else {
-//   // if (this.$refs.canvas.height / this.$refs.canvas.width < 1.34) {
-//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height  < 1.34 ', this.$refs.canvas.height / this.$refs.canvas.width)
-//     // context.translate((screenWidth / 2) - 6, screenWidth)
-//   context.translate(0, screenWidth * 2)
-//   // } else {
-//   //   console.log('on est la this.$refs.canvas.width / this.$refs.canvas.height', this.$refs.canvas.height / this.$refs.canvas.width)
-//     // context.translate((screenWidth / 2) + (screenWidth - this.$refs.canvas.width - (screenWidth / 10)) / 2, screenWidth)
-//   //   context.translate(0, screenWidth * 2)
-//   // }
-// }
-// context.drawImage(image, -imageWidth / 2, -imageWidth / 2, imageWidth, imageWidth * image.height / image.width)
-// context.translate(0, 700 * 2)
-// this.$refs.canvas.width = imageWidth
-// this.$refs.canvas.height = imageWidth * image.width / image.height
-// context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)

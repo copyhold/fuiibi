@@ -3,16 +3,16 @@
     <v-container grid-list-sm fluid>
     <v-layout row wrap >
       <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1">
-        <v-card height="120px">
+        <v-card>
           <v-container fluid>
             <v-layout col xs12>
-              <v-flex xs4 sm4 md4 >
-                <v-img :src="item.imageUrl" height="112px" style="background-color: white" class="clickable" />
+              <v-flex xs4 sm4 md4>
+                <v-img :src="item.imageUrl" height="120px" />
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout column full-height style="height: 100%;">
                   <p class="bold  mt-2" @click="eventDetails(item.id)">{{ item.title }}</p>
-                  <p class="location">{{ item.location.locality }} - {{ item.location.country }}</p>
+                  <p class="location" v-if="item.location">{{ item.location.locality }} - {{ item.location.country }}</p>
                   <p class="date">{{ item.date | date}}</p>
                   <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(index)" end>Remove</v-btn>
                 </v-layout>
@@ -33,7 +33,6 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
 export default {
   data: () => ({
     direction: 'left',
@@ -61,9 +60,6 @@ export default {
       this.right = !val
     }
   },
-  created () {
-    this.$store.dispatch('load_my_events')
-  },
   computed: {
     activeFab () {
       switch (this.tabs) {
@@ -73,9 +69,9 @@ export default {
         default: return {}
       }
     },
-    ...mapState({
-      events: state => state.events.myevents
-    })
+    events () {
+      return this.$store.getters.myevents
+    }
   },
   methods: {
     eventDetails (key) {
@@ -87,9 +83,6 @@ export default {
     alertB4remove (index) {
       const event = this.events[index]
       if (!confirm('Event remove you would like?')) return
-      const events = [...this.events]
-      events.splice(index, 1)
-      this.events = events
       this.$store.dispatch('removeEventFromUser', event)
     }
   }
@@ -128,7 +121,6 @@ p {
 .container{
   margin-top: 0;
   padding: 4px;
-  margin-bottom: 56px;
 }
 .card_actions{
   padding: 0px;

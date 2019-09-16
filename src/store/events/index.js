@@ -1,10 +1,9 @@
-import * as firebase from 'firebase'
 import Vue from 'vue'
 import router from './../../router'
-require('firebase/functions')
 /* eslint-disable */
 // Here we are not eporting anymore a store, it's done in the index.js of the all store, so we export a normal JS object
 // export const store = new Vuex.Store({
+const firebase = global.firebase
 export default {
   state: {
     loadedNotifications: [],
@@ -13,6 +12,15 @@ export default {
     events: []
   },
   mutations: {
+    add_event_to_collection (state, eventData) {
+      const eventscopy  = [ ...state.myevents ]
+      eventscopy.push(eventData)
+      eventscopy.sort((a,b) => (new Date(b.date)).getTime() - (new Date(a.date)).getTime())
+      state.myevents = eventscopy
+    },
+    remove_event_from_collection (state, eventData) {
+      state.myevents = state.myevents.filter(event => event.id !== eventData)
+    },
     my_events_updated (state, events) {
       state.myevents = events
     },
@@ -46,8 +54,8 @@ export default {
   actions: {
     load_my_events (store) {
       if (!store.getters.user) return
-      firebase.functions()
-      .httpsCallable('loadUserEvents')({ uid: store.getters.user.id })
+      const fb_function = firebase.functions().httpsCallable('loadUserEvents')
+      fb_function({ uid: store.getters.user.id })
       .then(response => {
         store.commit('my_events_updated', response.data)
       })
@@ -102,37 +110,19 @@ export default {
       .catch(Vue.console.log);
     },
     removeEventFromUser ({commit, getters}, payload) {
-      const eventId = payload.id
-      const user = getters.user
-      commit('setLoading', true)
-      // We remove the event from the user's list
-      firebase.functions().httpsCallable('removeEventFromUser')({ evid: eventId, uid: user.id })
-      commit('removeEventFromUser', eventId)
-      commit('setLoading', false)
+      return firebase.functions().httpsCallable('removeEventFromUser')({ evid: payload.id, uid: getters.user.id })
     },
-    uploadPictures (store, {files}) {
+    uploadPictures: async function (store, {files}) {
       const currentEvent = store.state.currentEvent
       if (!currentEvent) {
         return null
       }
-      Promise.all(
-        files.map(file => {
-          const filename = Math.round(Math.random() * 10000) + '-' + file.name;
-          return firebase.storage().ref(`events/${filename}`).put(file)
-        })
-      )
-      .then(storedfiles => {
-        return Promise.all(
-          storedfiles.map(storedFile => {
-            const imageUrl = storedFile.metadata.downloadURLs[0]
-            return firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
-          })
-        )
-      })
-      .then(() => {
-        store.dispatch('setCurrentEvent', currentEvent.id)
-      })
-      .catch(this.$debug)
+      for (let file of files) {
+        const storedFile = await firebase.storage().ref(`events/${Math.round(Math.random() * 10000)}-${file.name}`).put(file)
+        const imageUrl = await storedFile.ref.getDownloadURL()
+        await firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
+      }
+      store.dispatch('setCurrentEvent', currentEvent.id)
     },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
@@ -196,6 +186,18 @@ export default {
       })
       .catch(Vue.console.error)
     },
+    listenToEvents ({commit, getters, dispatch}) {
+      const ref = firebase.database().ref(`users/${getters.user.id}/userEvents/`)
+      ref.on('child_added', async snap => {
+        const eventSnap = await firebase.database().ref(`events/${snap.val()}`).once('value')
+        if (!eventSnap.exists()) return
+        commit('add_event_to_collection', { ...eventSnap.val(), id: eventSnap.key })
+        return Promise.resolve()
+      })
+      ref.on('child_removed', snap => {
+        commit('remove_event_from_collection', snap.val())
+      })
+    },
     listenToNotifications ({commit, getters, dispatch}) {
       function updateNotifications(data) {
         const evid = data.key
@@ -217,32 +219,30 @@ export default {
       ref.on('child_changed', updateNotifications)
     },
 
-    iwtClicked ({commit, getters, dispatch}, payload) {
-      Vue.console.debug('[iwtClicked] notification - payload', payload);
-      const key = payload.notification.id || payload.notification.key
-      const userId = payload.userId
+    iwtClicked ({commit, getters, dispatch}, evid) {
+      Vue.console.debug('[iwtClicked] notification - payload', evid);
+      const userId = getters.user.id
       Vue.console.debug('[iwtClicked] clickerId', userId);
-      Promise.all([
+      return Promise.all([
         // I push the new event key in the events array of the clicker user
-        firebase.database().ref(`users/${userId}/userEvents/${key}`).set(key),
+        firebase.database().ref(`users/${userId}/userEvents/${evid}`).set(evid),
         // Then I push the userId in the users array of the event
-        firebase.database().ref(`events/${key}/users/${userId}`).set(getters.user.id)
+        firebase.database().ref(`events/${evid}/users/${userId}`).set(userId)
 
       ])
       .then(res => {
-      // dispatch('loadUserEvents', 'current user')
-        dispatch('reloadMyEvents')
+        return Promise.resolve()
         const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
         return LFKnow({
           evid: key,
           uid: getters.user.id
         })
       })
-      .catch(Vue.console.log)
+      .catch(Vue.console.error)
       .finally(() => commit('setLoading', false))
     },
 
-    createEvent ({commit, getters, dispatch}, payload) {
+    createEvent: async function ({commit, getters, dispatch}, payload) {
       const eventData = {
         title: payload.title,
         location: payload.location,
@@ -254,91 +254,47 @@ export default {
         users: {[getters.user.id]: getters.user.id},
         dateToRank: - payload.date.getTime()
       }
-      Vue.console.log('[createEvent] eventData', eventData);
-      let imageUrl
-      let key
       let userEvents = []
       let users = [getters.user.id]
       let fbKey
       let pictures
       this.users = {[getters.user.id]: getters.user.id}
+      // I stock the event's image in FB storage
+      const filename = payload.filename
+      // const ext = filename.slice(filename.lastIndexOf('.'))
+      const fileData = await firebase.storage().ref('events').put(payload.image)
+      eventData.imageUrl = await fileData.ref.getDownloadURL()
+      eventData.pictures = [{uid: getters.user.id, imageUrl: eventData.imageUrl}] 
+      Vue.console.log('[createEvent] eventData', eventData);
 
       //Reach out to firebase and store it
-      firebase.database().ref('events/').push(eventData)
-      .then((data) => {
-        key = data.key
-        eventData.id = data.key
-        this.fbKey = key
+      const eventSnap = await firebase.database().ref('events').push(eventData)
+      const key = eventData.id = this.fbkey = eventSnap.key
 
-        // Here I'm getting the key of the new event created.
-        // Push the new event key in the events array of the creator user
-        firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
-        // I stock the event's image in FB storage
-        const filename = payload.image.name
-        // const ext = filename.slice(filename.lastIndexOf('.'))
-        const ext = 'png'
-        return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
-      })
-      .then(fileData => {
-        imageUrl = fileData.metadata.downloadURLs[0]
-        // QUAND ON RECOIT UNE NOUVELLE NOTIFICATION QUI VIENT D'ETRE CREE, ON N E VOIT PAS CETTE PHOTO
-        // IL FAUT RELOADER LA PAGE POUR LA VOIR
-        // dispatch('addPicture', {image:payload.image, key: key})
+      // Here I'm getting the key of the new event created.
+      // Push the new event key in the events array of the creator user
+   // await firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
+   // firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
+   //   evid: key,
+   //   uid: getters.user.id
+   // })
+      Vue.console.log('newEventData', eventData);
+      dispatch('load_my_events')
+      commit('setLoading', false)
+      router.push(`/events/${key}`)
 
-
-        // to reach the specific item with the key in the events array and set the imageUrl stored above:
-        // Here we set the picture as the event picture
-        return firebase.database().ref('events').child(key).update({imageUrl: imageUrl})
-      })
-      .then( _=> {
-        return firebase.database().ref('events/' + key + '/pictures/' + key).update({uid: getters.user.id, imageUrl: imageUrl})
-      })
-      .then( () => {
-        return firebase.database().ref('events/' + key + '/pictures/').once('value')
-      })
-      .then( data => {
-        this.pictures = data.val()
-        Vue.console.log('create Event picture => this.pictures', this.pictures);
-        // here we commit that to my local store
-        const newEventData = {
-          title: payload.title,
-          location: payload.location,
-          description: payload.description,
-          date: payload.date.toISOString(),
-          duration: payload.duration,
-          creatorId: getters.user.id,
-          creationDate: new Date(),
-          imageUrl: imageUrl,
-          users: this.users,
-          dateToRank: 0 - Date.now(),
-          id: eventData.id,
-          pictures: this.pictures
-        }
-        Vue.console.log('newEventData', newEventData);
-
-        const newEvent = {
-          event: newEventData,
-          key: key,
-          fbKey: this.fbKey
-        }
-        // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
-        commit('addEvent', newEvent)
-        commit('addEventToMyEvents', newEvent)
-        router.push(`/events/${key}`)
-
-        firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')({
-          evid: key,
-          uid: getters.user.id
-        })
-
-      })
-      .catch(Vue.console.error)
-      .finally(() => {
-        commit('setLoading', false)
-      })
+      // I commit here in the addEvent only the events created here. The one already existing are fetched by the listenToNotifications child_added.
+      // const newEvent = {
+      //   event: eventData,
+      //   key: key,
+      //   fbKey: this.fbKey
+      // }
+      // commit('addEvent', newEvent)
+      // commit('addEventToMyEvents', newEvent)
     },
   },
   getters: {
+    myevents: state => state.myevents,
     events: state => state.events,
     getCurrentEvent: state => state.currentEvent,
     getEventData (state) {

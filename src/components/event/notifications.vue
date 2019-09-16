@@ -6,37 +6,35 @@
       </v-flex>
       <v-container grid-list-sm fluid>
         <v-layout row wrap>
-            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.key" class="mb-1" v-if="!loading">
-              <v-card v-if="notification.event">
-                <v-img @click="eventDetails(notification.key)" :src="notification.event.imageUrl" height="212px" style="background-color: white" />
+            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1" v-if="!loading">
+              <v-card v-if="notification.e">
+                <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="212px" style="background-color: white" />
+                <mark v-if="notification.totalnotis>1" class="noti-group-counter"> {{notification.totalnotis}} </mark>
                 <v-layout col align-end ml-3 mt-3>
-                  <v-flex xs9 tag="h4" @click="eventDetails(notification.key)" class="secondaryDark--text bold bigger"> {{ notification.event.title }}</v-flex>
+                  <v-flex xs9 tag="h4" @click="eventDetails(notification.e[0])" class="secondaryDark--text bold bigger"> {{ notification.e[2] }}</v-flex>
                   <time class="xs3 flex timer text-xs-center">{{ timeStamp(notification) }} ago</time>
                 </v-layout>
                 <v-layout col align-end ml-3 pb-2>
                   <v-flex xs9>
-                    <v-layout @click="eventDetails(notification.key)">
+                    <v-layout @click="eventDetails(notification.e[0])">
                       <div offset-xs3>
-                        <p class="location">{{ notification.event.location.locality }} - {{ notification.event.location.country }}</p>
-                        <p class="date">{{ notification.event.date | date}}</p>
+                        <p class="location">{{ notification.e[4] }}</p>
+                        <p class="date">{{ notification.e[3] | date}}</p>
                       </div>
                     </v-layout>
                     <v-layout>
                       <div offset-xs3>
-                        <!-- <p>{{ myFriends(notification) }} friends were there!</p> -->
-                        <!-- <p><b>{{ notification.clickerName }}</b> was there!</p> -->
-                        <p v-if="notification.friendsCount === 1" @click="getUserPage(notification)"><span class="bold clickable">{{ notification.clickerName }}</span> was there!</p>
-                        <p v-else-if="notification.friendsCount === 2"><span class="bold clickable" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & 1 friend were there!</p>
-                        <p v-else><span class="bold clickable" @click="getUserPage(notification)">{{ notification.clickerName }}</span> & {{ notification.friendsCount - 1}} friends were there!</p>
+                        <p v-if="notification.e[5] === 1" @click="getUserPage(notification.u[0])"><span class="bold clickable">{{ notification.u[1] }}</span> was there!</p>
+                        <p v-else-if="notification.e[5] === 2"><span class="bold clickable" @click="getUserPage(notification.u[0])">{{ notification.u[1] }}</span> & 1 friend were there!</p>
+                        <p v-else><span class="bold clickable" @click="getUserPage(notification.u[0])">{{ notification.u[1] }}</span> &amp; {{ notification.e[5] - 1}} friends were there!</p>
                       </div>
                     </v-layout>
                   </v-flex>
-                  <v-flex xs3 align-self-end text-xs-center v-if="!wasThere(notification.key)">
-                    <v-btn fab large class="iwt" @click="iwtClicked(notification)"></v-btn>
+                  <v-flex xs3 align-self-end text-xs-center v-if="!wasThere(notification.e[0])">
+                    <v-btn fab large class="iwt" @click="iwtClicked(notification.e[0])"></v-btn>
                   </v-flex>
                   <v-flex xs3 align-self-end text-xs-center v-else>
                     <v-btn flat large class="iwt checked" center></v-btn>
-                    <!-- <v-badge bottom overlap overlay color="red" class="vuBadge"><v-icon dark slot="badge">check</v-icon></v-badge> -->
                   </v-flex>
                 </v-layout>
               </v-card>
@@ -64,10 +62,22 @@
     },
     computed: mapState({
       notifications: state => {
-        if (!state.user.user) return []
-        const {notifications} = state.user.user
-        if (!notifications) return []
-        return Object.values(notifications).sort((a, b) => a.dateToRank - b.dateToRank)
+        if (!state.user.user.notifications) return null
+        const idsmap = {}
+        const result = []
+
+        for (const noti of state.user.user.notifications) {
+          const sameeventnoti = idsmap[noti.e[0]]
+          if (sameeventnoti >= 0) {
+            noti.totalnotis = result[sameeventnoti].totalnotis + 1
+            result[sameeventnoti] = null
+          } else {
+            noti.totalnotis = 1
+          }
+          result.push(noti)
+          idsmap[noti.e[0]] = result.length - 1
+        }
+        return result.filter(noti => !!noti)
       },
       loading: state => state.loading
     }),
@@ -78,23 +88,23 @@
       eventDetails (key) {
         this.$router.push('/events/' + key)
       },
-      getUserPage (key) {
-        console.log('[getUserPage] clicked key', key)
-        this.$store.dispatch('getUserData', {userId: key.userId})
-        this.$router.push('/users/' + key.userId)
+      getUserPage (uid) {
+        this.$log('[getUserPage] clicked key', uid)
+        this.$store.dispatch('loadPersons', [uid])
+     // this.$store.dispatch('getUserData', {userId: uid})
+        this.$router.push('/users/' + uid)
       },
       /* eslint-disable */
-      wasThere (key) {
-        const uid = this.$store.getters.user.id
-        const noti = this.notifications.findIndex(noti => noti.event.users && noti.event.users[uid])
-        return noti > -1
+      wasThere (evid) {
+        if (!this.$store.getters.user.userEvents) return false
+        const myevents = new Set(Object.keys(this.$store.getters.user.userEvents))
+        return myevents.has(evid)
       },
-      iwtClicked (notification) {
-        this.$store.dispatch('iwtClicked', {notification: notification, userId: this.$store.getters.user.id , firstName: this.$store.getters.user.firstName})
+      iwtClicked (evid) {
+        this.$store.dispatch('iwtClicked', evid)
       },
       timeStamp (notification) {
-        let diff = Math.round(Math.abs(Date.now() + notification.dateToRank) / 60 / 1000)
-        // console.log('[timeStamp] notification', notification);
+        let diff = Math.round(Math.abs(Date.now() - notification.d) / 60 / 1000)
         if (diff < 60) {
           return diff + 'min'
         }
@@ -114,6 +124,20 @@
 }
 </style>
 <style scoped>
+.noti-group-counter {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  z-index: 20;
+  border-radius: 50%;
+  color: #fff;
+  background: #20b050;
+  font-size: 11px;
+  line-height: 20px;
+  text-align: center;
+}
 .container.grid-list-sm .layout .flex {
   padding: 2px;
 }

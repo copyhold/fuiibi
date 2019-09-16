@@ -47,7 +47,49 @@
     <script type="text/javascript" src='https://maps.googleapis.com/maps/api/js?key=AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4&libraries=places'></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://apis.google.com/js/client.js"></script>
-    <!-- <script src="https://apis.google.com/js/client.js?onload=gapiLoad"></script> -->
+
+    <script>
+    Promise.all([
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-functions.js",
+      "https://www.gstatic.com/firebasejs/6.3.4/firebase-database.js"].map(url => {
+        const scr = document.createElement('script')
+        scr.src = url
+        scr.setAttribute('defer', 'defer')
+        scr.type = 'application/javascript'
+        document.head.appendChild(scr)
+        return new Promise((resolve, reject) => {
+          scr.onload = resolve
+        })
+      }))
+    .then(res => {
+      firebase.initializeApp({
+        apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
+        authDomain: 'iwtapplication.firebaseapp.com',
+        databaseURL: 'https://fuiibi.firebaseio.com',
+     // databaseURL: 'ws://localhost:5000',
+        projectId: 'iwtapplication',
+        messagingSenderId: '208715939086',
+        storageBucket: 'gs://iwtapplication.appspot.com'
+      })
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          firebase.messaging().useServiceWorker(registration)
+        })
+        .catch(function (err) {
+          console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
+        })
+      }
+      const app = document.createElement('script')
+      app.src = "<%= htmlWebpackPlugin.files.js[0] %>"
+      document.head.appendChild(app)
+    })
+    .catch(console.error)
+    </script>
   </head>
   <body>
     <div id="fb-root"></div>

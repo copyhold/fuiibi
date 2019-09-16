@@ -1,7 +1,6 @@
-import * as firebase from 'firebase'
 import Vue from 'vue'
 import router from './../../router'
-
+const firebase = window.firebase
 /* eslint-disable */
 export default {
   state: {
@@ -10,10 +9,17 @@ export default {
     emails: []
   },
   mutations: {
-    removeEventFromUser(state, payload) {
-      const events = state.user.events
+    AddNewNotification (state, payload) {
+      Vue.console.log('addnewnoti', payload.d)
+      const notifications = [ ...state.user.notifications]
+      notifications.push(payload)
+      state.user.notifications = notifications
+    },
+    removeEventFromUser (state, payload) {
+      // @TODO remove me later - events sync
+      const events = state.user.userEvents
       events.splice(events.findIndex(event => event.key === payload), 1)
-      Reflect.deleteProperty(state.user.events, payload)
+      Reflect.deleteProperty(state.user.userEvents, payload)
     },
     addProfilePicture (state, payload) {
       const user = payload.user
@@ -168,6 +174,11 @@ export default {
     }
   },
   actions: {
+    installApp () {
+      if (window.installPromptEvent) {
+        window.installPromptEvent.prompt()
+      }
+    },
 
     // ***************SINGIN********************
     signInWithGoogle ({commit, getters}) {
@@ -190,11 +201,13 @@ export default {
       });
     },
 
-    signUserIn ({commit}, payload) {
+    signUserIn ({commit, dispatch}, payload) {
       commit('setLoading', true)
       commit('clearError')
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+      return firebase.auth()
+      .signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
+        dispatch('installApp')
         const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
         const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
         const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
@@ -218,12 +231,12 @@ export default {
           friends: [],
           events: []
         }
-        Vue.console.debug('[signUserIn] newUser b4 commit(setUser, newUser)', newUser);
         commit('setUser', newUser)
+        return Promise.resolve(newUser)
       })
       .catch(error => {
         commit('setError', error)
-        Vue.console.log(error);
+        return Promise.reject(error)
       })
       .finally(() => {
         commit('setLoading', false)
@@ -242,6 +255,7 @@ export default {
       Vue.console.log('[checkUserFromGoogle] payload')
       firebase.database().ref('users/' + payload.uid).once('value')
       .then( user =>{
+        dispatch('installApp')
         Vue.console.log('[checkUserFromGoogle] user');
         let userData = user.val()
         if (userData === null) {
@@ -250,19 +264,17 @@ export default {
         } else {
           const friends = {}
           for (let friendid of Object.values(userData.friends || {})) {
-            if (friendid!==true) {
-              friends[friendid] = true
-            }
+            friends[friendid] = friendid
           }
           commit('setUser', { ...userData, photoUrl: userData.imageURL, friends })
           Vue.console.log('[checkUserFromGoogle] this user is NOT new')
-          const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(userData.friends || {})])
+          const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
           dispatch('loadPersons', Array.from(ids))
-          // dispatch('fetchUserData')
           dispatch('setupMessagingAndToken')
-          dispatch('listenToNotifications')
+          // dispatch('listenToNotifications')
+          dispatch('listenToMyFeed')
           dispatch('listenToProfileUpdate')
-       // dispatch('fetchUsersEvents')
+          dispatch('listenToEvents')
         }
       })
     },
@@ -285,6 +297,7 @@ export default {
       Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
       commit('setUser', newUser)
       commit('setLoading', false)
+      dispatch('installApp')
       // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
       firebase.database().ref('users/' + payload.id).set(newUser)
       router.push('/welcome')
@@ -314,6 +327,8 @@ export default {
       })
       .then(() => {
         commit('setLoading', false)
+        dispatch('installApp')
+        router.push('/welcome')
       })
       .catch(
         error => {
@@ -323,7 +338,6 @@ export default {
           Vue.console.log(error);
         }
       )
-      router.push('/welcome')
     },
 
     //*****************************************************
@@ -379,7 +393,7 @@ export default {
       .signOut()
       .then(() => {
         commit('setUser', null)
-        router.push('/')
+        location.href = '/'
       })
       .catch(console.error)
     },
@@ -448,10 +462,23 @@ export default {
         commit('setLoading', false)
       })
     },
+    listenToMyFeed ({commit, getters, state}) {
+      return firebase.firestore().collection(`/notifications/${getters.user.id}/list`)
+      .orderBy('d', 'desc').limit(10)
+      .onSnapshot(snap => {
+        if (snap.empty) return;
+        snap.docChanges().forEach(change => {
+          commit('AddNewNotification', change.doc.data())
+        })
+      })
+    },
+    userObjectChanged (key, val) {
 
-    listenToProfileUpdate ({commit, getters, state}) {
+    },
+    listenToProfileUpdate ({commit, dispatch, getters, state}) {
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
-        Vue.console.log('[listenToProfileUpdate] ', child_snap, child_snap.key)
+        dispatch('userObjectChanged', child_snap.key, child_snap.val())
+        Vue.console.log('[listenToProfileUpdate] ', child_snap.val(), child_snap.key)
         const copy = { ...state.user }
         copy[child_snap.key] = child_snap.val()
         commit('setUser', { ...state.user, [child_snap.key]: child_snap.val()} )
@@ -511,12 +538,17 @@ export default {
         commit('setLoading', false)
         return
       }
+      return Promise.all([
       // Send the friend an invitation to accept the friendship in his pending friends.
-      firebase.database().ref(`/users/${friendId}/pendingFriends/${userId}`).set(true)
+      firebase.database().ref(`/users/${friendId}/pendingFriends/${userId}`).set(true),
       // Add the friend id in the pending invitation's user
       firebase.database().ref(`/users/${userId}/pendingInvitations/${friendId}`).set(true)
+      ])
+      .then(() => {
       commit('addPendingInvitations', friendId)
       commit('setLoading', false)
+      })
+      .catch(Vue.console.error)
     },
 
     acceptFriendRequest ({commit, getters}, fid) {
@@ -532,10 +564,8 @@ export default {
         return
       }
       return Promise.all([
-        firebase.database().ref(`/users/${user.id}/friends`).push(fid),
-        firebase.database().ref(`/users/${fid}/friends`).push(user.id),
-      //firebase.database().ref('/users/' + user.id + '/friends/' + fid).set(true),
-      //firebase.database().ref('/users/' + fid + '/friends/' + user.id).set(true)
+        firebase.database().ref(`/users/${user.id}/friends/${fid}`).set(fid),
+        firebase.database().ref(`/users/${fid}/friends/${user.id}`).set(user.id),
       ])
       .then(res => {
         commit('removePendingFriendFromUser', fid)
@@ -552,20 +582,6 @@ export default {
       Vue.console.debug('[removeFriend] payload', payload);
       firebase.database().ref('/users/' + user.id + '/friends').child(friendId).remove()
       commit('removeFriendFromUser', friendId)
-
-   // We need to get the firebase key of the user in the friend's list to remove it from his database.
-   // this code removes me from removed friends' friends list , do we need it?
-   // firebase.database().ref('/users/' + friendId + '/friends').once('value')
-   // .then( data => {
-   //   const dataPairs = data.val()
-   //   Vue.console.log('[removeFriend] dataPairs', dataPairs);
-   //   for (let key in dataPairs) {
-   //     if (dataPairs[key] === user.id) {
-   //       Vue.console.log('[removeFriend] dans le for if (dataPairs[key] === user.id)', key)
-   //       firebase.database().ref('/users/' + friendId + '/friends').child(key).remove()
-   //     }
-   //   }
-   // })
     },
     refuseFriend ({commit, getters}, payload) {
       const friendId = payload.id
