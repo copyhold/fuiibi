@@ -109,18 +109,20 @@
   }
 
   .fuiibiTextHomePage {
-    font-size: 15vh;
+    font-size: 33vw;
     font-family: 'Marck Script', cursive;
-    top: 11vh;
+    top: 7vh;
     position: absolute;
   }
 
   .fullscreen-bg {
     position: fixed;
-    height: 100%;
+    /* height: 100%; */
     width: 100%;
     top: 0px;
     left: 0px;
+    height: 100vh; /* Fallback for browsers that do not support Custom Properties */
+    height: calc(var(--vh, 1vh) * 100);
   }
   .loginGoogleButton {
     width: 80%;
@@ -145,7 +147,7 @@
     position: absolute;
     top: 1vh;
     text-align: center;
-    margin-left: 15%;
+    margin-left: 12vw;
   }
 
   .oneClick {
@@ -161,7 +163,7 @@
   .slogan {
     position: absolute;
     top: 30vh;
-    left: 10vw;
+    left: 12vw;
     font-family: 'Nunito', sans-serif;
   }
 
