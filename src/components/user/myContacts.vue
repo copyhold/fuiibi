@@ -1,11 +1,12 @@
 <template >
   <v-container>
-    <v-layout v-if="!loading" row>
+    <v-layout v-if="!loading && emails.length===0" row>
       <v-flex text-xs-center xs10 offset-xs1 mt-3 pa-3>
-          <p>we want to scan your Google contacts. we believe that we can find something interesting there</p>
-          <p>Don't worry, it will be fast and will cost nothing to you.</p>
-          <h3>so click the button and be patient</h3>
-          <v-btn color="info" @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
+        <p>we want to scan your Google contacts. we believe that we can find something interesting there</p>
+        <p>Don't worry, it will be fast and will cost nothing to you.</p>
+        <h3>so click the button and be patient</h3>
+        <v-btn color="info" @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
+        <v-alert v-if="alert">{{alert}}</v-alert>
       </v-flex>
     </v-layout>
     <v-list subheader v-else>
@@ -22,34 +23,43 @@ export default {
     return {
       loadedGContacts: [],
       totalGcontacts: 0,
+      alert: false,
       emails: [],
       signedIn: false,
       loading: false
     }
-  },
-  created () {
-    gapi.load('client:auth2', {
-      callback: this.continueWithGoogle,
-      onerror: console.error
-    })
   },
   methods: {
     startSync () {
       this.loadedGContacts = []
       this.totalGcontacts = 0
       this.emails = []
-      if (!this.signedIn) return
-      this.loadGContacts()
+      this.loading = true
+      gapi.load('client:auth2', {
+        callback: this.authorizeContactsAccess,
+        onerror: console.error
+      })
     },
-    continueWithGoogle () {
+    authorizeContactsAccess () {
       const updateSigninStatus = (isSignedIn) => {
         this.signedIn = isSignedIn
+        if (isSignedIn) {
+          // not we request additional permissions to read contacts
+          const me = gapi.auth2.getAuthInstance().currentUser.get()
+          const options = new gapi.auth2.SigninOptionsBuilder({'scope': 'https://www.googleapis.com/auth/contacts.readonly'})
+          me.grant(options).then(success => {
+            this.loadGContacts()
+          }, fail => {
+            this.alert = "Sad to hear that you don't trust us"
+            this.loading = false
+          })
+        }
       }
-      // const clientId = '24686685442-e8ookfdde4dbc6fqqmjo3iajo9rc71ai.apps.googleusercontent.com'
-      // const apiKey = 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
+      const apiKey = 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M'
       const clientId = '208715939086-dneafckdpuqq4mb6buksum5u2q49rrqf.apps.googleusercontent.com'
       gapi.client.init({
-        discoveryDocs: ['https://people.googleapis.com/$discovery/rest?version=v1'],
+        discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/people/v1/rest'],
+        apiKey,
         clientId,
         scope: 'https://www.googleapis.com/auth/contacts.readonly'
       }).then(function () {
@@ -63,7 +73,6 @@ export default {
       })
     },
     loadGContacts (nextPageToken = null) {
-      this.loading = true
       gapi.client.people.people.connections.list({
         resourceName: 'people/me',
         pageSize: 100,
@@ -90,9 +99,11 @@ export default {
       })
       .then(res => {
         this.emails = this.emails.concat(res.data)
+        this.loading = false
       })
       .catch(err => {
         this.$error('load google contacts', err)
+        this.loading = false
       })
     }
   }

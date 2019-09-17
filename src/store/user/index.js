@@ -527,7 +527,7 @@ export default {
       commit('cancelInvitation', fid)
       firebase.database().ref(`/users/${getters.user.id}/pendingInvitations/${fid}`).remove()
     },
-    sendFriendRequest ({commit, getters}, payload) {
+    sendFriendRequest ({commit, dispatch, getters}, payload) {
       commit('setLoading', true)
       const friendId = payload
       const userId = getters.user.id
@@ -544,8 +544,9 @@ export default {
       firebase.database().ref(`/users/${userId}/pendingInvitations/${friendId}`).set(true)
       ])
       .then(() => {
-      commit('addPendingInvitations', friendId)
-      commit('setLoading', false)
+        commit('addPendingInvitations', friendId)
+        commit('setLoading', false)
+        return dispatch('loadPersons', [friendId])
       })
       .catch(Vue.console.error)
     },
