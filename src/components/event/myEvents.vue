@@ -1,5 +1,5 @@
 <template >
-  <v-container class="container">
+  <v-container class="container mb-5">
     <v-container grid-list-sm fluid>
     <v-layout row wrap >
       <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1">
