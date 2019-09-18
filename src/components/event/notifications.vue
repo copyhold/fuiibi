@@ -5,8 +5,8 @@
         <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
       </v-flex>
       <v-container grid-list-sm fluid>
-        <v-layout row wrap>
-            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1" v-if="!loading">
+        <v-layout row wrap v-if="notifications.length>1">
+            <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1">
               <v-card v-if="notification.e">
                 <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="212px" style="background-color: white" />
                 <mark v-if="notification.totalnotis>1" class="noti-group-counter"> {{notification.totalnotis}} </mark>
@@ -62,11 +62,11 @@
     },
     computed: mapState({
       notifications: state => {
-        if (!state.user.user.notifications) return null
+        if (!state.user.feed) return []
         const idsmap = {}
         const result = []
 
-        for (const noti of state.user.user.notifications) {
+        for (const noti of state.user.feed) {
           const sameeventnoti = idsmap[noti.e[0]]
           if (sameeventnoti >= 0) {
             noti.totalnotis = result[sameeventnoti].totalnotis + 1
