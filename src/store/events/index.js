@@ -112,6 +112,14 @@ export default {
     removeEventFromUser ({commit, getters}, payload) {
       return firebase.functions().httpsCallable('removeEventFromUser')({ evid: payload.id, uid: getters.user.id })
     },
+    uploadPicture: async function (store, {file,evid}) {
+      store.commit('setLoading', true)
+      const storedFile = await firebase.storage().ref(`events/${Math.round(Math.random() * 10000)}-${file.name}`).put(file)
+      const imageUrl = await storedFile.ref.getDownloadURL()
+      await firebase.database().ref(`/events/${evid}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
+      store.commit('setLoading', false)
+      store.dispatch('setCurrentEvent', evid)
+    },
     uploadPictures: async function (store, {files}) {
       const currentEvent = store.state.currentEvent
       if (!currentEvent) {
