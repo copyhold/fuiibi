@@ -1,12 +1,12 @@
 <template lang="html">
   <v-container class="container" v-if="event">
-    <div @click="back" class="arrowBack clickable">
+    <div @click="back" class="arrowBack clickable hidden-sm-and-up" v-if="loggedInUserId">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-btn absolute class="ml-2 mt-3" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
+    <v-btn style="z-index: 1" absolute class="ml-2 mt-3" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
     </v-btn>
-    <v-speed-dial v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
+    <v-speed-dial absolute top v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
@@ -37,7 +37,8 @@
               <!-- {{ event.location.street_number }}, -->
               {{ event.location.locality }} - {{ event.location.country }}
             </p>
-            <p v-else><v-icon class="mr-1">place</v-icon>
+            <p v-else>
+              <v-icon class="mr-1">place</v-icon>
               {{ event.location.route }}
               {{ event.location.locality }} - {{ event.location.country }}
             </p>
@@ -57,9 +58,6 @@
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
                 <span v-else>
                   <v-btn flat large class="iwt checked" center></v-btn>
-                  <!-- <v-badge overlap overlay color="red" class="vuBadge">
-                    <v-icon dark slot="badge">check</v-icon>
-                  </v-badge> -->
                 </span>
               </v-flex>
             </v-layout>
@@ -92,7 +90,6 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab icon color="#424242"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
-
         <!-- <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn> -->
         <v-carousel hide-delimiters dark :cycle="false" height="100vh">
           <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
@@ -108,23 +105,29 @@
               <v-list-tile-avatar class="avatarImg">
                 <img :src="user.imageUrl"/>
               </v-list-tile-avatar>
-              <v-list-tile-content  @click="getUserPage(user)" >
-                <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+              <v-list-tile-content v-if="loggedInUserId">
+                <v-list-tile-content  @click="getUserPage(user)" >
+                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+                </v-list-tile-content>
               </v-list-tile-content>
-              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                  <v-btn small class="greyColors" flat left>Pending...</v-btn>
-              </v-list-tile-action>
-              <v-list-tile-action v-else>
-                <v-list-tile-action v-if="!isFriend(user)">
-                  <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
-                </v-list-tile-action>
-                <!-- <v-list-tile-action v-else>
-                  <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-                </v-list-tile-action> -->
-                <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
+              <v-list-tile-content v-else>
+                <v-list-tile-content>
+                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile-content>
 
-              </v-list-tile-action>
-            </v-list-tile>
+              <v-list-tile-content v-if="loggedInUserId">
+                <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                    <v-btn small class="greyColors" flat left>Pending...</v-btn>
+                </v-list-tile-action>
+                <v-list-tile-action v-else>
+                  <v-list-tile-action v-if="!isFriend(user)">
+                    <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
+                  </v-list-tile-action>
+                  <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
+                </v-list-tile-action>
+              </v-list-tile-content>
+             </v-list-tile>
           </template>
         </v-list>
       </v-dialog>
@@ -426,9 +429,9 @@ export default {
 </style>
 <style scoped>
   .shareButton {
-    position: absolute;
-    top: 64px !important;
-    right: 0px;
+    /* position: absolute; */
+    top: 88px !important;
+    /* right: 0px; */
     z-index: 1;
   }
   .rotateLeftIcon {
@@ -505,6 +508,9 @@ export default {
     font-size: 15px;
     font-weight: 200;
     min-height: 70px;
+  }
+  .checked{
+    background: url("../img/iwtChecked.png") left/80% no-repeat;
   }
   @media screen and (max-width: 1263px) {
     span.vuBadge {
