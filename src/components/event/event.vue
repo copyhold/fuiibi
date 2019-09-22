@@ -307,6 +307,7 @@ export default {
           this.$store.dispatch('reloadMyEvents')
         })
       } else {
+        localStorage.return_to_event = this.event.id
         this.$router.push('/')
       }
     },

@@ -272,14 +272,13 @@ export default {
           const ids = new Set([ ...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
           dispatch('loadPersons', Array.from(ids))
           dispatch('setupMessagingAndToken')
-          // dispatch('listenToNotifications')
           dispatch('listenToMyFeed')
           dispatch('listenToProfileUpdate')
           dispatch('listenToEvents')
         }
       })
     },
-    createUserFromGoogle ({commit}, payload) {
+    async createUserFromGoogle ({commit}, payload) {
       Vue.console.log('let create a user from google', payload);
       commit('setLoading', true)
       const [firstName, ...lastName] = payload.displayName.split(' ')
@@ -300,19 +299,23 @@ export default {
       commit('setLoading', false)
       dispatch('installApp')
       // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-      firebase.database().ref('users/' + payload.id).set(newUser)
-      router.push('/welcome')
+      await firebase.database().ref('users/' + payload.id).set(newUser)
+      if (localStorage.return_to_event) {
+        router.push(`/events/${localStorage.return_to_event}`)
+      } else {
+        router.push('/welcome')
+      }
     },
-    signUserUp ({commit}, payload) {
+    async signUserUp ({commit,dispatch}, payload) {
       //As we are doing a request to the web, we change the status of loading to true.
       commit('setLoading', true)
       commit('clearError')
-      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-      .then(user => {
+      try {
+        const user = await firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
         //Here we got our user, so we are not loading anymore and we change the status of setLoading
         const newUser = {
-          id: user.uid,
-          email: user.email,
+          id: user.user.uid,
+          email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
           notifications: [],
@@ -321,24 +324,21 @@ export default {
           //*********************************************************
           imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/default_avatar.png?alt=media&token=245e435c-c87b-4af3-8688-a6469500b7de'
         }
-        Vue.console.log('[signUserUp] setUser - newUser', newUser);
-        commit('setUser', newUser)
         // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-        return firebase.database().ref(`users/${user.uid}`).set(newUser)
-      })
-      .then(() => {
-        commit('setLoading', false)
+        const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
         dispatch('installApp')
-        router.push('/welcome')
-      })
-      .catch(
-        error => {
-          //Here we got an error, so we are not loading anymore and we change the status of setLoading
-          commit('setLoading', false)
-          commit('setError', error)
-          Vue.console.log(error);
+        commit('setUser', newUser)
+        commit('setLoading', false)
+        if (localStorage.return_to_event) {
+          router.push(`/events/${localStorage.return_to_event}`)
+        } else {
+          router.push('/welcome')
         }
-      )
+      } catch (error) {
+        commit('setLoading', false)
+        commit('setError', error)
+        Vue.console.log(error);
+      }
     },
 
     //*****************************************************
