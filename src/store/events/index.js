@@ -227,27 +227,20 @@ export default {
       ref.on('child_changed', updateNotifications)
     },
 
-    iwtClicked ({commit, getters, dispatch}, evid) {
+    async iwtClicked ({commit, getters, dispatch}, evid) {
       Vue.console.debug('[iwtClicked] notification - payload', evid);
       const userId = getters.user.id
       Vue.console.debug('[iwtClicked] clickerId', userId);
-      return Promise.all([
-        // I push the new event key in the events array of the clicker user
-        firebase.database().ref(`users/${userId}/userEvents/${evid}`).set(evid),
+      // I push the new event key in the events array of the clicker user
+      try {
+        await firebase.database().ref(`users/${userId}/userEvents/${evid}`).set(evid),
         // Then I push the userId in the users array of the event
-        firebase.database().ref(`events/${evid}/users/${userId}`).set(userId)
-
-      ])
-      .then(res => {
-        return Promise.resolve()
-        const LFKnow = firebase.functions().httpsCallable('letFriendsKnowMyNewEvent')
-        return LFKnow({
-          evid: key,
-          uid: getters.user.id
-        })
-      })
-      .catch(Vue.console.error)
-      .finally(() => commit('setLoading', false))
+        await firebase.database().ref(`events/${evid}/users/${userId}`).set(userId)
+        return true
+      } catch (error) {
+        Vue.console.error(error)
+        return false
+      }
     },
 
     createEvent: async function ({commit, getters, dispatch}, payload) {

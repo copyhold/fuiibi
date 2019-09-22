@@ -28,9 +28,7 @@
 
             <v-layout row class="mb-2">
               <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
-                <!-- <v-btn raised class="primary primary--text" @click="onPickFile" left outline>Upload</v-btn>
-                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked"> -->
-                <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
+                <v-btn block flat class="secondary--text" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
                 <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
               the accept image is in order to accept image and nothing else-->
                 <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
@@ -58,7 +56,7 @@
             </v-card-text>
           </v-card>
           <v-btn color="info" @click.native="e1 = 2" flat><v-icon></v-icon>Back</v-btn>
-          <v-btn @click.native="addProfilePicture" color="primary" :to="'/search'" >Finish</v-btn>
+          <v-btn @click.native="addProfilePicture" color="primary" to="/friends" >Finish</v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
@@ -89,74 +87,6 @@
       addProfilePicture () {
         console.log('[addProfilePicture] clicked - this.image', this.image)
         this.$store.dispatch('addProfilePicture', {image: this.image})
-
-        var date = new Date()
-        var fbKey = 'welcomeEvent'
-        var key = 'welcomeEvent'
-        var event = {
-          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/fuiibidatabasedevelopement.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=7a4382b4-dafd-4d9b-bb56-6354bdef7ef7',
-          title: 'Your subscribtion',
-          description: 'Congratulations for your first event! This event has been created automatically and will be deleted at your next login. But go and open your fist personal event and it will be automatically shared with all your friends.',
-          friendsCount: 1,
-          creationDate: Date(),
-          location: {
-            administrative_area_level_1: 'Somewhere',
-            country: 'Planet earth',
-            latitude: 1,
-            longitude: 1,
-            locality: 'Home',
-            postal_code: '4747',
-            street_number: '47'
-          },
-          date: date.toISOString(),
-          duration: '2 minutes',
-          creatorId: this.$store.getters.user.id,
-          dateToRank: -Date.now()
-        }
-        var clickerName = 'Fuiibi team'
-
-        const newNotif = {
-          event: event,
-          key: key,
-          clickerName: clickerName,
-          dateToRank: event.dateToRank,
-          friendsCount: 1
-        }
-        const newEvent = {
-          event: event,
-          key: key,
-          fbKey: fbKey
-        }
-
-        this.$store.commit('addEventToMyEvents', newEvent)
-        this.$store.commit('addNotification', newNotif)
-        this.$store.commit('addEvent', newEvent)
-
-        var deferredPrompt
-        console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
-        window.addEventListener('beforeinstallprompt', function (event) {
-          console.log('beforeinstallprompt fired')
-          event.preventDefault()
-          deferredPrompt = event
-          // return false
-          // Update UI notify the user they can add to home screen
-          // btnAdd.style.display = 'block'
-        })
-        if (deferredPrompt) {
-          deferredPrompt.prompt()
-          deferredPrompt.userChoice.then(function (choiceResult) {
-            console.log(choiceResult.outcome)
-
-            if (choiceResult.outcome === 'dismissed') {
-              console.log('User cancelled installation')
-            } else {
-              console.log('User added to home screen')
-            }
-          })
-          deferredPrompt = null
-        } else {
-          console.log('NO deferredPrompt')
-        }
       },
 
       onPickFile () {
@@ -221,6 +151,11 @@
     border-width: thin;
     height: 144px;
     margin: 0 auto;
+  }
+  .uploadPicture .secondary--text {
+    height: 100%;
+    margin: 0;
+    padding: 0;
   }
   .fitScreen {
     max-width: calc(100vw - 16px);

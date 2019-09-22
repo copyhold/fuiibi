@@ -278,7 +278,7 @@ export default {
         }
       })
     },
-    async createUserFromGoogle ({commit}, payload) {
+    async createUserFromGoogle ({commit,dispatch}, payload) {
       Vue.console.log('let create a user from google', payload);
       commit('setLoading', true)
       const [firstName, ...lastName] = payload.displayName.split(' ')
@@ -296,10 +296,11 @@ export default {
       }
       Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
       commit('setUser', newUser)
+      // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
+      await firebase.database().ref('users/' + payload.uid).set(newUser)
       commit('setLoading', false)
       dispatch('installApp')
-      // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-      await firebase.database().ref('users/' + payload.id).set(newUser)
+      dispatch('iwtClicked', 'defaultevent')
       if (localStorage.return_to_event) {
         router.push(`/events/${localStorage.return_to_event}`)
       } else {
@@ -312,7 +313,6 @@ export default {
       commit('clearError')
       try {
         const user = await firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-        //Here we got our user, so we are not loading anymore and we change the status of setLoading
         const newUser = {
           id: user.user.uid,
           email: payload.email,
@@ -328,9 +328,11 @@ export default {
         const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
         dispatch('installApp')
         commit('setUser', newUser)
+        dispatch('iwtClicked','defaultevent')
         commit('setLoading', false)
         if (localStorage.return_to_event) {
           router.push(`/events/${localStorage.return_to_event}`)
+          localStorage.removeItem('return_to_event')
         } else {
           router.push('/welcome')
         }
