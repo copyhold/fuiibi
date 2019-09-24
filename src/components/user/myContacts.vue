@@ -2,9 +2,9 @@
   <v-container>
     <v-layout v-if="!loading && emails.length===0" row>
       <v-flex text-xs-center xs10 offset-xs1 mt-3 pa-3>
-        <p>we want to scan your Google contacts. we believe that we can find something interesting there</p>
-        <p>Don't worry, it will be fast and will cost nothing to you.</p>
-        <h3>so click the button and be patient</h3>
+        <p>We want to scan your Google contacts in order to check if you already have friends using Fuiibi.</p>
+        <p>Don't worry, it will be fast and will cost you nothing.</p>
+        <h3>So click the button and be patient.</h3>
         <v-btn color="info" @click="startSync"><v-icon>start</v-icon>Find my contacts in Fuiibi</v-btn>
         <v-alert v-if="alert">{{alert}}</v-alert>
       </v-flex>

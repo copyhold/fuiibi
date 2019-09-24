@@ -1,11 +1,16 @@
 <template>
   <v-container class="container pb-1">
     <v-container>
-      <v-flex xs12 class="text-xs-center">
+      <!-- <v-flex xs12 class="text-xs-center">
         <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
-      </v-flex>
-      <v-container grid-list-sm fluid>
-        <v-layout row wrap v-if="notifications.length>1">
+      </v-flex> -->
+      <v-layout row wrap v-if="notifications.length<1" class="mt-5">
+        <v-flex xs12 class="text-xs-center">
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="notifications.length<1"></v-progress-circular>
+        </v-flex>
+      </v-layout>
+      <v-container grid-list-sm fluid v-else>
+        <v-layout row wrap >
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1">
               <v-card v-if="notification.e">
                 <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="212px" style="background-color: white" />

@@ -32,15 +32,6 @@
                 <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loadingPictures"></v-progress-circular>
               </v-flex>
           </v-layout>
-          <!-- <v-layout row wrap v-if="loadingPictures" >
-            <v-flex xs4>
-            </v-flex>
-            <v-flex xs4>
-              <v-progress-circular :size="70" indeterminate color="primary"></v-progress-circular></v-progress-circular>
-            </v-flex>
-            <v-flex xs4>
-            </v-flex>
-          </v-layout> -->
         </v-container>
       </v-card>
     </v-dialog>
