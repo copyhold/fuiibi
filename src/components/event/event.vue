@@ -72,10 +72,10 @@
 
     <v-layout class="mt-2">
       <v-container fluid grid-list-sm>
-        <v-layout row wrap>
-          <v-flex xs4 sm3 md2 v-for="pic in event.pictures" :key="pic.id">
+        <v-layout row wrap class="gallery">
+          <v-flex xs4 sm3 md2 v-for="pic,j in event.pictures" :key="pic.id">
             <v-card flat tile class="">
-              <v-img :src="pic.imageUrl" aspect-ratio="1" @click="checkPicSrc(pic.imageUrl)" class="clickable"/>
+              <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'"/>
             </v-card>
           </v-flex>
         </v-layout>
@@ -160,7 +160,8 @@ export default {
       bottom: false,
       left: false,
       contain: true,
-      transition: 'slide-y-reverse-transition'
+      transition: 'slide-y-reverse-transition',
+      selectedpictures: {}
     }
   },
   watch: {
@@ -228,6 +229,14 @@ export default {
     }
   },
   methods: {
+    photoRightClick (i) {
+      if (this.selectedpictures[i]) {
+        this.$set(this.selectedpictures, i, null)
+      } else {
+        this.$set(this.selectedpictures, i, this.event.pictures[i])
+      }
+      this.$debug(this.selectedpictures)
+    },
     eventUsers () {
       if (!this.event.users) {
         return []
@@ -426,6 +435,9 @@ export default {
 .event-page > footer { display: none; }
 </style>
 <style scoped>
+.gallery .v-image.selected .v-image__image {
+  box-shadow: 0 0 3px 2px rgba(20, 150, 10, .6) inset;
+}
   .shareButton {
     position: absolute;
     top: 64px !important;
