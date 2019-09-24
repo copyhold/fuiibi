@@ -14,18 +14,25 @@
           <v-layout row wrap>
             <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height v-for="(file, index) in files" :key="file.id" :loadingPictures='loadingPictures=false'>
               <v-card v-if="file" flat tile>
-                <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic"><v-icon color="black">close</v-icon></v-btn>
+                <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic">
+                  <v-icon color="black">close</v-icon>
+                </v-btn>
                 <v-img :src="file.url" aspect-ratio="1" @click="selectFileForEdit(file)"></v-img>
               </v-card>
             </v-flex>
             <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height>
               <input accept="image/*" type="file" id="selectphotos" multiple class="d-none" @change="addedPhoto()" ref="filesfield" />
-              <v-btn for="selectphotos" center outline color="grey" class="uploadPicture" tag="label" v-if="!loadingPictures" >
+              <v-btn for="selectphotos" center outline color="grey" class="uploadPicture" tag="label" v-if="!loadingPictures">
                 <v-icon>add_a_photo</v-icon>
               </v-btn>
             </v-flex>
           </v-layout>
-          <v-layout row wrap v-if="loadingPictures" >
+          <v-layout row wrap v-if="loadingPictures">
+              <v-flex xs12 class="text-xs-center">
+                <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loadingPictures"></v-progress-circular>
+              </v-flex>
+          </v-layout>
+          <!-- <v-layout row wrap v-if="loadingPictures" >
             <v-flex xs4>
             </v-flex>
             <v-flex xs4>
@@ -33,7 +40,7 @@
             </v-flex>
             <v-flex xs4>
             </v-flex>
-          </v-layout>
+          </v-layout> -->
         </v-container>
       </v-card>
     </v-dialog>
@@ -87,6 +94,7 @@ export default {
           }
         })
       })
+      this.loadingPictures = true
     },
     startUpload () {
       Array.from(this.files).forEach(file => this.$store.dispatch('uploadPicture', {file, evid: this.evid}))
