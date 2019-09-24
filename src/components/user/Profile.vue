@@ -32,7 +32,7 @@
                   <h4 class="greyColor mb-1 bold">Living in:</h4>
                   <h4 else class="greyColor mb-1 bold">Gender:</h4>
                   <h4 else class="greyColor mb-1 bold">Email:</h4>
-                  <h4 else class="greyColor mb-1">key: </h4>
+                  <!-- <h4 else class="greyColor mb-1">key: </h4> -->
                 </v-flex>
                 <v-flex xs7 sm7 md7>
                   <h4 class="mb-1"> {{ user.firstName }}</h4>
@@ -45,10 +45,10 @@
                   <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
                   <h4 v-else class="mb-1">To be edited</h4>
                   <h4 class="mb-1">{{ user.email }}</h4>
-                  <h4 class="mb-1">{{ user.id }}</h4>
+                  <!-- <h4 class="mb-1">{{ user.id }}</h4> -->
                 </v-flex>
                 <v-fab-transition>
-                  <v-btn color="orange" fixed bottom right fab class=" white--text" @click="turnOnEditMode">
+                  <v-btn color="orange" fixed bottom right fab class="addevent white--text" @click="turnOnEditMode">
                     <v-icon>edit</v-icon>
                   </v-btn>
                 </v-fab-transition>
@@ -135,7 +135,7 @@
                   </v-layout> -->
 
                   <v-fab-transition>
-                    <v-btn type="submit" color="green" fixed bottom right fab class=" white--text">
+                    <v-btn type="submit" color="green" fixed bottom right fab class="addevent white--text">
                       <v-icon>done</v-icon>
                     </v-btn>
                   </v-fab-transition>
@@ -309,6 +309,9 @@
 </script>
 
 <style scoped>
+#app.size-xs .addevent {
+  bottom: 80px;
+}
     .vueGoogleInput{
       width: 96%;
       border-bottom: 1px solid grey;
@@ -351,7 +354,7 @@
     top: 281px;
     right: 10px;
     z-index: 1000;
-  },
+  }
   .greyColor{
     color: grey;
   }

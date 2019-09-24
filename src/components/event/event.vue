@@ -3,10 +3,10 @@
     <div @click="back" class="arrowBack clickable hidden-sm-and-up" v-if="loggedInUserId">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-btn style="z-index: 1" absolute class="ml-2 mt-4" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
+    <v-btn style="z-index: 1" absolute class="ml-2 mt-4" v-if="loggedInUserId == event.creatorId && !loading" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
     </v-btn>
-    <v-speed-dial absolute top v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
+    <v-speed-dial v-if="!loading" absolute top v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
         <v-icon>close</v-icon>
