@@ -80,7 +80,7 @@
       </v-container>
     </v-layout>
 
-    <add-pictures v-if="userWasThere" :userWasThere="userWasThere"></add-pictures>
+    <add-pictures v-if="userWasThere" :userWasThere="userWasThere" :evid="event.id"></add-pictures>
 
     <v-dialog dark :fullscreen="fullscreen_carousel || $vuetify.breakpoint.smAndDown" :scrollable="fullscreen_carousel" :hide-overlay="$vuetify.breakpoint.smAndDown" v-model="carousel" max-width="800px">
       <v-card>
@@ -310,7 +310,7 @@ export default {
           this.$store.dispatch('reloadMyEvents')
         })
       } else {
-        localStorage.setItem('eventToOpen', 'https://www.fuiibi.com/events/' + this.event.id)
+        localStorage.return_to_event = this.event.id
         this.$router.push('/')
       }
     },

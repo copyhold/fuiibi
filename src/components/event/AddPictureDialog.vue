@@ -50,7 +50,7 @@ import Compressor from 'compressorjs'
 import ImageEditor from './Edit/imageeditor.vue'
 
 export default {
-  props: ['meetupId', 'userWasThere'],
+  props: ['evid', 'userWasThere'],
   components: {ImageEditor},
   data () {
     return {
@@ -70,38 +70,28 @@ export default {
       }
     },
     addedPhoto (filelist) {
-      this.loadingPictures = true
       const files = this.$refs.filesfield.files
-      if (files.length === 0) {
-        return
-      }
-      Promise.all(
-        [...files].map(file => {
-          return new Promise((resolve, reject) => {
+      if (files.length === 0) return
+      Array.from(files).forEach(file => {
         // eslint-disable-next-line
-            new Compressor(file, {
-              mimeType: 'image/jpeg',
-              maxWidth: 1500,
-              maxHeight: 1500,
-              success: resolve,
-              error: reject
-            })
-          })
+        new Compressor(file, {
+          mimeType: 'image/jpeg',
+          maxWidth: 1500,
+          maxHeight: 1500,
+          success: compressedfile => {
+            compressedfile.url = window.URL.createObjectURL(compressedfile)
+            this.files.push(compressedfile)
+          },
+          error: err => {
+            this.$error(err)
+          }
         })
-      )
-      .then(compressedfiles => {
-        const files = [...this.files]
-        for (let onefile of compressedfiles) {
-          onefile.url = window.URL.createObjectURL(onefile)
-          files.push(onefile)
-        }
-        this.files = files
       })
-      .catch(this.$debug)
     },
     startUpload () {
+      Array.from(this.files).forEach(file => this.$store.dispatch('uploadPicture', {file, evid: this.evid}))
       this.picDialog = false
-      return this.$store.dispatch('uploadPictures', {files: this.files})
+      this.files = []
     },
     selectFileForEdit (file) {
       this.editFile = { ...file, show: true }
