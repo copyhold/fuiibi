@@ -1,8 +1,8 @@
-<template >
+<template>
   <v-container>
     <v-list subheader>
       <v-subheader>
-        <v-text-field hide-details placeholder="start typing" :change="loading=false" single-line v-model="search" full-width />
+        <v-text-field hide-details placeholder="Search for Fuiibi users" :change="loading=false" single-line v-model="search" full-width />
         <v-btn @click="searchUsers" flat :disabled="loading"><v-icon>search</v-icon></v-btn>
       </v-subheader>
       <user-card v-for="user in users" :user="user" :key="user.id" />
