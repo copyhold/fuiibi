@@ -23,7 +23,7 @@
         <v-stepper-content step="2">
           <v-card color="white lighten-3" class="mb-5" height="auto">
             <v-card-title class="primary--text title">Add your profile picture</v-card-title>
-
+            <v-divider></v-divider>
             <v-layout row class="mb-2">
               <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
                 <v-btn block flat class="secondary--text" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
@@ -33,11 +33,16 @@
               </v-flex>
             </v-layout>
 
+            <v-layout row v-if="imageUrl != ''">
+              <v-btn @click="rotateLeft" flat class="mx-0 primary--text"><v-icon left class="rotateLeftIcon mx-1 pl-0">rotate_left</v-icon>rotate left</v-btn>
+              <v-btn @click="rotateRight" flat class="mx-0 primary--text">rotate right<v-icon right class="mx-1">rotate_right</v-icon></v-btn>
+            </v-layout>
+
             <v-layout row>
               <v-flex xs12 sm6 class="mt-3">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <canvas ref="canvas" class="fitScreen" v-if="showCanvas"></canvas>
-                <v-btn flat v-if="showCanvas" absolute right @click="onPickFile2" class="above">Change</v-btn>
+                <v-btn flat v-if="showCanvas" absolute block outline @click="onPickFile2" class="above primary--text mb-4">Choose another photo</v-btn>
                 <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
@@ -82,6 +87,38 @@
       }
     },
     methods: {
+      rotateRight () {
+        let context = this.$refs.canvas.getContext('2d')
+        let image = this.$refs.imageToCanvas
+        // let screenWidth = window.screen.width
+        let imageWidth = 700
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+        context.save()
+        context.translate(0, this.$refs.canvas.height)
+        context.rotate(90 * Math.PI / 180)
+        context.drawImage(image, -imageWidth, -this.$refs.canvas.width, imageWidth, imageWidth * image.height / image.width)
+        context.restore()
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      },
+      rotateLeft () {
+        let context = this.$refs.canvas.getContext('2d')
+        let image = this.$refs.imageToCanvas
+        // let screenWidth = window.screen.width
+        let imageWidth = 700
+        this.$refs.canvas.height = imageWidth
+        this.$refs.canvas.width = imageWidth * image.height / image.width
+        context.clearRect(0, 0, this.$refs.canvas.width, this.$refs.canvas.height)
+        context.save()
+        context.translate(this.$refs.canvas.width / 2, this.$refs.canvas.height / 2)
+        context.rotate(270 * Math.PI / 180)
+        context.drawImage(image, -imageWidth / 2, -this.$refs.canvas.width / 2, imageWidth, imageWidth * image.height / image.width)
+        context.restore()
+        this.image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+        image = this.dataURItoBlob(this.$refs.canvas.toDataURL())
+      },
       addProfilePicture () {
         this.$store.dispatch('addProfilePicture', {image: this.image})
       },
@@ -142,6 +179,9 @@
 </script>
 
 <style scoped>
+  .rotateLeftIcon {
+    margin-top: 0 !important;
+  }
   .uploadPicture {
     border-style: dashed;
     border-color: grey;

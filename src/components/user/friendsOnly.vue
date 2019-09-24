@@ -1,7 +1,7 @@
 <template >
   <v-container>
-    <v-list subheader v-if="pendingFriends"  xs12>
-      <v-subheader>Invitations sent to me</v-subheader>
+    <v-list subheader v-if="pendingFriends.length>0"  xs12>
+      <v-subheader>Invitations I received</v-subheader>
       <template v-for="(user,i) in pendingFriends">
         <v-divider></v-divider>
         <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
@@ -24,7 +24,7 @@
         </v-list-tile>
       </template>
     </v-list>
-    <v-list subheader v-if="pendingInvitations"  xs12>
+    <v-list subheader v-if="pendingInvitations.length>0"  xs12>
       <v-subheader>Invitations I sent</v-subheader>
       <template v-for="user in pendingInvitations">
         <v-divider></v-divider>
@@ -50,11 +50,12 @@
           <v-icon class="pl-2">search</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-content>
-          <v-text-field hide-details placeholder="start typing" single-line v-model="search" full-width class="pl-2" />
+          <v-text-field hide-details placeholder="Search in you friend list" single-line v-model="search" full-width class="pl-2" />
         </v-list-tile-content>
       </v-list-tile>
+      <v-divider></v-divider>
+      <v-divider></v-divider>
       <template v-for="user,i in filteredFriends" >
-        <v-divider></v-divider>
         <v-list-tile avatar v-bind:key="i" @click="" v-if="user.id != loggedInUserId">
           <v-list-tile-avatar>
             <img :src="user.imageUrl"/>
@@ -66,6 +67,7 @@
             <v-btn icon flat @click="removeFriend(user)"><v-icon color="lightGrey darken-2">mdi-account-remove</v-icon></v-btn>
           </v-list-tile-action>
         </v-list-tile>
+        <v-divider></v-divider>
       </template>
     </v-list>
   </v-container>

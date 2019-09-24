@@ -138,14 +138,14 @@ export default {
       if (this.email && this.password) {
         return this.email && this.password
       } else {
-        this.$log('this form is not valid!')
+        // this.$log('this form is not valid!')
       }
     },
     signUpFormIsValid () {
       if (this.email && this.password && this.firstName && this.lastName && this.password === this.confirmPassword) {
         return this.email && this.password && this.firstName && this.lastName
       } else {
-        this.$log('this form is not valid!')
+        // this.$log('this form is not valid!')
       }
     },
     comparePasswords () {

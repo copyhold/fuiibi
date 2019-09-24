@@ -23,7 +23,7 @@
           </v-layout>
 
           <v-layout row v-if="imageUrl != ''">
-            <v-btn @click="rotateLeft" flat><v-icon left class="rotateLeftIcon pr-3">rotate_left</v-icon>rotate left</v-btn>
+            <v-btn @click="rotateLeft" flat><v-icon left class="rotateLeftIcon">rotate_left</v-icon>rotate left</v-btn>
             <v-btn @click="rotateRight" flat>rotate right<v-icon right>rotate_right</v-icon></v-btn>
           </v-layout>
 
@@ -31,7 +31,7 @@
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
               <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
-              <v-btn v-if="showCanvas" right @click="onPickFile2" class="above">Change</v-btn>
+              <v-btn block v-if="showCanvas" @click="onPickFile2" class="above secondary">Choose another photo</v-btn>
               <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
             </v-flex>
           </v-layout>
@@ -52,7 +52,7 @@
 
           <v-layout row wrap>
             <v-flex xs12 sm6 offset-sm3>
-              <div class="text-xs-center mb-3" >
+              <div class="text-xs-center my-3" >
                 <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
                   <v-avatar>
                     <v-icon >my_location</v-icon>
@@ -65,7 +65,6 @@
                 <v-progress-circular indeterminate color="primary" :witdh="7" :size="30" v-if="searchingForLocation" class="mt-1"></v-progress-circular>
               </v-flex>
               <div class="mdl-spinner mdl-js-spinner is-active" id="location-loader"></div>
-              </div>
             </v-flex>
           </v-layout>
 
@@ -504,7 +503,7 @@
     margin-top: 0 !important;
   }
   .fitScreen {
-    max-width: 100vw;
+    max-width: 100%;
   }
   .vueGoogleInput{
     width: 96%;
@@ -538,8 +537,8 @@
     left: 0;
   }
   .above {
-    z-index: 50;
-    left: 1vw;
+    z-index: 1;
+    /* left: 1vw; */
     position: relative;
   }
   .centered {
