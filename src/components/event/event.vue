@@ -3,7 +3,7 @@
     <div @click="back" class="arrowBack clickable hidden-sm-and-up" v-if="loggedInUserId">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-btn style="z-index: 1" absolute class="ml-2 mt-3" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
+    <v-btn style="z-index: 1" absolute class="ml-2 mt-4" v-if="loggedInUserId == event.creatorId" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
     </v-btn>
     <v-speed-dial absolute top v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
@@ -310,6 +310,7 @@ export default {
           this.$store.dispatch('reloadMyEvents')
         })
       } else {
+        localStorage.setItem('eventToOpen', 'https://www.fuiibi.com/events/' + this.event.id)
         this.$router.push('/')
       }
     },
@@ -449,11 +450,6 @@ export default {
       top: 19px;
       left: 8px;
       z-index: 3;
-  }
-  span.vuBadge {
-    bottom: 100px;
-    right: 130px;
-    position: absolute;
   }
   .iwt{
     height: 72px;

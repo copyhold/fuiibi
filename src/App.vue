@@ -198,7 +198,7 @@
 
   @media screen and (max-width: 600px) {
     .marginTop {
-      margin-top: 56px;
+      margin-top: 36px;
     }
     div.toolbar__content {
       height: 40px !important;

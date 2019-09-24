@@ -16,11 +16,9 @@
             <v-card-text>Store your and your friend's pictures around the events you will create.
               One single place for all the pictures sorted in a time line.
               <br><br>
-
               Let's try it and enjoy! </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
-          <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="2">
           <v-card color="white lighten-3" class="mb-5" height="auto">
@@ -28,8 +26,6 @@
 
             <v-layout row class="mb-2">
               <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
-                <!-- <v-btn raised class="primary primary--text" @click="onPickFile" left outline>Upload</v-btn>
-                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked"> -->
                 <v-btn block flat class="secondary--text pt-5" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
                 <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
               the accept image is in order to accept image and nothing else-->
@@ -127,10 +123,25 @@
           key: key,
           fbKey: fbKey
         }
-
-        this.$store.commit('addEventToMyEvents', newEvent)
-        this.$store.commit('addNotification', newNotif)
-        this.$store.commit('addEvent', newEvent)
+        if (localStorage.getItem('eventToOpen') === null) {
+          this.$store.commit('addEventToMyEvents', newEvent)
+          this.$store.commit('addNotification', newNotif)
+          this.$store.commit('addEvent', newEvent)
+        } else {
+          console.log('in Local storage!!!!')
+          if (this.$store.getters.user) {
+            this.$store.dispatch('iwtClicked', this.event.id)
+            .then(() => {
+              this.$store.dispatch('setCurrentEvent', this.$route.params.id)
+              this.$store.dispatch('reloadMyEvents')
+            })
+          } else {
+            console.log('no user registered??????????')
+          }
+        }
+        // this.$store.commit('addEventToMyEvents', newEvent)
+        // this.$store.commit('addNotification', newNotif)
+        // this.$store.commit('addEvent', newEvent)
 
         var deferredPrompt
         console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
