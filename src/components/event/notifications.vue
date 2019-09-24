@@ -1,5 +1,5 @@
 <template>
-  <v-container class="container">
+  <v-container class="container pb-1">
     <v-container>
       <v-flex xs12 class="text-xs-center">
         <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>

@@ -16,11 +16,9 @@
             <v-card-text>Store your and your friend's pictures around the events you will create.
               One single place for all the pictures sorted in a time line.
               <br><br>
-
               Let's try it and enjoy! </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
-          <!-- <v-btn flat>Skip</v-btn> -->
         </v-stepper-content>
         <v-stepper-content step="2">
           <v-card color="white lighten-3" class="mb-5" height="auto">
@@ -85,7 +83,6 @@
     },
     methods: {
       addProfilePicture () {
-        console.log('[addProfilePicture] clicked - this.image', this.image)
         this.$store.dispatch('addProfilePicture', {image: this.image})
       },
 

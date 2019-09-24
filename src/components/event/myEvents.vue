@@ -1,5 +1,5 @@
 <template >
-  <v-container class="container">
+  <v-container class="container pb-5 mb-5">
     <v-container grid-list-sm fluid>
     <v-layout row wrap >
       <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1">
@@ -14,7 +14,7 @@
                   <p class="bold  mt-2" @click="eventDetails(item.id)">{{ item.title }}</p>
                   <p class="location" v-if="item.location">{{ item.location.locality }} - {{ item.location.country }}</p>
                   <p class="date">{{ item.date | date}}</p>
-                  <v-btn  flat small class="greyColors align-self-end" @click="alertB4remove(index)" end>Remove</v-btn>
+                  <v-btn  flat small class="greyColors align-self-end mr-0 pr-0" @click="alertB4remove(index)" end>Remove</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -82,7 +82,7 @@ export default {
     },
     alertB4remove (index) {
       const event = this.events[index]
-      if (!confirm('Event remove you would like?')) return
+      if (!confirm('Hey there, are you sure you want to permanently remove this event from your Event List?')) return
       this.$store.dispatch('removeEventFromUser', event)
     }
   }
@@ -109,11 +109,11 @@ p {
   margin-bottom: 4px;
 }
 .greyColors{
-  background-color: #f6f7f9;
-  border-color: #ced0d4;
+  /* background-color: #f6f7f9;
+  border-color: #ced0d4; */
   color: #4b4f56;
-  right: 0px;
-  bottom: 8px;
+  /* right: 0px;
+  bottom: 8px; */
 }
 .date {
   color: grey;
