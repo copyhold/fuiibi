@@ -25,9 +25,9 @@
           <span>My events</span>
         </v-btn>
         <v-btn flat :key="'My friends'" :to="'/friends'">
-          <v-badge color="red" id="redBadge" v-if="user.pendingFriends != ''">
+          <!-- <v-badge color="red" id="redBadge" v-if="user.pendingFriends.length>0">
             <span slot="badge"></span>
-          </v-badge>
+          </v-badge> -->
           <v-icon left>supervisor_account</v-icon>
           <span>My friends</span>
         </v-btn>
@@ -58,9 +58,9 @@
       </v-btn>
       <v-btn flat :key="'My friends'" :to="'/friends'">
         <span>My friends</span>
-        <v-badge color="red" id="redBadge" v-if="user.pendingFriends != ''">
+        <!-- <v-badge color="red" id="redBadge" v-if="user.pendingFriends.length>0">
           <span slot="badge"></span>
-        </v-badge>
+        </v-badge> -->
         <v-icon>supervisor_account</v-icon>
       </v-btn>
     </v-bottom-nav>

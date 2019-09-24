@@ -50,7 +50,7 @@
           <v-icon class="pl-2">search</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-content>
-          <v-text-field hide-details placeholder="Search in you friend list" single-line v-model="search" full-width class="pl-2" />
+          <v-text-field hide-details placeholder="Search in you friends list" single-line v-model="search" full-width />
         </v-list-tile-content>
       </v-list-tile>
       <v-divider></v-divider>
@@ -123,7 +123,6 @@
     },
     methods: {
       getUserPage (key) {
-        console.log('[getUserPage] clicked key', key)
         this.$store.dispatch('getUserData', {userId: key.id})
         this.$router.push('/users/' + key.id)
       },
