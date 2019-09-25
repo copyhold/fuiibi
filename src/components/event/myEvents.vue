@@ -12,7 +12,7 @@
           <v-container fluid>
             <v-layout col xs12>
               <v-flex xs4 sm4 md4>
-                <v-img :src="item.imageUrl" height="120px" />
+                <v-img :src="item.imageUrl" height="120px" @click="eventDetails(item.id)"/>
               </v-flex>
               <v-flex xs8 sm8 md8 class="ml-3">
                 <v-layout column full-height style="height: 100%;">

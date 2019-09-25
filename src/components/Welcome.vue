@@ -3,62 +3,79 @@
     <v-dialog v-model="welcome" fullscreen>
       <v-stepper v-model="e1">
       <v-stepper-header>
-        <v-stepper-step step="1" :complete="e1 > 1">Welcome message</v-stepper-step>
+        <v-stepper-step step="1" :complete="e1 > 1">See your friend's photos</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step step="2" :complete="e1 > 2">Choose a profile picture</v-stepper-step>
+        <v-stepper-step step="2" :complete="e1 > 2">See yourself on others photos</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step step="3">Let's look for friends</v-stepper-step>
+        <v-stepper-step step="3" :complete="e1 > 3">Share your events </v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step step="4" :complete="e1 > 4">Add your profile picture</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step step="5">Let's look for friends</v-stepper-step>
       </v-stepper-header>
-      <v-stepper-items>
-        <v-stepper-content step="1">
-          <v-card color="white lighten-3" class="mb-5" height="380">
-            <v-card-title class="primary--text title">Welcome to Fuiibi!</v-card-title>
-            <v-card-text>Store your and your friend's pictures around the events you will create.
-              One single place for all the pictures sorted in a time line.
-              <br><br>
-              Let's try it and enjoy! </v-card-text>
+      <v-stepper-items class="p-0">
+
+        <v-stepper-content step="1" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
+          <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
+            <v-img width="160px" src="/src/components/img/friendship.png" class="mb-5"/>
+            <v-card-text class="text-center headline">See your friend's photos </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
         </v-stepper-content>
-        <v-stepper-content step="2">
-          <v-card color="white lighten-3" class="mb-5" height="auto">
-            <v-card-title class="primary--text title">Add your profile picture</v-card-title>
-            <v-divider></v-divider>
-            <v-layout row class="mb-2">
-              <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
-                <v-btn block flat class="secondary--text" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn>
-                <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
-              the accept image is in order to accept image and nothing else-->
-                <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
-              </v-flex>
-            </v-layout>
 
+        <v-stepper-content step="2" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
+          <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
+            <v-img width="160px" src="/src/components/img/selfie.png" class="mb-5"/>
+            <v-card-text class="text-center headline">See yourself on others photos </v-card-text>
+          </v-card>
+          <v-btn color="primary" @click.native="e1 = 3">Next</v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="3" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
+          <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
+            <v-img width="160px" src="/src/components/img/sharing.png" class="mb-5"/>
+            <v-card-text class="text-center headline">Share your events </v-card-text>
+          </v-card>
+          <v-btn color="primary" @click.native="e1 = 4">Next</v-btn>
+        </v-stepper-content>
+
+        <v-stepper-content step="4" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
+          <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
             <v-layout row v-if="imageUrl != ''">
-              <v-btn @click="rotateLeft" flat class="mx-0 primary--text"><v-icon left class="rotateLeftIcon mx-1 pl-0">rotate_left</v-icon>rotate left</v-btn>
+              <v-btn @click="rotateLeft" flat class="mx-3 primary--text"><v-icon left class="rotateLeftIcon mx-1 pl-0">rotate_left</v-icon>rotate left</v-btn>
               <v-btn @click="rotateRight" flat class="mx-0 primary--text">rotate right<v-icon right class="mx-1">rotate_right</v-icon></v-btn>
             </v-layout>
-
             <v-layout row>
               <v-flex xs12 sm6 class="mt-3">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <canvas ref="canvas" class="fitScreen" v-if="showCanvas"></canvas>
-                <v-btn flat v-if="showCanvas" absolute block outline @click="onPickFile2" class="above primary--text mb-4">Choose another photo</v-btn>
+                <v-btn flat v-if="showCanvas" absolute block outline @click="onPickFile2" class="primary--text mb-4">Choose another photo</v-btn>
                 <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
+            <v-img width="160px" src="/src/components/img/camera.png" class="mb-5" v-if="showUploadImage" @click="onPickFile"/>
+            <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
+            <v-card-text v-if="showUploadImage" class="text-center headline">Add your profile picture</v-card-text>
+            <!-- <v-layout row class="mb-2">
+              <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
+                <v-btn block flat class="secondary--text" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn> -->
+                <!-- We hide the button below because it's ugly and we use the button above instead. But it needs to be linked to the below input and for that we use ref
+              the accept image is in order to accept image and nothing else-->
+                <!-- <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
+              </v-flex>
+            </v-layout> -->
           </v-card>
-          <v-btn color="info" @click.native="e1 = 1" flat><v-icon></v-icon>Back</v-btn>
-          <v-btn color="primary" @click.native="e1 = 3">Next</v-btn>
-          <!-- <v-btn flat>Skip</v-btn> -->
+          <!-- <v-btn color="info" @click.native="e1 = 4" flat><v-icon></v-icon>Back</v-btn> -->
+          <v-btn flat @click.native="e1 = 5" color="primary">Skip</v-btn>
+          <v-btn color="primary" @click.native="e1 = 5">Next</v-btn>
         </v-stepper-content>
-        <v-stepper-content step="3">
-          <v-card color="white lighten-3" class="mb-5" height="300px">
-            <v-card-text>Now that your account has been set up, you are ready to look for your friends using the app!
-              We will redicect you to the search page so that you can contact your friends. If you would like to have Fuiibi's icon on your
-              mobile, you should accept when it will be proposed to you, otherwise, just go to setting and check how to do it! Enjoy!
-            </v-card-text>
+
+        <v-stepper-content step="5" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
+          <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
+            <v-img width="160px" src="/src/components/img/toast.png" class="mb-5"/>
+            <v-card-text class="text-center headline">Well done! You are all set</v-card-text>
           </v-card>
-          <v-btn color="info" @click.native="e1 = 2" flat><v-icon></v-icon>Back</v-btn>
+          <v-btn color="primary" @click.native="e1 = 4" flat><v-icon></v-icon>Back</v-btn>
           <v-btn @click.native="addProfilePicture" color="primary" to="/friends" >Finish</v-btn>
         </v-stepper-content>
       </v-stepper-items>

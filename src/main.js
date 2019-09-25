@@ -8,7 +8,9 @@ import vuelogger from 'vue-logger'
 
 import App from './App'
 import router from './router'
-import { store } from './store'
+import {
+  store
+} from './store'
 import DateFilter from './filters/date'
 import AlertCmp from './components/shared/alert.vue'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
@@ -46,24 +48,26 @@ Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyACbBFnoaG5EVR7-IDGn8lsiTtPHxWQWB4'
 })
 
-Vue.use(Vuetify, { theme: {
-  primaryDark: '#F5F5F5',
-  primary: '#0E1E51',
-  primaryWhite: '#fff',
-  primaryLight: '#439889',
-  secondary: '#0E1E51',
-  secondaryDark: '#01021E',
-  accent: '#82B1FF',
-  error: '#FF5252',
-  info: '#2196F3',
-  success: '#4CAF50',
-  warning: '#FFC107',
-  grey: '#A8A8A8',
-  darkgray: '#424242',
-  orange: '#E65100',
-  white: '#FFFFFF',
-  lightGrey: '#C8C8C8'
-}})
+Vue.use(Vuetify, {
+  theme: {
+    primaryDark: '#F5F5F5',
+    primary: '#0E1E51',
+    primaryWhite: '#fff',
+    primaryLight: '#439889',
+    secondary: '#0E1E51',
+    secondaryDark: '#01021E',
+    accent: '#82B1FF',
+    error: '#FF5252',
+    info: '#2196F3',
+    success: '#4CAF50',
+    warning: '#FFC107',
+    grey: '#A8A8A8',
+    darkgray: '#424242',
+    orange: '#E65100',
+    white: '#FFFFFF',
+    lightGrey: '#C8C8C8'
+  }
+})
 
 Vue.filter('date', DateFilter)
 Vue.component('app-alert', AlertCmp)
@@ -81,26 +85,29 @@ new Vue({
   store,
   router,
   template: '<App/>',
-  components: { App },
-  created () {
+  components: {
+    App
+  },
+  // eslint-disable-next-line
+  created() {
     document.body.classList.add('appinitialized')
     window.firebase.initializeApp({
       apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
       authDomain: 'iwtapplication.firebaseapp.com',
       databaseURL: 'https://fuiibi.firebaseio.com',
-   // databaseURL: 'ws://localhost:5000',
+      // databaseURL: 'ws://localhost:5000',
       projectId: 'iwtapplication',
       messagingSenderId: '208715939086',
       storageBucket: 'gs://iwtapplication.appspot.com'
     })
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        window.firebase.messaging().useServiceWorker(registration)
-      })
-      .catch(function (err) {
-        console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
-      })
+        .then(registration => {
+          window.firebase.messaging().useServiceWorker(registration)
+        })
+        .catch(function (err) {
+          console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
+        })
     }
     this.$debug('we are here in vue')
     window.firebase.auth().onAuthStateChanged((user) => {
@@ -113,7 +120,7 @@ new Vue({
 
         this.$store.dispatch('checkUserFromGoogle', user)
       } else {
-     // this.$router.push('/')
+        // this.$router.push('/')
       }
     })
   }
