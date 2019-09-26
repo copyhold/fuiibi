@@ -120,18 +120,6 @@ export default {
       store.commit('setLoading', false)
       store.dispatch('setCurrentEvent', evid)
     },
-    uploadPictures: async function (store, {files}) {
-      const currentEvent = store.state.currentEvent
-      if (!currentEvent) {
-        return null
-      }
-      for (let file of files) {
-        const storedFile = await firebase.storage().ref(`events/${Math.round(Math.random() * 10000)}-${file.name}`).put(file)
-        const imageUrl = await storedFile.ref.getDownloadURL()
-        await firebase.database().ref(`/events/${currentEvent.id}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
-      }
-      store.dispatch('setCurrentEvent', currentEvent.id)
-    },
     addPicture ({commit, getters}, payload) {
       let image = payload.image
       let id = payload.key
@@ -175,14 +163,6 @@ export default {
         })
       })
     },
-    listenToEventPictures({commit, state}, evid) {
-      firebase.database().ref(`/events/${evid}/pictures`)
-      .on('child_added')
-      .then(data => { // new picture snapshot
-        const picture = data.val()
-      })
-      .catch(Vue.console.error) 
-    },
     reloadEvent({commit, ...store}, evid) {
       if (evid=='null') return
       const noti = store.rootGetters.notification(evid)
@@ -205,26 +185,6 @@ export default {
       ref.on('child_removed', snap => {
         commit('remove_event_from_collection', snap.val())
       })
-    },
-    listenToNotifications ({commit, getters, dispatch}) {
-      function updateNotifications(data) {
-        const evid = data.key
-        const notifData = data.val()
-        if (data.empty) return
-        const newNotif = {
-          key:          evid,
-          clickerName:  notifData.clickerName,
-          userId:       notifData.userId,
-          dateToRank:   notifData.dateToRank,
-          friendsCount: data.child('users').numChildren(),
-          event:        null
-        }
-        commit('updateNotifications', newNotif)
-        dispatch('reloadEvent', evid) // after reloadEvent notification object will be updated
-      }
-      const ref = firebase.database().ref(`users/${getters.user.id}/notifications/`).orderByChild('dateToRank')
-      ref.on('child_added', updateNotifications)
-      ref.on('child_changed', updateNotifications)
     },
 
     async iwtClicked ({commit, getters, dispatch}, evid) {
@@ -281,7 +241,14 @@ export default {
   getters: {
     myevents: state => state.myevents,
     events: state => state.events,
-    getCurrentEvent: state => state.currentEvent,
+    getCurrentEvent: state => {
+      if (state.currentEvent) {
+        return {
+          ...state.currentEvent,
+          pictures: Object.values(state.currentEvent.pictures).reverse()
+        }
+      }
+    },
     getEventData (state) {
       return (key) => {
         return state.events.find(event => event.key === key )

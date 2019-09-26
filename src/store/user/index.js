@@ -189,10 +189,7 @@ export default {
     },
 
     // ***************SINGIN********************
-    signInWithGoogle({
-      commit,
-      getters
-    }) {
+    signInWithGoogle({ commit, getters }) {
       Vue.console.log('[signInWithGoogle]');
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then(function (result) {
@@ -212,98 +209,88 @@ export default {
       });
     },
 
-    signUserIn({
-      commit,
-      dispatch
-    }, payload) {
+    signUserIn({ commit, dispatch }, payload) {
       commit('setLoading', true)
       commit('clearError')
       return firebase.auth()
-        .signInWithEmailAndPassword(payload.email, payload.password)
-        .then(user => {
-          dispatch('installApp')
-          const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
-          const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
-          const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
-          const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
-          const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
-          const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
-          const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
-          const userData = firebase.database().ref('users/' + user.uid).once('value')
-          Vue.console.debug('[signUserIn] userData', userData);
-          Vue.console.debug('[signUserIn] userData.firstName', userData.firstName);
+      .signInWithEmailAndPassword(payload.email, payload.password)
+      .then(user => {
+        dispatch('installApp')
+        const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
+        const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
+        const lastName = firebase.database().ref('users/' + user.uid + 'lastName').once('value')
+        const imageUrl = firebase.database().ref('users/' + user.uid + 'imageUrl').once('value')
+        const gender = firebase.database().ref('users/' + user.uid + 'gender').once('value')
+        const livingIn = firebase.database().ref('users/' + user.uid + 'livingIn').once('value')
+        const dateOfBirth = firebase.database().ref('users/' + user.uid + 'dateOfBirth').once('value')
+        const userData = firebase.database().ref('users/' + user.uid).once('value')
+        Vue.console.debug('[signUserIn] userData', userData);
+        Vue.console.debug('[signUserIn] userData.firstName', userData.firstName);
 
-          const newUser = {
-            id: user.uid,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            imageUrl: this.imageUrl,
-            email: this.email,
-            livingIn: this.livingIn,
-            gender: this.gender,
-            dateOfBirth: this.dateOfBirth,
-            friends: [],
-            events: []
-          }
-          commit('setUser', newUser)
-          return Promise.resolve(newUser)
-        })
-        .catch(error => {
-          commit('setError', error)
-          return Promise.reject(error)
-        })
-        .finally(() => {
-          commit('setLoading', false)
-        })
+        const newUser = {
+          id: user.uid,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          imageUrl: this.imageUrl,
+          email: this.email,
+          livingIn: this.livingIn,
+          gender: this.gender,
+          dateOfBirth: this.dateOfBirth,
+          friends: [],
+          events: []
+        }
+        commit('setUser', newUser)
+        return Promise.resolve(newUser)
+      })
+      .catch(error => {
+        commit('setError', error)
+        return Promise.reject(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
+      })
     },
-    reloadMyEvents({
-      commit,
-      state,
-      getters
-    }) {
+    reloadMyEvents({ commit, state, getters }) {
       if (!getters.user) return
       firebase.database().ref(`users/${getters.user.id}/userEvents`).once('value')
-        .then(snap => {
-          if (!snap.exists()) return
-          commit('setUser', {
-            ...getters.user,
-            userEvents: snap.val()
-          })
+      .then(snap => {
+        if (!snap.exists()) return
+        commit('setUser', {
+          ...getters.user,
+          userEvents: snap.val()
         })
-        .catch(this.$debug)
+      })
+      .catch(this.$debug)
     },
-    checkUserFromGoogle({
-      commit,
-      dispatch
-    }, payload) {
+    checkUserFromGoogle({ commit, dispatch }, payload) {
       Vue.console.log('[checkUserFromGoogle] payload')
       firebase.database().ref('users/' + payload.uid).once('value')
-        .then(user => {
-          dispatch('installApp')
-          Vue.console.log('[checkUserFromGoogle] user');
-          let userData = user.val()
-          if (userData === null) {
-            Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
-            dispatch('createUserFromGoogle', payload)
-          } else {
-            const friends = {}
-            for (let friendid of Object.values(userData.friends || {})) {
-              friends[friendid] = friendid
-            }
-            commit('setUser', {
-              ...userData,
-              photoUrl: userData.imageURL,
-              friends
-            })
-            Vue.console.log('[checkUserFromGoogle] this user is NOT new')
-            const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
-            dispatch('loadPersons', Array.from(ids))
-            dispatch('setupMessagingAndToken')
-            dispatch('listenToMyFeed')
-            dispatch('listenToProfileUpdate')
-            dispatch('listenToEvents')
+      .then(user => {
+        dispatch('installApp')
+        Vue.console.log('[checkUserFromGoogle] user');
+        let userData = user.val()
+        if (userData === null) {
+          Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
+          dispatch('createUserFromGoogle', payload)
+        } else {
+          const friends = {}
+          for (let friendid of Object.values(userData.friends || {})) {
+            friends[friendid] = friendid
           }
-        })
+          commit('setUser', {
+            ...userData,
+            photoUrl: userData.imageURL,
+            friends
+          })
+          Vue.console.log('[checkUserFromGoogle] this user is NOT new')
+          const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
+          dispatch('loadPersons', Array.from(ids))
+          dispatch('setupMessagingAndToken')
+          dispatch('listenToMyFeed')
+          dispatch('listenToProfileUpdate')
+          dispatch('listenToEvents')
+        }
+      })
     },
     async createUserFromGoogle ({commit,dispatch}, payload) {
       Vue.console.log('let create a user from google', payload);
@@ -314,7 +301,6 @@ export default {
         email: payload.email,
         firstName: firstName,
         lastName: lastName.join(' '),
-        notifications: [],
         events: [],
         friends: [],
         pendingFriends: {},
@@ -322,24 +308,9 @@ export default {
         imageUrl: payload.photoURL
       }
       Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
-      commit('setUser', newUser)
-      // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-      await firebase.database().ref('users/' + payload.uid).set(newUser)
-      commit('setLoading', false)
-      dispatch('installApp')
-      dispatch('iwtClicked', 'defaultevent')
-      if (localStorage.return_to_event) {
-        router.push(`/events/${localStorage.return_to_event}`)
-        localStorage.removeItem('return_to_event')
-      } else {
-        router.push('/welcome')
-      }
+      return await dispatch('newUserCreated', newUser)
     },
-    async signUserUp({
-      commit,
-      dispatch
-    }, payload) {
-      //As we are doing a request to the web, we change the status of loading to true.
+    async signUserUp({ commit, dispatch }, payload) { // this creates the user from sign up form
       commit('setLoading', true)
       commit('clearError')
       try {
@@ -349,29 +320,38 @@ export default {
           email: payload.email,
           firstName: payload.firstName,
           lastName: payload.lastName,
-          notifications: [],
           events: [],
           friends: [],
-          //*********************************************************
+          pendingFriends: {},
+          pendingInvitations: {},
           imageUrl: 'https://firebasestorage.googleapis.com/v0/b/iwtapplication.appspot.com/o/default_avatar.png?alt=media&token=245e435c-c87b-4af3-8688-a6469500b7de'
         }
         // Here below I create the user in the database of Firebase, not only Firebase's authentification as above
-        const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
-        dispatch('installApp')
-        commit('setUser', newUser)
-        dispatch('iwtClicked','defaultevent')
-        commit('setLoading', false)
-        if (localStorage.return_to_event) {
-          router.push(`/events/${localStorage.return_to_event}`)
-          localStorage.removeItem('return_to_event')
-        } else {
-          router.push('/welcome')
-        }
+        return await dispatch('newUserCreated', newUser)
       } catch (error) {
         commit('setLoading', false)
         commit('setError', error)
         Vue.console.log(error);
+        return Promise.reject()
       }
+    },
+    async newUserCreated ({commit, dispatch}, newUser) {
+      const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
+      commit('setUser', newUser)
+      commit('setLoading', false)
+      await dispatch('listenToMyFeed')
+      await dispatch('listenToProfileUpdate')
+      await dispatch('listenToEvents')
+      await dispatch('installApp')
+      await dispatch('iwtClicked', 'defaultevent')
+      if (localStorage.return_to_event) {
+        await dispatch('iwtClicked',localStorage.return_to_event)
+        router.push(`/events/${localStorage.return_to_event}`)
+        localStorage.removeItem('return_to_event')
+      } else {
+        router.push('/welcome')
+      }
+      return Promise.resolve()
     },
 
     //*****************************************************
@@ -510,29 +490,19 @@ export default {
           commit('setLoading', false)
         })
     },
-    listenToMyFeed({
-      commit,
-      getters,
-      state
-    }) {
+    listenToMyFeed({ commit, getters, state }) {
       return firebase.firestore().collection(`/notifications/${getters.user.id}/list`)
-        .orderBy('d', 'desc').limit(10)
-        .onSnapshot(snap => {
-          if (snap.empty) return;
-          this.lastNotiSnap = snap
-          snap.docChanges().forEach(change => {
-            commit('AddNewNotification', change.doc.data())
-          })
+      .orderBy('d', 'desc').limit(10)
+      .onSnapshot(snap => {
+        if (snap.empty) return;
+        this.lastNotiSnap = snap
+        snap.docChanges().forEach(change => {
+          commit('AddNewNotification', change.doc.data())
         })
+      })
     },
-    listenToProfileUpdate({
-      commit,
-      dispatch,
-      getters,
-      state
-    }) {
+    listenToProfileUpdate({ commit, dispatch, getters, state }) {
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
-        dispatch('userObjectChanged', child_snap.key, child_snap.val())
         Vue.console.log('[listenToProfileUpdate] ', child_snap.val(), child_snap.key)
         const copy = {
           ...state.user
@@ -545,67 +515,51 @@ export default {
       })
     },
 
-    updateProfile({
-      commit,
-      getters
-    }, payload) {
+    updateProfile({ commit, getters }, payload) {
       let imageUrl
       if (payload.image) {
-        firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
-          .then(fileData => {
-            this.imageUrl = fileData.metadata.downloadURLs[0]
-            firebase.database().ref('users/' + payload.id).update({
-              imageUrl: this.imageUrl
+        return firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
+        .then(fileData => {
+          this.imageUrl = fileData.metadata.downloadURLs[0]
+          Vue.console.log('imageUrl', this.imageUrl);
+          commit('updateProfile', {
+            payload: payload,
+            imageUrl: this.imageUrl
+          })
+          return firebase.database().ref('users/' + payload.id).update({
+            imageUrl: this.imageUrl
+          })
+        })
+        .then(_ => {
+          return firebase.database().ref('users/' + payload.id).update({
+              dateOfBirth: payload.dateOfBirth,
+              livingIn: payload.livingIn,
+              gender: payload.gender,
+              email: payload.email,
+              firstName: payload.firstName,
+              lastName: payload.lastName
             })
-            Vue.console.log('imageUrl', this.imageUrl);
-          })
-          .then(_ => {
-            firebase.database().ref('users/' + payload.id).update({
-                dateOfBirth: payload.dateOfBirth,
-                livingIn: payload.livingIn,
-                gender: payload.gender,
-                email: payload.email,
-                firstName: payload.firstName,
-                lastName: payload.lastName
-              })
-              .then(_ => {
-                commit('updateProfile', {
-                  payload: payload,
-                  imageUrl: this.imageUrl
-                })
-              })
-          })
+        })
+        .catch(console.error)
       } else {
-        firebase.database().ref('users/' + payload.id).update({
-            dateOfBirth: payload.dateOfBirth,
-            livingIn: payload.livingIn,
-            gender: payload.gender,
-            email: payload.email,
-            firstName: payload.firstName,
-            lastName: payload.lastName
-          })
-          .then(_ => {
-            commit('updateProfile', {
-              payload: payload
-            })
-          })
+        commit('updateProfile', { payload: payload })
+        return firebase.database().ref('users/' + payload.id).update({
+          dateOfBirth: payload.dateOfBirth,
+          livingIn: payload.livingIn,
+          gender: payload.gender,
+          email: payload.email,
+          firstName: payload.firstName,
+          lastName: payload.lastName
+        })
       }
-
     },
 
     // ************** FRIENDSACTIONS****************
-    cancelInvitation({
-      commit,
-      getters
-    }, fid) {
+    cancelInvitation({ commit, getters }, fid) {
       commit('cancelInvitation', fid)
       firebase.database().ref(`/users/${getters.user.id}/pendingInvitations/${fid}`).remove()
     },
-    sendFriendRequest({
-      commit,
-      dispatch,
-      getters
-    }, payload) {
+    sendFriendRequest({ commit, dispatch, getters }, payload) {
       commit('setLoading', true)
       const friendId = payload
       const userId = getters.user.id
@@ -629,10 +583,7 @@ export default {
         .catch(Vue.console.error)
     },
 
-    acceptFriendRequest({
-      commit,
-      getters
-    }, fid) {
+    acceptFriendRequest({ commit, getters }, fid) {
       // Vue.console.log('[acceptFriendRequest] payload', payload);
       const user = getters.user
       commit('setLoading', true)
@@ -657,20 +608,14 @@ export default {
         })
     },
 
-    removeFriend({
-      commit,
-      getters
-    }, payload) {
+    removeFriend({ commit, getters }, payload) {
       const friendId = payload.id
       const user = getters.user
       Vue.console.debug('[removeFriend] payload', payload);
       firebase.database().ref('/users/' + user.id + '/friends').child(friendId).remove()
       commit('removeFriendFromUser', friendId)
     },
-    refuseFriend({
-      commit,
-      getters
-    }, payload) {
+    refuseFriend({ commit, getters }, payload) {
       const friendId = payload.id
       const user = getters.user
       Vue.console.log('[refuseFriend] payload', payload);

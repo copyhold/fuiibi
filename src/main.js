@@ -102,12 +102,12 @@ new Vue({
     })
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
-        .then(registration => {
-          window.firebase.messaging().useServiceWorker(registration)
-        })
-        .catch(function (err) {
-          console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
-        })
+      .then(registration => {
+        window.firebase.messaging().useServiceWorker(registration)
+      })
+      .catch(function (err) {
+        console.error('ERROR WHILE REGISTERING SERVICE WORKER', err)
+      })
     }
     this.$debug('we are here in vue')
     window.firebase.auth().onAuthStateChanged((user) => {

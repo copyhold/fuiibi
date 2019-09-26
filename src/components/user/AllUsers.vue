@@ -2,8 +2,11 @@
   <v-container>
     <v-list subheader>
       <v-subheader>
-        <v-text-field hide-details placeholder="Search for Fuiibi users" :change="loading=false" single-line v-model="search" full-width />
-        <v-btn @click="searchUsers" flat :disabled="loading"><v-icon>search</v-icon></v-btn>
+        <v-text-field hide-details placeholder="Search for Fuiibi users" single-line v-model="search" full-width />
+        <v-btn @click="searchUsers" flat :disabled="loading">
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="20" v-if="loading"></v-progress-circular>
+          <v-icon v-if="!loading">search</v-icon>
+        </v-btn>
       </v-subheader>
       <user-card v-for="user in users" :user="user" :key="user.id" />
     </v-list>

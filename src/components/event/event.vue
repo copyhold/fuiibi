@@ -71,20 +71,12 @@
     <v-layout class="mt-2">
       <v-container fluid grid-list-sm>
         <v-layout row wrap class="gallery">
+          <v-flex v-if="loading">
+            <v-progress-circular indeterminate color="grey"></v-progress-circular>
+          </v-flex>
           <v-flex xs4 sm3 md2 v-for="pic,j in event.pictures" :key="pic.id">
-            <v-card flat tile class="">
-              <!-- <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'"/> -->
-               <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'">
-                <template v-slot:placeholder>
-                  <v-layout row
-                    class="fill-height ma-0"
-                    align="center"
-                    justify="center"
-                  >
-                    <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                  </v-layout row>
-                </template>
-               </v-img>  
+            <v-card flat tile>
+             <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'"/>
             </v-card>
           </v-flex>
         </v-layout>

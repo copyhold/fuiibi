@@ -112,8 +112,6 @@
     },
     methods: {
       onSignup () {
-        // Vuex
-        // this.$store.dispatch('signUserUp', {firstName: this.firstName, email: this.email, password: this.password, image: this.image})
         this.$store.dispatch('signUserUp', {firstName: this.firstName, lastName: this.lastName, email: this.email, password: this.password})
       },
       onDismissed () {
