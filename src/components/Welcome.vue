@@ -138,6 +138,7 @@
       },
       addProfilePicture () {
         this.$store.dispatch('addProfilePicture', {image: this.image})
+        this.$store.dispatch('updateUser', {isNew: false})
       },
 
       onPickFile () {

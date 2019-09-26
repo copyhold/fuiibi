@@ -160,11 +160,6 @@ export default {
     }
   },
   watch: {
-    user (value) {
-      if (value !== null && value !== undefined) {
-        this.$router.push('/notifications')
-      }
-    },
     signUpForm (value) {
       if (value === true) document.body.classList.add('popup-show')
       else document.body.classList.remove('popup-show')

@@ -262,35 +262,45 @@ export default {
       })
       .catch(this.$debug)
     },
-    checkUserFromGoogle({ commit, dispatch }, payload) {
-      Vue.console.log('[checkUserFromGoogle] payload')
-      firebase.database().ref('users/' + payload.uid).once('value')
-      .then(user => {
-        dispatch('installApp')
-        Vue.console.log('[checkUserFromGoogle] user');
-        let userData = user.val()
-        if (userData === null) {
+    async checkUserFromGoogle ({ commit, dispatch }, payload) {
+      Vue.console.log('[checkUserFromGoogle]', payload)
+      const user = await firebase.database().ref('users/' + payload.uid).once('value')
+      dispatch('installApp')
+      let userData = user.val()
+      if (userData === null) { // I just signed up using oauth
+        if (payload.providerData[0].providerId !== 'password') {
           Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
-          dispatch('createUserFromGoogle', payload)
-        } else {
-          const friends = {}
-          for (let friendid of Object.values(userData.friends || {})) {
-            friends[friendid] = friendid
-          }
-          commit('setUser', {
-            ...userData,
-            photoUrl: userData.imageURL,
-            friends
-          })
-          Vue.console.log('[checkUserFromGoogle] this user is NOT new')
-          const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
-          dispatch('loadPersons', Array.from(ids))
-          dispatch('setupMessagingAndToken')
-          dispatch('listenToMyFeed')
-          dispatch('listenToProfileUpdate')
-          dispatch('listenToEvents')
+          await dispatch('createUserFromGoogle', payload)
         }
-      })
+      } else {
+        const friends = {}
+        for (let friendid of Object.values(userData.friends || {})) {
+          friends[friendid] = friendid
+        }
+        commit('setUser', {
+          ...userData,
+          photoUrl: userData.imageURL,
+          friends
+        })
+        Vue.console.log('[checkUserFromGoogle] this user is NOT new')
+        const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
+        dispatch('loadPersons', Array.from(ids))
+        dispatch('setupMessagingAndToken')
+      }
+      dispatch('listenToMyFeed')
+      dispatch('listenToProfileUpdate')
+      dispatch('listenToEvents')
+      if (localStorage.return_to_event) {
+        await dispatch('iwtClicked',localStorage.return_to_event)
+        router.push(`/events/${localStorage.return_to_event}`)
+        localStorage.removeItem('return_to_event')
+      } else {
+        if (userData.isNew) {
+          router.push('/welcome')
+        } else {
+          router.push('/notificatins')
+        }
+      }
     },
     async createUserFromGoogle ({commit,dispatch}, payload) {
       Vue.console.log('let create a user from google', payload);
@@ -339,9 +349,6 @@ export default {
       const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
       commit('setUser', newUser)
       commit('setLoading', false)
-      await dispatch('listenToMyFeed')
-      await dispatch('listenToProfileUpdate')
-      await dispatch('listenToEvents')
       await dispatch('installApp')
       await dispatch('iwtClicked', 'defaultevent')
       if (localStorage.return_to_event) {
