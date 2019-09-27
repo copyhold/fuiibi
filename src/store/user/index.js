@@ -1,9 +1,11 @@
 import Vue from 'vue'
-import router from './../../router'
 const firebase = window.firebase
 /* eslint-disable */
 export default {
   state: {
+    creatingFromEmail: false,
+    listeningToProfile: false,
+    listeningToFeed: false,
     user: null,
     users: [],
     feed: [],
@@ -262,16 +264,13 @@ export default {
       })
       .catch(this.$debug)
     },
-    async checkUserFromGoogle ({ commit, dispatch }, payload) {
+    async checkUserFromGoogle ({ commit, dispatch, state }, payload) {
       Vue.console.log('[checkUserFromGoogle]', payload)
       const user = await firebase.database().ref('users/' + payload.uid).once('value')
       dispatch('installApp')
       let userData = user.val()
       if (userData === null) { // I just signed up using oauth
-        if (payload.providerData[0].providerId !== 'password') {
-          Vue.console.log('[checkUserFromGoogle] this user is new => userData === null', userData)
-          await dispatch('createUserFromGoogle', payload)
-        }
+        return
       } else {
         const friends = {}
         for (let friendid of Object.values(userData.friends || {})) {
@@ -286,20 +285,9 @@ export default {
         const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
         dispatch('loadPersons', Array.from(ids))
         dispatch('setupMessagingAndToken')
-      }
-      dispatch('listenToMyFeed')
-      dispatch('listenToProfileUpdate')
-      dispatch('listenToEvents')
-      if (localStorage.return_to_event) {
-        await dispatch('iwtClicked',localStorage.return_to_event)
-        router.push(`/events/${localStorage.return_to_event}`)
-        localStorage.removeItem('return_to_event')
-      } else {
-        if (userData.isNew) {
-          router.push('/welcome')
-        } else {
-          router.push('/notificatins')
-        }
+        dispatch('listenToMyFeed')
+        dispatch('listenToProfileUpdate')
+        dispatch('listenToEvents')
       }
     },
     async createUserFromGoogle ({commit,dispatch}, payload) {
@@ -320,9 +308,10 @@ export default {
       Vue.console.log('[signUserUpWithGoogle] setUser - newUser', newUser);
       return await dispatch('newUserCreated', newUser)
     },
-    async signUserUp({ commit, dispatch }, payload) { // this creates the user from sign up form
+    async signUserUp({ commit, dispatch,state }, payload) { // this creates the user from sign up form
       commit('setLoading', true)
       commit('clearError')
+      state.creatingFromEmail = true
       try {
         const user = await firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
         const newUser = {
@@ -347,25 +336,27 @@ export default {
     },
     async newUserCreated ({commit, dispatch}, newUser) {
       const usersnap = await firebase.database().ref(`users/${newUser.id}`).set(newUser)
+      this.creatingFromEmail = false
       commit('setUser', newUser)
       commit('setLoading', false)
-      await dispatch('installApp')
-      await dispatch('iwtClicked', 'defaultevent')
-      if (localStorage.return_to_event) {
-        await dispatch('iwtClicked',localStorage.return_to_event)
-        router.push(`/events/${localStorage.return_to_event}`)
+      dispatch('installApp')
+      dispatch('iwtClicked', 'defaultevent')
+      dispatch('listenToMyFeed')
+      dispatch('listenToProfileUpdate')
+      dispatch('listenToEvents')
+      const {return_to_event} = localStorage
+      if (return_to_event) {
         localStorage.removeItem('return_to_event')
+        await dispatch('iwtClicked',return_to_event)
+        location.pathname = `/events/${return_to_event}`
       } else {
-        router.push('/welcome')
+        location.pathname = '/welcome'
       }
       return Promise.resolve()
     },
 
     //*****************************************************
-    addProfilePicture({
-      commit,
-      getters
-    }, payload) {
+    addProfilePicture({ commit, getters }, payload) {
       if (payload.image != "") {
         commit('setLoading', true)
         let user = getters.user
@@ -377,30 +368,31 @@ export default {
         // const ext = filename.slice(filename.lastIndexOf('.'))
         const ext = 'png'
         return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
-          .then(fileData => {
-            imageUrl = fileData.metadata.downloadURLs[0]
-            // to reach the specific item under the user id in the users array:
-            // I can change any value with the update as below
-            return firebase.database().ref('users').child(user.id).update({
-              imageUrl: imageUrl
-            })
-          }).then(() => {
-            // here we commit that to my local store
-            Vue.console.log('setUser dans addProfilePicture');
-            commit('setLoading', false)
-            commit('addProfilePicture', {
-              imageUrl: imageUrl,
-              user: user
-            })
+        .then(fileData => {
+          imageUrl = fileData.metadata.downloadURLs[0]
+          // to reach the specific item under the user id in the users array:
+          // I can change any value with the update as below
+          return firebase.database().ref('users').child(user.id).update({
+            imageUrl: imageUrl
           })
-          .catch(
-            error => {
-              //Here we got an error, so we are not loading anymore and we change the status of setLoading
-              commit('setLoading', false)
-              commit('setError', error)
-              Vue.console.log(error);
-            }
-          )
+        })
+        .then(() => {
+          // here we commit that to my local store
+          Vue.console.log('setUser dans addProfilePicture');
+          commit('setLoading', false)
+          commit('addProfilePicture', {
+            imageUrl: imageUrl,
+            user: user
+          })
+        })
+        .catch(
+          error => {
+            //Here we got an error, so we are not loading anymore and we change the status of setLoading
+            commit('setLoading', false)
+            commit('setError', error)
+            Vue.console.log(error);
+          }
+        )
       } else {
         commit('setLoading', false)
       }
@@ -498,6 +490,8 @@ export default {
         })
     },
     listenToMyFeed({ commit, getters, state }) {
+      if (state.listeningToFeed) return
+      state.listeningToFeed = true
       return firebase.firestore().collection(`/notifications/${getters.user.id}/list`)
       .orderBy('d', 'desc').limit(10)
       .onSnapshot(snap => {
@@ -509,6 +503,8 @@ export default {
       })
     },
     listenToProfileUpdate({ commit, dispatch, getters, state }) {
+      if (state.listeningToProfile) return
+      state.listeningToProfile = true
       firebase.database().ref('users/' + getters.user.id).on('child_changed', (child_snap, prevChildKey) => {
         Vue.console.log('[listenToProfileUpdate] ', child_snap.val(), child_snap.key)
         const copy = {

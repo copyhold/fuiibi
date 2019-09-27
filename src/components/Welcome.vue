@@ -76,7 +76,7 @@
             <v-card-text class="text-center headline">Well done! You are all set</v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 4" flat><v-icon></v-icon>Back</v-btn>
-          <v-btn @click.native="addProfilePicture" color="primary" to="/friends" >Finish</v-btn>
+          <v-btn @click.native="addProfilePicture" color="primary" to="/notifications" >Finish</v-btn>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>

@@ -6,6 +6,7 @@ import router from './../../router'
 const firebase = global.firebase
 export default {
   state: {
+    listeningToEvents: false,
     loadedNotifications: [],
     currentEvent: null,
     myevents: [],
@@ -174,7 +175,9 @@ export default {
       })
       .catch(Vue.console.error)
     },
-    listenToEvents ({commit, getters, dispatch}) {
+    listenToEvents ({commit, getters, dispatch, state}) {
+      if (state.listeningToEvents) return
+      state.listeningToEvents = true
       const ref = firebase.database().ref(`users/${getters.user.id}/userEvents/`)
       ref.on('child_added', async snap => {
         const eventSnap = await firebase.database().ref(`events/${snap.val()}`).once('value')
