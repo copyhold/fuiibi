@@ -319,7 +319,7 @@ export default {
         this.$store.dispatch('iwtClicked', this.event.id)
         .then(() => {
           this.$store.dispatch('setCurrentEvent', this.$route.params.id)
-          this.$store.dispatch('reloadMyEvents')
+          this.$store.dispatch('reloadMyEvents') // this call probably not needed
         })
       } else {
         localStorage.return_to_event = this.event.id

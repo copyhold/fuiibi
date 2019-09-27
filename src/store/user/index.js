@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import router from './../../router'
 const firebase = window.firebase
 /* eslint-disable */
 export default {
@@ -184,6 +185,18 @@ export default {
     }
   },
   actions: {
+    reloadMyEvents({ commit, state, getters }) {
+      if (!getters.user) return
+      firebase.database().ref(`users/${getters.user.id}/userEvents`).once('value')
+      .then(snap => {
+        if (!snap.exists()) return
+        commit('setUser', {
+          ...getters.user,
+          userEvents: snap.val()
+        })
+      })
+      .catch(this.$debug)
+    },
     installApp() {
       if (window.installPromptEvent) {
         window.installPromptEvent.prompt()
@@ -217,6 +230,7 @@ export default {
       return firebase.auth()
       .signInWithEmailAndPassword(payload.email, payload.password)
       .then(user => {
+        return Promise.resolve()
         dispatch('installApp')
         const firstName = firebase.database().ref('users/' + user.uid + 'firstName').once('value')
         const email = firebase.database().ref('users/' + user.uid + 'email').once('value')
@@ -242,6 +256,7 @@ export default {
           events: []
         }
         commit('setUser', newUser)
+        this.$router.push('/notifications')
         return Promise.resolve(newUser)
       })
       .catch(error => {
@@ -251,18 +266,6 @@ export default {
       .finally(() => {
         commit('setLoading', false)
       })
-    },
-    reloadMyEvents({ commit, state, getters }) {
-      if (!getters.user) return
-      firebase.database().ref(`users/${getters.user.id}/userEvents`).once('value')
-      .then(snap => {
-        if (!snap.exists()) return
-        commit('setUser', {
-          ...getters.user,
-          userEvents: snap.val()
-        })
-      })
-      .catch(this.$debug)
     },
     async checkUserFromGoogle ({ commit, dispatch, state }, payload) {
       Vue.console.log('[checkUserFromGoogle]', payload)
@@ -283,11 +286,15 @@ export default {
         })
         Vue.console.log('[checkUserFromGoogle] this user is NOT new')
         const ids = new Set([...Object.keys(userData.pendingFriends || {}), ...Object.keys(userData.pendingInvitations || {}), ...Object.values(friends || {})])
-        dispatch('loadPersons', Array.from(ids))
-        dispatch('setupMessagingAndToken')
-        dispatch('listenToMyFeed')
-        dispatch('listenToProfileUpdate')
-        dispatch('listenToEvents')
+        await dispatch('loadPersons', Array.from(ids))
+        await dispatch('setupMessagingAndToken')
+        await dispatch('listenToMyFeed')
+        await dispatch('listenToProfileUpdate')
+        await dispatch('listenToEvents')
+        if (location.pathname==='/') {
+          router.push('/notifications')
+        }
+        return Promise.resolve()
       }
     },
     async createUserFromGoogle ({commit,dispatch}, payload) {
