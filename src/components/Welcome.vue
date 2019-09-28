@@ -31,6 +31,7 @@
           <v-btn color="primary" @click.native="e1 = 3">Next</v-btn>
         </v-stepper-content>
 
+
         <v-stepper-content step="3" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
             <v-img width="160px" src="/src/components/img/sharing.png" class="mb-5"/>
@@ -138,6 +139,88 @@
       },
       addProfilePicture () {
         this.$store.dispatch('addProfilePicture', {image: this.image})
+        var date = new Date()
+        var fbKey = 'welcomeEvent'
+        var key = 'welcomeEvent'
+        var event = {
+          imageUrl: 'https://firebasestorage.googleapis.com/v0/b/fuiibidatabasedevelopement.appspot.com/o/homero-con-iphoneLight.jpg?alt=media&token=7a4382b4-dafd-4d9b-bb56-6354bdef7ef7',
+          title: 'Your subscribtion',
+          description: 'Congratulations for your first event! This event has been created automatically and will be deleted at your next login. But go and open your fist personal event and it will be automatically shared with all your friends.',
+          friendsCount: 1,
+          creationDate: Date(),
+          location: {
+            administrative_area_level_1: 'Somewhere',
+            country: 'Planet earth',
+            latitude: 1,
+            longitude: 1,
+            locality: 'Home',
+            postal_code: '4747',
+            street_number: '47'
+          },
+          date: date.toISOString(),
+          duration: '2 minutes',
+          creatorId: this.$store.getters.user.id,
+          dateToRank: -Date.now()
+        }
+        var clickerName = 'Fuiibi team'
+
+        const newNotif = {
+          event: event,
+          key: key,
+          clickerName: clickerName,
+          dateToRank: event.dateToRank,
+          friendsCount: 1
+        }
+        const newEvent = {
+          event: event,
+          key: key,
+          fbKey: fbKey
+        }
+        if (localStorage.getItem('eventToOpen') === null) {
+          this.$store.commit('addEventToMyEvents', newEvent)
+          this.$store.commit('addNotification', newNotif)
+          this.$store.commit('addEvent', newEvent)
+        } else {
+          console.log('in Local storage!!!!')
+          if (this.$store.getters.user) {
+            this.$store.dispatch('iwtClicked', this.event.id)
+            .then(() => {
+              this.$store.dispatch('setCurrentEvent', this.$route.params.id)
+              this.$store.dispatch('reloadMyEvents')
+            })
+          } else {
+            console.log('no user registered??????????')
+          }
+        }
+        // this.$store.commit('addEventToMyEvents', newEvent)
+        // this.$store.commit('addNotification', newNotif)
+        // this.$store.commit('addEvent', newEvent)
+
+        var deferredPrompt
+        console.log('[addProfilePicture] dans welcome, b4 window.addEventListener(beforeinstallprompt, function (event)')
+        window.addEventListener('beforeinstallprompt', function (event) {
+          console.log('beforeinstallprompt fired')
+          event.preventDefault()
+          deferredPrompt = event
+          // return false
+          // Update UI notify the user they can add to home screen
+          // btnAdd.style.display = 'block'
+        })
+        if (deferredPrompt) {
+          deferredPrompt.prompt()
+          deferredPrompt.userChoice.then(function (choiceResult) {
+            console.log(choiceResult.outcome)
+
+            if (choiceResult.outcome === 'dismissed') {
+              console.log('User cancelled installation')
+            } else {
+              console.log('User added to home screen')
+            }
+          })
+          deferredPrompt = null
+        } else {
+          console.log('NO deferredPrompt')
+        }
       },
 
       onPickFile () {
