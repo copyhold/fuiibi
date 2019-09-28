@@ -94,7 +94,9 @@
                   v-on:placechanged="getAddressData"
                   v-on:inputChange="updateWhereFromInput"
                   v-model="where"
-                  class="vueGoogleInput"></vue-google-autocomplete>
+                  types=''
+                  class="vueGoogleInput">
+                </vue-google-autocomplete>
               </v-flex>
           </v-layout>
 

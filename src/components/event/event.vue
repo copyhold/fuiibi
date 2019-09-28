@@ -108,39 +108,70 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showUsers" max-width="96%" v-if="eventUsers()">
+    <v-dialog v-model="showUsers" v-if="eventUsers()">
       <v-list subheader>
           <template v-for="user in eventUsers()">
-            <v-divider></v-divider>
+            
             <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user && user.id != loggedInUserId">
+              
               <v-list-tile-avatar class="avatarImg">
                 <img :src="user.imageUrl"/>
               </v-list-tile-avatar>
-              <v-list-tile-content v-if="loggedInUserId">
-                <v-list-tile-content  @click="getUserPage(user)" >
-                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-                </v-list-tile-content>
+
+              <v-list-tile-content v-if="loggedInUserId" class="space60percent">
+                  <v-list-tile-title @click="getUserPage(user)"  v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
               </v-list-tile-content>
-              <v-list-tile-content v-else>
-                <v-list-tile-content>
+              
+              <v-list-tile-content v-else class="space60percent">
                   <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+              </v-list-tile-content>
+
+              <v-list-tile-content v-if="loggedInUserId" align-content-end left>
+                <v-btn v-if="hasPendingInvitation(user) || isPendingFriend(user)" small class="greyColors" absolute flat right>Pending...</v-btn>
+                <v-list-tile-content v-else>
+                    <v-icon class="primary--text" v-if="!isFriend(user)" @click="sendFriendRequest(user.id)">mdi-account-plus</v-icon>
+                    <v-icon v-else color="green darken-2">mdi-account-check</v-icon>
                 </v-list-tile-content>
               </v-list-tile-content>
 
-              <v-list-tile-content v-if="loggedInUserId">
-                <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                    <v-btn small class="greyColors" flat left>Pending...</v-btn>
-                </v-list-tile-action>
-                <v-list-tile-action v-else>
-                  <v-list-tile-action v-if="!isFriend(user)">
-                    <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
-                  </v-list-tile-action>
-                  <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
-                </v-list-tile-action>
-              </v-list-tile-content>
              </v-list-tile>
+            <v-divider></v-divider>
           </template>
         </v-list>
+
+         <!-- <v-list>
+              <v-list-item
+                v-for="user in eventUsers()"
+                v-bind:key="user.id"
+                v-if="!loading && user && user.id != loggedInUserId"
+              >
+                <v-list-item-avatar class="avatarImg">
+                  <img :src="user.imageUrl"/>
+                </v-list-item-avatar>
+                
+                <v-list-item-content v-if="loggedInUserId" @click="getUserPage(user)">
+                  <v-list-item-title v-html="user.firstName + ' ' + user.lastName"></v-list-item-title>
+                </v-list-item-content>
+
+                <v-list-item-content v-else>
+                  <v-list-item-title v-html="user.firstName + ' ' + user.lastName"></v-list-item-title>
+                </v-list-item-content>
+
+                <v-list-item-icon v-if="loggedInUserId">
+                  <v-list-item-icon v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                    <v-btn small class="greyColors" flat left>Pending...</v-btn>
+                  </v-list-item-icon>
+                  <v-list-item-icon v-else>
+                    <v-btn v-if="!isFriend(user)" @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1">
+                      <v-icon class="pl-4">mdi-account-plus</v-icon>
+                    </v-btn>
+                    <v-btn v-else flat small class="primary--text pl-3 pr-1">
+                      <v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon>
+                    </v-btn>
+                  </v-list-item-icon>
+                </v-list-item-icon>
+              </v-list-item>
+            </v-list> -->
       </v-dialog>
 
   </v-container>
@@ -458,6 +489,9 @@ export default {
     /* right: 0px; */
     z-index: 1;
   }
+  .space60percent {
+    width: 90%
+  }
   .rotateLeftIcon {
     margin-top: 0 !important;
   }
@@ -532,26 +566,17 @@ export default {
     background: url("../img/iwtChecked.png") left/80% no-repeat;
   }
   @media screen and (max-width: 1263px) {
-    span.vuBadge {
-      bottom: 100px;
-      right: 82px;
-      position: absolute;
-    }
     .carousel {
       min-height: 100%;
       width: 100vw;
     }
   }
-  @media screen and (max-width: 960px) {
-    span.vuBadge {
-      bottom: 100px;
-      right: 82px;
-      position: absolute;
-    }
-  }
   @media screen and (max-width: 600px) {
     .container {
       padding: 0;
+    }
+    .space60percent {
+      width: 70%
     }
     .arrowBack {
       position: fixed;

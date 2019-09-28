@@ -12,14 +12,13 @@
               <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn-toggle>
-                <v-btn icon flat color="" @click="$store.dispatch('acceptFriendRequest', user.id)">
-                  <v-icon>add</v-icon>
+                <v-btn icon flat>
+                  <v-icon class="mr-2" color="primary" @click="$store.dispatch('acceptFriendRequest', user.id)">mdi-account-plus</v-icon>
+                  <v-icon class="mr-2" color="red" @click="$store.dispatch('refuseFriend', user.id)">mdi-delete</v-icon>
                 </v-btn>
-                <v-btn icon flat color="" @click="$store.dispatch('refuseFriend', user.id)">
-                  <v-icon>clear</v-icon>
-                </v-btn>
-              </v-btn-toggle>
+                <!-- <v-btn icon flat color="" @click="$store.dispatch('refuseFriend', user.id)">
+                  <v-icon color="red">mdi-delete</v-icon>
+                </v-btn> -->
             </v-list-tile-action>
         </v-list-tile>
       </template>
@@ -36,8 +35,8 @@
             <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
           </v-list-tile-content>
           <v-list-tile-action>
-            <v-btn icon flat color="" @click="$store.dispatch('cancelInvitation', user.id)">
-              <v-icon>cancel_presentation</v-icon>
+            <v-btn icon flat @click="$store.dispatch('cancelInvitation', user.id)">
+              <v-icon color="red">mdi-delete</v-icon>
             </v-btn>
           </v-list-tile-action>
         </v-list-tile>
