@@ -47,18 +47,42 @@
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.duration }}</p>
                 <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
-                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
+
+                   <v-tooltip v-model="showToolTips" bottom allow-overflow transition="scroll-x-transition" color="green">
+                    <template v-slot:activator="{ on }">
+                      <!-- Here is the original element that I entered between tooltips -->
+                      <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
+                    </template>
+                    <span @click="showToolTips = false">Click the above link to see who attended the event</span>
+                  </v-tooltip>
+
                 </div>
                 <div v-else class="ml-2" @click="showUsers = true">
-                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
+
+                   <v-tooltip v-model="showToolTips" bottom transition="scroll-x-transition" color="green">
+                    <template v-slot:activator="{ on }">
+                      <!-- Here is the original element that I entered between tooltips. I added spam because eslint asked it -->
+                      <span><v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there</span>
+                    </template>
+                    <span @click="showToolTips = false">Click the above link to see who attended the event</span>
+                  </v-tooltip>
+
                 </div>
               </v-flex>
               <!-- <a href="whatsapp://send" data-text="Take a look at this awesome website:" data-href="" class="wa_btn wa_btn_s" style="display:block">Share</a> -->
               <v-flex xs2 sm2 md2>
-                <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
-                <span v-else>
-                  <v-btn flat large class="iwt checked" center></v-btn>
-                </span>
+
+                  <v-tooltip v-model="showToolTips" top transition="scroll-x-transition" color="green" max-width="87px" style="top: 335px !important">
+                    <template v-slot:activator="{ on }">
+                      <!-- Here is the original element that I entered between tooltips. -->
+                      <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
+                      <span v-else>
+                        <v-btn flat large class="iwt checked" center></v-btn>
+                      </span>                    
+                    </template>
+                    <span @click="showToolTips = false">If you attended the event, click on the bellow button</span>
+                  </v-tooltip>
+
               </v-flex>
             </v-layout>
               <v-divider class="mb-2"></v-divider>
@@ -82,7 +106,7 @@
                     justify="center"
                   >
                     <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                  </v-layout row>
+                  </v-layout>
                 </template>
                </v-img>  
             </v-card>
@@ -186,6 +210,7 @@ export default {
   },
   data () {
     return {
+      showToolTips: false,
       fullscreen_carousel: false,
       eventurl: location.href,
       showUsers: false,
