@@ -60,10 +60,18 @@
                 </template>
               </v-flex>
               <v-flex xs2 sm2 md2>
-                <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
-                <span v-else>
-                  <v-btn flat large class="iwt checked" center></v-btn>
-                </span>
+
+                  <v-tooltip v-model="showToolTips" top transition="scroll-x-transition" color="green" max-width="87px" style="top: 335px !important">
+                    <template v-slot:activator="{ on }">
+                      <!-- Here is the original element that I entered between tooltips. -->
+                      <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
+                      <span v-else>
+                        <v-btn flat large class="iwt checked" center></v-btn>
+                      </span>                    
+                    </template>
+                    <span @click="showToolTips = false">If you attended the event, click on the bellow button</span>
+                  </v-tooltip>
+
               </v-flex>
             </v-layout>
               <v-divider class="mb-2"></v-divider>
@@ -105,7 +113,7 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="showUsers" max-width="96%" v-if="eventUsers()">
+    <v-dialog v-model="showUsers" v-if="eventUsers()">
       <v-list subheader>
         <v-subheader>Who was here</v-subheader>
         <template v-for="user in eventUsers()">
@@ -147,6 +155,7 @@ export default {
   },
   data () {
     return {
+      showToolTips: false,
       fullscreen_carousel: false,
       eventurl: location.href,
       showUsers: false,
@@ -450,6 +459,9 @@ export default {
     /* right: 0px; */
     z-index: 1;
   }
+  .space60percent {
+    width: 90%
+  }
   .rotateLeftIcon {
     margin-top: 0 !important;
   }
@@ -524,26 +536,17 @@ export default {
     background: url("../img/iwtChecked.png") left/80% no-repeat;
   }
   @media screen and (max-width: 1263px) {
-    span.vuBadge {
-      bottom: 100px;
-      right: 82px;
-      position: absolute;
-    }
     .carousel {
       min-height: 100%;
       width: 100vw;
     }
   }
-  @media screen and (max-width: 960px) {
-    span.vuBadge {
-      bottom: 100px;
-      right: 82px;
-      position: absolute;
-    }
-  }
   @media screen and (max-width: 600px) {
     .container {
       padding: 0;
+    }
+    .space60percent {
+      width: 70%
     }
     .arrowBack {
       position: fixed;

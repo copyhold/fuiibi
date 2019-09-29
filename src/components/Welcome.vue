@@ -31,6 +31,7 @@
           <v-btn color="primary" @click.native="e1 = 3">Next</v-btn>
         </v-stepper-content>
 
+
         <v-stepper-content step="3" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
             <v-img width="160px" src="/src/components/img/sharing.png" class="mb-5"/>
