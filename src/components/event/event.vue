@@ -46,14 +46,19 @@
             <v-layout row>
               <v-flex xs10>
                 <p><v-icon class="mr-2">timelapse</v-icon>{{ event.duration }}</p>
-                <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
-                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
-                </div>
-                <div v-else class="ml-2" @click="showUsers = true">
-                  <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
-                </div>
+                <template v-if="event.id==='defaultevent'">
+                  <v-icon class="mr-2">supervisor_account</v-icon>
+                  <b>{{userWasThere ? "You and  many others were here" : "Many others were here"}}</b>
+                </template>
+                <template v-else>
+                  <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
+                    <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
+                  </div>
+                  <div v-else class="ml-2" @click="showUsers = true">
+                    <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
+                  </div>
+                </template>
               </v-flex>
-              <!-- <a href="whatsapp://send" data-text="Take a look at this awesome website:" data-href="" class="wa_btn wa_btn_s" style="display:block">Share</a> -->
               <v-flex xs2 sm2 md2>
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
                 <span v-else>
@@ -83,7 +88,7 @@
       </v-container>
     </v-layout>
 
-    <add-pictures v-if="userWasThere" :userWasThere="userWasThere" :evid="event.id"></add-pictures>
+    <add-pictures v-if="userWasThere && event.id!=='defaultevent'" :userWasThere="userWasThere" :evid="event.id"></add-pictures>
 
     <v-dialog dark :fullscreen="fullscreen_carousel || $vuetify.breakpoint.smAndDown" :scrollable="fullscreen_carousel" :hide-overlay="$vuetify.breakpoint.smAndDown" v-model="carousel" max-width="800px">
       <v-card>
@@ -102,37 +107,32 @@
 
     <v-dialog v-model="showUsers" max-width="96%" v-if="eventUsers()">
       <v-list subheader>
-          <template v-for="user in eventUsers()">
-            <v-divider></v-divider>
-            <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user && user.id != loggedInUserId">
-              <v-list-tile-avatar class="avatarImg">
-                <img :src="user.imageUrl"/>
-              </v-list-tile-avatar>
-              <v-list-tile-content v-if="loggedInUserId">
-                <v-list-tile-content  @click="getUserPage(user)" >
-                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile-content>
-              <v-list-tile-content v-else>
-                <v-list-tile-content>
-                  <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile-content>
+        <v-subheader>Who was here</v-subheader>
+        <template v-for="user in eventUsers()">
+          <v-divider></v-divider>
+          <v-list-tile avatar v-bind:key="user.id" v-if="!loading && user && user.id != loggedInUserId">
+            <v-list-tile-avatar class="avatarImg">
+              <img :src="user.imageUrl"/>
+            </v-list-tile-avatar>
+            <v-list-tile-content v-if="loggedInUserId"  @click="getUserPage(user)" >
+              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+            </v-list-tile-content>
+            <v-list-tile-content v-else>
+              <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
+            </v-list-tile-content>
 
-              <v-list-tile-content v-if="loggedInUserId">
-                <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-                    <v-btn small class="greyColors" flat left>Pending...</v-btn>
-                </v-list-tile-action>
-                <v-list-tile-action v-else>
-                  <v-list-tile-action v-if="!isFriend(user)">
-                    <v-btn @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
-                  </v-list-tile-action>
-                  <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
-                </v-list-tile-action>
-              </v-list-tile-content>
-             </v-list-tile>
-          </template>
-        </v-list>
+            <template v-if="loggedInUserId">
+              <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
+                <v-btn small class="greyColors" flat left>Pending...</v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action v-else>
+                <v-btn v-if="!isFriend(user)" @click="sendFriendRequest(user.id)" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">mdi-account-plus</v-icon></v-btn>
+                <v-btn v-else flat small class="primary--text pl-3 pr-1"><v-icon color="green darken-2" class="pl-4">mdi-account-check</v-icon></v-btn>
+              </v-list-tile-action>
+            </template>
+          </v-list-tile>
+        </template>
+      </v-list>
       </v-dialog>
 
   </v-container>
