@@ -61,21 +61,15 @@
               </v-flex>
               <v-flex xs2 sm2 md2>
 
-                  <v-tooltip v-model="showToolTips" top transition="scroll-x-transition" color="green" max-width="87px" style="top: 335px !important">
-                    <template v-slot:activator="{ on }">
-                      <!-- Here is the original element that I entered between tooltips. -->
-                      <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
-                      <span v-else>
-                        <v-btn flat large class="iwt checked" center></v-btn>
-                      </span>                    
-                    </template>
-                    <span @click="showToolTips = false">If you attended the event, click on the bellow button</span>
-                  </v-tooltip>
+                <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
+                <v-btn flat large class="iwt checked" v-else center></v-btn>
 
               </v-flex>
             </v-layout>
+            <template v-if="event.description">
               <v-divider class="mb-2"></v-divider>
               <p>{{ event.description }}</p>
+            </template>
           </v-card-text>
         </v-card>
       </v-flex>
