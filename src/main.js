@@ -78,6 +78,11 @@ Vue.component('friends-only', FriendsOnly)
 Vue.component('user-card', UserCard)
 
 Vue.config.productionTip = false
+
+router.afterEach((to, from) => {
+  const gtag = window.gtag
+  gtag('config', 'UA-149004256-1', {page_path: to})
+})
 // Vue.use(Typewriter)
 /* eslint-disable no-new */
 new Vue({

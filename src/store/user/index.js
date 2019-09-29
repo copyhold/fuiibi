@@ -271,9 +271,7 @@ export default {
         commit('setUser', newUser)
         commit('setLoading', false)
         dispatch('iwtClicked', 'defaultevent')
-     // dispatch('listenToMyFeed')
-     // dispatch('listenToProfileUpdate')
-     // dispatch('listenToEvents')
+        gtag('event', 'signup', { event_category: 'user actions', event_label: provider })
         const {return_to_event} = localStorage
         if (return_to_event) {
           localStorage.removeItem('return_to_event')

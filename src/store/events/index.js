@@ -118,6 +118,7 @@ export default {
       const storedFile = await firebase.storage().ref('events').child(`${evid}---${Math.round(Math.random() * 10000)}----${file.name}`).put(file)
       const imageUrl = await storedFile.ref.getDownloadURL()
       await firebase.database().ref(`/events/${evid}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
+      gtag('event', 'upload picture', { event_category: 'event actions', event_label: evid })
       store.commit('setLoading', false)
       store.dispatch('setCurrentEvent', evid)
     },
@@ -204,6 +205,7 @@ export default {
         Vue.console.error(error)
         return false
       }
+      gtag('event', 'event join', { event_category: 'user actions', event_label: 'iwt' })
     },
 
     createEvent: async function ({commit, getters, dispatch}, payload) {
@@ -236,6 +238,7 @@ export default {
       const key = eventData.id = this.fbkey = eventSnap.key
       await firebase.database().ref(`users/${getters.user.id}/userEvents/${key}`).set(key)
 
+      gtag('event', 'event create', { event_category: 'event', event_label: key })
       Vue.console.log('newEventData', eventData);
       commit('setLoading', false)
       router.push(`/events/${key}`)
