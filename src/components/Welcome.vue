@@ -17,7 +17,7 @@
 
         <v-stepper-content step="1" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
-            <v-img width="160px" src="/src/components/img/friendship.png" class="mb-5"/>
+            <v-img width="160px" src="/static/welcome/friendship.png" class="mb-5"/>
             <v-card-text class="text-center headline">See your friend's photos </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 2">Next</v-btn>
@@ -25,7 +25,7 @@
 
         <v-stepper-content step="2" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
-            <v-img width="160px" src="/src/components/img/selfie.png" class="mb-5"/>
+            <v-img width="160px" src="/static/welcome/selfie.png" class="mb-5"/>
             <v-card-text class="text-center headline">See yourself on others photos </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 3">Next</v-btn>
@@ -34,7 +34,7 @@
 
         <v-stepper-content step="3" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
-            <v-img width="160px" src="/src/components/img/sharing.png" class="mb-5"/>
+            <v-img width="160px" src="/static/welcome/sharing.png" class="mb-5"/>
             <v-card-text class="text-center headline">Share your events </v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 4">Next</v-btn>
@@ -54,7 +54,7 @@
                 <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
-            <v-img width="160px" src="/src/components/img/camera.png" class="mb-5" v-if="showUploadImage" @click="onPickFile"/>
+            <v-img width="160px" src="/static/welcome/camera.png" class="mb-5" v-if="showUploadImage" @click="onPickFile"/>
             <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
             <v-card-text v-if="showUploadImage" class="text-center headline">Add your profile picture</v-card-text>
             <!-- <v-layout row class="mb-2">
@@ -73,7 +73,7 @@
 
         <v-stepper-content step="5" style="height: calc(100vh - 76px)" color="primary" class="py-0 px-0">
           <v-card align="center" justify="center" class="pt-5 mb-4" style="height: calc(100vh - 200px)">
-            <v-img width="160px" src="/src/components/img/toast.png" class="mb-5"/>
+            <v-img width="160px" src="/static/welcome/toast.png" class="mb-5"/>
             <v-card-text class="text-center headline">Well done! You are all set</v-card-text>
           </v-card>
           <v-btn color="primary" @click.native="e1 = 4" flat><v-icon></v-icon>Back</v-btn>
