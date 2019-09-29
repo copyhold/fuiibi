@@ -115,7 +115,7 @@ export default {
     },
     uploadPicture: async function (store, {file,evid}) {
       store.commit('setLoading', true)
-      const storedFile = await firebase.storage().ref(`events/${evid}/${Math.round(Math.random() * 10000)}-${file.name}`).put(file)
+      const storedFile = await firebase.storage().ref('events').child(`${evid}---${Math.round(Math.random() * 10000)}----${file.name}`).put(file)
       const imageUrl = await storedFile.ref.getDownloadURL()
       await firebase.database().ref(`/events/${evid}/pictures`).push({ uid: store.getters.user.id, imageUrl: imageUrl })
       store.commit('setLoading', false)
@@ -226,7 +226,7 @@ export default {
       // I stock the event's image in FB storage
       const filename = payload.filename
       // const ext = filename.slice(filename.lastIndexOf('.'))
-      const fileData = await firebase.storage().ref(`events/${evid}/first-image`).put(payload.image)
+      const fileData = await firebase.storage().ref(`events---first-image---${Math.round(Math.random() * 1e9)}---${filename.toString()}`).put(payload.image)
       eventData.imageUrl = await fileData.ref.getDownloadURL()
       eventData.pictures = [{uid: getters.user.id, imageUrl: eventData.imageUrl}] 
       Vue.console.log('[createEvent] eventData', eventData);

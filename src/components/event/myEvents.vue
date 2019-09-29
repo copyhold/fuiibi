@@ -2,7 +2,7 @@
   <v-container class="container pb-5 mb-5">
     <v-layout row wrap v-if="events.length<1" class="mt-5">
       <v-flex xs12 class="text-xs-center">
-        <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="notifications.length<1"></v-progress-circular>
+        <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="events.length<1"></v-progress-circular>
       </v-flex>
     </v-layout>
     <v-container grid-list-sm fluid v-else>
