@@ -9,11 +9,11 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="notifications.length<1"></v-progress-circular>
         </v-flex>
       </v-layout>
-      <v-container grid-list-sm fluid v-else>
+      <v-container grid-list-sm fluid v-else style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
         <v-layout row wrap >
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1">
               <v-card v-if="notification.e">
-                <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="212px" style="background-color: white" />
+                <v-img @click="eventDetails(notification.e[0])" :src="notification.e[1]" height="250px" style="background-color: white" />
                 <mark v-if="notification.totalnotis>1" class="noti-group-counter"> {{notification.totalnotis}} </mark>
                 <v-layout col align-end ml-3 mt-3>
                   <v-flex xs9 tag="h4" @click="eventDetails(notification.e[0])" class="secondaryDark--text bold bigger"> {{ notification.e[2] }}</v-flex>
@@ -135,7 +135,7 @@
   right: 5px;
   width: 20px;
   height: 20px;
-  z-index: 20;
+  z-index: 1;
   border-radius: 50%;
   color: #fff;
   background: #20b050;

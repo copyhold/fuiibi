@@ -1,18 +1,19 @@
 <template>
   <v-layout v-if="userWasThere">
-    <v-dialog v-model="picDialog" fullscreen full-width max-width="800px" hide-overlay>
-      <v-card>
+    <v-dialog v-model="picDialog" fullscreen full-width max-width="800px" hide-overlay >
+      <v-card style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
         <v-toolbar dark color="primary">
           <v-btn icon white @click="picDialog=false">
             <v-icon>arrow_back</v-icon>
           </v-btn>
           <v-toolbar-title>Upload pictures</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-icon right dark v-if="files.length>0"   @click="startUpload">cloud_upload</v-icon>
+          <!-- <v-icon right dark v-if="files.length>0"   @click="startUpload">cloud_upload</v-icon> -->
+          <v-btn right color="white" small absolute class="text--primary" v-if="files.length>0"   @click="startUpload">Done</v-btn>
         </v-toolbar>
         <v-container grid-list-s fluid>
           <v-layout row wrap>
-            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height v-for="(file, index) in files" :key="file.id" :loadingPictures='loadingPictures=false'>
+            <v-flex lg2 xs4 sm3 px-1 py-1 full-height v-for="(file, index) in files" :key="file.id" :loadingPictures='loadingPictures=false'>
               <v-card v-if="file" flat tile>
                 <v-btn flat icon small absolute right @click="deletePhoto(file, index)" class="closeButtonPic">
                   <v-icon color="black">close</v-icon>
@@ -20,7 +21,7 @@
                 <v-img :src="file.url" aspect-ratio="1" @click="selectFileForEdit(file)"></v-img>
               </v-card>
             </v-flex>
-            <v-flex lg2 xs4 sm3 pl-1 pr-1 pt-1 pb-1 full-height>
+            <v-flex lg2 xs4 sm3 px-1 py-1>
               <input accept="image/*" type="file" id="selectphotos" multiple class="d-none" @change="addedPhoto()" ref="filesfield" />
               <v-btn for="selectphotos" center outline color="grey" class="uploadPicture" tag="label" v-if="!loadingPictures">
                 <v-icon>add_a_photo</v-icon>
@@ -109,7 +110,7 @@ export default {
   border-width: thin;
   height: 100%;
   width: 100%;
-  min-height: 33vw;
+  min-height: 29vw;
   margin: 0 auto;
 }
 .closeButtonPic{

@@ -54,7 +54,8 @@
                 <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
-            <v-img width="160px" src="/static/welcome/camera.png" class="mb-5" v-if="showUploadImage" @click="onPickFile"/>
+            <v-img width="160px" src="/static/welcome/camera.png" class="mb-2" v-if="showUploadImage" @click="onPickFile"/>
+            <p v-if="showUploadImage" class="text-center blink_me">Click the camera</p>
             <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
             <v-card-text v-if="showUploadImage" class="text-center headline">Add your profile picture</v-card-text>
             <!-- <v-layout row class="mb-2">
@@ -198,6 +199,9 @@
 </script>
 
 <style scoped>
+.blink_me {
+  animation: blinker 1s linear infinite;
+}
   .rotateLeftIcon {
     margin-top: 0 !important;
   }
@@ -233,6 +237,12 @@
     border-radius: 100px;
     height: 150px;
     width: 150px;
+  }
+
+  @keyframes blinker {
+  50% {
+    opacity: 0.3;
+  }
   }
 
 </style>

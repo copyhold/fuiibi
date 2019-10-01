@@ -3,9 +3,9 @@
     <div @click="back" class="arrowBack clickable hidden-sm-and-up" v-if="loggedInUserId">
         <v-icon class="secondaryDark--text">arrow_back</v-icon>
     </div>
-    <v-btn style="z-index: 1" absolute class="ml-2 mt-4" v-if="loggedInUserId == event.creatorId && !loading" small v-model="fab" color="green" dark fab @click="onPickFile">
+    <!-- <v-btn style="z-index: 1" absolute class="ml-2 mt-4" v-if="loggedInUserId == event.creatorId && !loading" small v-model="fab" color="green" dark fab @click="onPickFile">
       <v-icon>create</v-icon>
-    </v-btn>
+    </v-btn> -->
     <v-speed-dial v-if="!loading" absolute top v-model="fab"  :top="top" :bottom="bottom" :right="right" :left="left" :direction="direction" :transition="transition" class="shareButton">
       <v-btn slot="activator" small v-model="fab" color="red darken-2" dark fab>
         <v-icon>share</v-icon>
@@ -18,15 +18,11 @@
         <v-icon dark>mdi-facebook</v-icon>
       </v-btn>
     </v-speed-dial>
-    <v-layout row wrap v-if="loading">
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
-        </v-flex>
-    </v-layout>
-    <v-layout row wrap v-else>
+
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card>
-          <v-img :src="event.imageUrl" height="250px" />
+          <v-img :src="event.imageUrl" height="270px" />
           <v-card-title class="eventTitle">
               <h2>{{ event.title }}</h2>
           </v-card-title>
@@ -52,10 +48,12 @@
                 </template>
                 <template v-else>
                   <div v-if="totalUserCount > 1" class="ml -2" @click="showUsers = true">
-                    <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> users were there
+                    <v-icon class="mr-2">supervisor_account</v-icon>
+                    <b>{{ totalUserCount }} users were there</b>
                   </div>
                   <div v-else class="ml-2" @click="showUsers = true">
-                    <v-icon class="mr-2">supervisor_account</v-icon><b>{{ totalUserCount }}</b> user was there
+                    <v-icon class="mr-2">supervisor_account</v-icon>
+                    <b>{{ totalUserCount }} user was there</b>
                   </div>
                 </template>
               </v-flex>
@@ -76,11 +74,16 @@
     </v-layout>
 
     <v-layout class="mt-2">
-      <v-container fluid grid-list-sm>
-        <v-layout row wrap class="gallery">
-          <v-flex v-if="loading">
-            <v-progress-circular indeterminate color="grey"></v-progress-circular>
+      <v-container fluid grid-list-sm style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
+         <!-- <v-flex v-if="loading" class="text-xs-center">
+            <v-progress-circular indeterminate color="darkgray" :width="1"></v-progress-circular>
+          </v-flex> -->
+        <v-layout row wrap v-if="loading">
+          <v-flex xs12 class="text-xs-center">
+            <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
           </v-flex>
+        </v-layout>
+        <v-layout row wrap class="gallery" v-else>
           <v-flex xs4 sm3 md2 v-for="pic,j in event.pictures" :key="pic.id">
             <v-card flat tile>
              <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'"/>
@@ -89,6 +92,11 @@
         </v-layout>
       </v-container>
     </v-layout>
+      <!-- <v-layout row wrap v-if="loading">
+        <v-flex xs12 class="text-xs-center">
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
+        </v-flex>
+    </v-layout> -->
 
     <add-pictures v-if="userWasThere && event.id!=='defaultevent'" :userWasThere="userWasThere" :evid="event.id"></add-pictures>
 
@@ -149,7 +157,6 @@ export default {
   },
   data () {
     return {
-      showToolTips: false,
       fullscreen_carousel: false,
       eventurl: location.href,
       showUsers: false,

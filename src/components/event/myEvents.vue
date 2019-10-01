@@ -1,11 +1,11 @@
 <template >
-  <v-container class="container pb-5 mb-5">
+  <v-container class="container pb-5 mb-5" style="background: white url('/src/images/icons/imageForBackground.png') repeat">
     <v-layout row wrap v-if="events.length<1" class="mt-5">
       <v-flex xs12 class="text-xs-center">
         <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="events.length<1"></v-progress-circular>
       </v-flex>
     </v-layout>
-    <v-container grid-list-sm fluid v-else>
+    <v-container grid-list-sm fluid v-else  >
     <v-layout row wrap >
       <v-flex xs12 sm6 md6 v-for="(item,index) in events" :key="index" class="mb-1">
         <v-card>

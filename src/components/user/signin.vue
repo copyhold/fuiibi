@@ -175,6 +175,7 @@ export default {
       this.$store.dispatch('signInWithGoogle')
     },
     onSignin () {
+      this.signInForm = false
       this.$store.dispatch('signUserIn', {email: this.email, password: this.password})
       .then(user => {
         if (document.getElementById('homepage')) document.getElementById('homepage').remove()

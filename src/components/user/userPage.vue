@@ -1,5 +1,5 @@
 <template lang="html">
-  <v-container class="container">
+  <v-container class="container" style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
     <v-layout row wrap v-if="loading">
         <v-flex xs12 class="text-xs-center">
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
@@ -12,7 +12,7 @@
       <v-flex xs12>
 
         <v-card class="mb-1">
-          <v-img :src="user.imageUrl" height="120px" >
+          <v-img :src="user.imageUrl" height="250px" >
           </v-img>
           <v-card-title class="eventTitle">
               <h2>{{ user.firstName }}</h2>
@@ -27,8 +27,13 @@
       </v-flex>
     </v-layout>
 
-    <v-layout row wrap v-for="(item,index) in events" :key="index" class="mb-1" v-if="!loading && user">
-      <v-flex xs12 sm12 md12>
+    <v-layout row wrap v-for="(item,index) in events" :key="index" class="mb-1" v-if="user">
+       <v-layout row wrap v-if="loading">
+        <v-flex xs12 class="text-xs-center">
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
+        </v-flex>
+      </v-layout>
+      <v-flex xs12 sm12 md12 v-else>
         <v-card height="120px">
           <v-container fluid>
             <v-layout col xs12>
@@ -173,9 +178,9 @@ export default {
     padding: 0px;
   }
   .iwt{
-    height: 90px;
-    width: 90px;
-    background: url("../img/iwt3.png") center/95% no-repeat;
+    height: 70px;
+    width: 70px;
+    background: url("../img/iwt3.png") center/80% no-repeat;
     position: absolute;
     right: 0px;
   }
@@ -193,14 +198,14 @@ export default {
   }
   .eventTitle{
     width: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
     text-align: left;
     color: white;
     position: absolute;
     top: 0px;
     font-size: 20px;
     font-weight: 200;
-    min-height: 120px;
+    min-height: 250px;
   }
   .checked{
     background: url("../img/iwtChecked.png") right/95% no-repeat;
@@ -223,8 +228,8 @@ export default {
       z-index: 3;
     }
     .iwt{
-      height: 72px;
-      width: 72px;
+      height: 50px;
+      width: 50px;
       background: url("../img/iwt3.png") center/95% no-repeat;
       position: absolute;
       right: 0px;
@@ -245,7 +250,7 @@ export default {
       position: absolute;
     }
     .checked{
-      background: url("../img/iwtChecked.png") right/80% no-repeat;
+      background: url("../img/iwtChecked.png") right/50% no-repeat;
     }
   }
 </style>
