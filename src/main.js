@@ -80,8 +80,9 @@ Vue.component('user-card', UserCard)
 Vue.config.productionTip = false
 
 router.afterEach((to, from) => {
+  const path = to.path || to
   const gtag = window.gtag
-  gtag('config', 'UA-149004256-1', {page_path: to})
+  gtag('config', 'UA-149004256-1', {page_path: path})
 })
 // Vue.use(Typewriter)
 /* eslint-disable no-new */
