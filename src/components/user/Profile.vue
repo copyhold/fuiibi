@@ -8,18 +8,18 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading" class="mt-5"></v-progress-circular>
         </v-flex>
     </v-layout>
+
     <v-layout row wrap v-else>
       <v-flex xs12>
-
         <v-card>
           <v-img :src="user.imageUrl" height="300px" v-if="!showCanvas"></v-img>
           <img :src="imageUrl" ref="imageToCanvas" style="display: none">
           <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
           <v-layout v-if="editMode">
-            <v-btn flat absolute right @click="onPickFile2" class="pb-1 above">Change</v-btn>
+            <v-btn @click="onPickFile2" block class="above secondary">Change the profile photo</v-btn>
             <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
           </v-layout>
-          <v-card-title>
+          <v-card-title class="pt-0">
               <h2 v-if="!editMode">{{ user.firstName }}</h2>
           </v-card-title>
           <v-divider></v-divider>
@@ -30,7 +30,7 @@
                   <h4 class="greyColor mb-1 bold">Last name:</h4>
                   <h4 class="greyColor mb-1 bold">Date of birth:</h4>
                   <h4 class="greyColor mb-1 bold">Living in:</h4>
-                  <h4 else class="greyColor mb-1 bold">Gender:</h4>
+                  <!-- <h4 else class="greyColor mb-1 bold">Gender:</h4> -->
                   <h4 else class="greyColor mb-1 bold">Email:</h4>
                   <!-- <h4 else class="greyColor mb-1">key: </h4> -->
                 </v-flex>
@@ -42,8 +42,8 @@
                   <h4 v-if="user.livingIn != null" class="mb-1"> {{ user.livingIn.locality }} - {{ user.livingIn.country }}</h4>
                   <h4 v-else class="mb-1">To be edited</h4>
                   <!-- <h4 class="mb-1">unknown</h4> -->
-                  <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
-                  <h4 v-else class="mb-1">To be edited</h4>
+                  <!-- <h4 v-if="gender" class="mb-1"> {{ user.gender }}</h4>
+                  <h4 v-else class="mb-1">To be edited</h4> -->
                   <h4 class="mb-1">{{ user.email }}</h4>
                   <!-- <h4 class="mb-1">{{ user.id }}</h4> -->
                 </v-flex>

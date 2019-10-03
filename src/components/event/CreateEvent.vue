@@ -5,7 +5,7 @@
     </div>
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3 class="mt-2">
-        <h3 class="mb-2">Create a new event </h3>
+        <h2 class="mb-2">Create a new event </h2>
         <!-- <v-switch v-bind:label="`Public`" v-model="ex11"></v-switch> -->
       </v-flex>
     </v-layout>
@@ -31,7 +31,7 @@
             <v-flex xs12 sm6 offset-sm3>
               <img :src="imageUrl" ref="imageToCanvas" style="display: none">
               <canvas ref="canvas" v-if="showCanvas" class="fitScreen"></canvas>
-              <v-btn block v-if="showCanvas" @click="onPickFile2" class="above secondary">Choose another photo</v-btn>
+              <v-btn block v-if="showCanvas" @click="onPickFile2" class="above secondary">Change the main photo of the event</v-btn>
               <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
             </v-flex>
           </v-layout>
@@ -55,7 +55,8 @@
               <div class="text-xs-center my-3" >
                 <v-chip color="secondary" outline justify-center v-if="locationInNavigator && showLocationButton" @click="getLocation">
                   <v-avatar>
-                    <v-icon >my_location</v-icon>
+                    <v-icon v-if="!gettingLocation">my_location</v-icon>
+                    <v-progress-circular v-else indeterminate color="darkgray" :width="1" :size="10"></v-progress-circular>
                   </v-avatar>
                   Use my current location
                 </v-chip>
@@ -68,7 +69,7 @@
             </v-flex>
           </v-layout>
 
-          <v-layout row wrap>
+          <!-- <v-layout row wrap>
             <v-flex xs12 sm6 offset-sm3>
               <div class="text-xs-center mb-3" >
                 <v-chip color="secondary" outline justify-center v-if="!showVueAutoComplete && !showLocationButton && !searchingForLocation" @click="hideChangeButton">
@@ -79,7 +80,7 @@
                 </v-chip>
               </div>
             </v-flex>
-          </v-layout>
+          </v-layout> -->
 
           <v-layout row v-if="showVueAutoComplete">
               <v-flex xs1>
@@ -210,6 +211,7 @@
   export default {
     data () {
       return {
+        gettingLocation: false,
         filename: null,
         usedDeviceLocation: false,
         showVueAutoComplete: true,
@@ -361,6 +363,8 @@
         this.$log('[alertNoResultFound], alertNoResultFound');
       },
       getLocation () {
+        this.gettingLocation = true
+        console.log("getting location", this.gettingLocation)
         navigator.geolocation.getCurrentPosition(position => {
           const {latitude: lat, longitude: lng} = position.coords
           this.lat = lat
@@ -375,6 +379,8 @@
           this.$debug(err)
           this.usedDeviceLocation = false
         })
+        this.gettingLocation = false
+        console.log("getting location", this.gettingLocation)
       },
       onCreateEvent () {
         if (!this.formIsValid) {

@@ -7,7 +7,6 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
 
-
       <!-- <v-toolbar-items class="hidden-xs-only">
         <v-btn flat v-for="item in menuItems" :key="item.title" :to="item.link">
           <v-icon left>{{ item.icon }}</v-icon>
@@ -32,12 +31,9 @@
           <span>My friends</span>
         </v-btn>
       </v-toolbar-items>
-
       <v-btn icon right @click="sideNav = !sideNav">
         <v-icon>more_vert</v-icon>
       </v-btn>
-
-
     </v-toolbar>
 
     <v-bottom-nav fixed shift class="bottomAtTop primaryWhite hidden-sm-and-up" v-if="userIsAuthenticated" >
@@ -191,6 +187,7 @@
   }
   .marginTop {
     margin-top: 60px;
+    background: white url('/src/images/icons/imageForBackground.png') repeat;
   }
   .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
     margin-left: 5%;

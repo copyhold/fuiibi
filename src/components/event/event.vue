@@ -24,7 +24,7 @@
         <v-card>
           <v-img :src="event.imageUrl" height="270px" />
           <v-card-title class="eventTitle">
-              <h2>{{ event.title }}</h2>
+              <h2 class="pl-3">{{ event.title }}</h2>
           </v-card-title>
           <v-divider class="mb-2"></v-divider>
           <v-card-text>
@@ -74,7 +74,7 @@
     </v-layout>
 
     <v-layout class="mt-2">
-      <v-container fluid grid-list-sm style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
+      <v-container fluid grid-list-sm >
          <!-- <v-flex v-if="loading" class="text-xs-center">
             <v-progress-circular indeterminate color="darkgray" :width="1"></v-progress-circular>
           </v-flex> -->
