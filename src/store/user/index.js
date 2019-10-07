@@ -538,29 +538,21 @@ export default {
         .catch(Vue.console.error)
     },
 
-    acceptFriendRequest({ commit, getters }, fid) {
-      // Vue.console.log('[acceptFriendRequest] payload', payload);
+    async acceptFriendRequest({ commit, getters }, fid) {
       const user = getters.user
-      commit('setLoading', true)
-      firebase.database().ref(`/users/${fid}/pendingInvitations/${user.id}`).remove()
-      firebase.database().ref(`/users/${user.id}/pendingFriends/${fid}`).remove()
-      if (getters.user.friends[fid]) {
-        Vue.console.log('Refused to add this friend as it already exist in the friends list!!!');
-        commit('setLoading', false)
-        commit('removePendingFriendFromUser', fid)
-        return
-      }
-      return Promise.all([
+      try {
+        await Promise.all([
+          firebase.database().ref(`/users/${fid}/pendingInvitations/${user.id}`).remove(),
+          firebase.database().ref(`/users/${user.id}/pendingFriends/${fid}`).remove(),
           firebase.database().ref(`/users/${user.id}/friends/${fid}`).set(fid),
-          firebase.database().ref(`/users/${fid}/friends/${user.id}`).set(user.id),
+          firebase.database().ref(`/users/${fid}/friends/${user.id}`).set(user.id)
         ])
-        .then(res => {
-          commit('removePendingFriendFromUser', fid)
-          Vue.console.debug('added friends')
-        })
-        .catch(error => {
-          Vue.console.log(error);
-        })
+        commit('removePendingFriendFromUser', fid)
+        return Promise.resolve()
+      } catch (e) {
+        Vue.console.error(e)
+        return Promise.reject()
+      }
     },
 
     removeFriend({ commit, getters }, payload) {

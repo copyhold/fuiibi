@@ -92,11 +92,6 @@
         </v-layout>
       </v-container>
     </v-layout>
-      <!-- <v-layout row wrap v-if="loading">
-        <v-flex xs12 class="text-xs-center">
-          <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="loading"></v-progress-circular>
-        </v-flex>
-    </v-layout> -->
 
     <add-pictures v-if="userWasThere && event.id!=='defaultevent'" :userWasThere="userWasThere" :evid="event.id"></add-pictures>
 
@@ -108,9 +103,8 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab icon color="#424242"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
-        <!-- <v-btn v-else absolute small fab><v-icon class="mr-1 clickable" dark @click="closeDialog">close</v-icon></v-btn> -->
-        <v-carousel hide-delimiters dark :cycle="false" height="100vh">
-          <v-carousel-item :contain="true" class="picInCaroussel" v-for="(picture, key, index) in event.pictures" v-bind:src="index === 0 ? picToOpen : picture.imageUrl" :key="index"></v-carousel-item>
+        <v-carousel hide-delimiters dark :cycle="false" height="100vh" v-if="carousel">
+          <v-carousel-item class="picInCaroussel" v-for="(picture, key, index) in carouselPictures" v-bind:src="picture.imageUrl" :key="index" :contain="true"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -207,6 +201,12 @@ export default {
     event () {
       return this.$store.getters.getCurrentEvent
     },
+    carouselPictures () {
+      const images = Object.values(this.event.pictures)
+      if (!this.picToOpen) return images
+      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
+      return [...images.slice(index), ...images.slice(0, index)]
+    },
     activeFab () {
       switch (this.tabs) {
         case 'one': return { 'class': 'purple', icon: 'account_circle' }
@@ -277,7 +277,6 @@ export default {
       this.$debug('[openTheRightPic] index, picture', index, picture)
     },
     checkPicSrc (imgUrl) {
-      this.$debug(imgUrl)
       this.picToOpen = imgUrl
       this.carousel = true
     },
@@ -447,7 +446,7 @@ export default {
 </script>
 
 <style>
-.event-page #homepage, 
+.event-page #homepage,
 .event-page > footer { display: none; }
 </style>
 <style scoped>

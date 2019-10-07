@@ -45,12 +45,10 @@ export default {
       if (!user.id) {
         return false
       }
+      if (!window.firebase.messaging.isSupported()) return false
       const messaging = window.firebase.messaging()
       return messaging.getToken()
       .then(fcmtoken => {
-        if (user.fcmtokens && user.fcmtokens[fcmtoken]) {
-          return
-        }
         return window.firebase.database().ref(`/users/${user.id}/fcmtokens/${fcmtoken}`).set(true)
       })
       .catch(err => {
@@ -62,15 +60,17 @@ export default {
       if (!user.id) {
         return false
       }
+      if (!window.firebase.messaging.isSupported()) return false
       const messaging = window.firebase.messaging()
       messaging.usePublicVapidKey('BGMmgv-N2qcvFyT0Uek_21rxK1xpoRZOsUB4OnKNFxsHyETOYxv2x3YfhGqHnZQP55IJjgORd6-fn9he6JiOlVI')
-      messaging.onMessage(message => {
-        Vue.console.log(message)
-      })
-      messaging.requestPermission()
-      .then(() => {
-        messaging.onTokenRefresh(() => store.dispatch('updateFCMtoken'))
-        store.dispatch('updateFCMtoken')
+      Notification.requestPermission()
+      .then(permission => {
+        if (permission === 'granted') {
+          messaging.onTokenRefresh(() => store.dispatch('updateFCMtoken'))
+          store.dispatch('updateFCMtoken')
+        } else {
+          throw new Error('notification permission declined')
+        }
       })
       .catch(err => {
         Vue.console.debug(err)
