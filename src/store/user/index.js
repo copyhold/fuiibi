@@ -18,6 +18,7 @@ export default {
       Vue.console.log('addnewnoti', payload.d)
       const notifications = [...state.feed]
       notifications.push(payload)
+      notifications.sort((a,b) => a.d < b.d ? 1 : (a.d===b.d ? 0 : -1))
       state.feed = notifications
     },
     removeEventFromUser(state, payload) {
