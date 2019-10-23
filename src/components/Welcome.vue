@@ -50,7 +50,7 @@
               <v-flex xs12 sm6 class="mt-3">
                 <img :src="imageUrl" class="profilePic" ref="imageToCanvas" style="display: none">
                 <canvas ref="canvas" class="fitScreen" v-if="showCanvas"></canvas>
-                <v-btn flat v-if="showCanvas" absolute block outline @click="onPickFile2" class="primary--text mb-4">Choose another photo</v-btn>
+                <v-btn flat v-if="showCanvas" block outline @click="onPickFile2" class="primary--text mb-4 fitScreen">Choose another photo</v-btn>
                 <input type="file" style="display: none" ref="fileInput2" accept="image/*" @change="onFilePicked" >
               </v-flex>
             </v-layout>
@@ -219,6 +219,7 @@
   }
   .fitScreen {
     max-width: calc(100vw - 16px);
+    max-height: calc(30vw - 16px);
   }
   .container{
     margin-top: 0;
@@ -244,5 +245,12 @@
     opacity: 0.3;
   }
   }
+
+  @media screen and (max-width: 600px) {
+  .fitScreen {
+    max-width: calc(100vw - 16px);
+    max-height: calc(60vw - 16px);
+  }
+}
 
 </style>
