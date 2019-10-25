@@ -68,7 +68,17 @@
 
     <v-dialog v-model="signInForm" persistent max-width="96%" lazy width="400px">
       <v-card>
-        <v-card-text>
+        <v-card-text v-if="forgotPassForm">
+          <v-layout>
+            <v-flex>
+              <v-alert v-show="resetsent" type="success">Please check your email for password reset instructions</v-alert>
+              <v-text-field xs12 label="Email" v-model="email" type="email" required></v-text-field>
+              <v-btn xs8 outlined @click="requestPasswordReset" >Request</v-btn>
+              <v-btn xs4 flat @click="signInForm=false;forgotPassForm=false;">cancel</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-card-text>
+        <v-card-text v-else>
           <v-container grid-list-md>
 
             <v-layout row>
@@ -85,8 +95,8 @@
               </v-flex>
             </v-layout>
 
-            <v-layout row>
-              <v-flex xs12>
+            <v-layout wrap>
+              <v-flex xs6>
                 <v-btn @click="onSignin" :disabled="loading || !signInFormIsValid" :loading="loading" class="orange white--text" block>
                   Log in
                   <span slot="loader" class="custom-loader">
@@ -94,13 +104,16 @@
                   </span>
                 </v-btn>
               </v-flex>
-              <v-flex xs12>
+              <v-flex xs6>
                 <v-btn @click.native="signInForm = false;error=null" :disabled="loading" :loading="loading" flat class="black--text" block>
                   Cancel
                   <span slot="loader" class="custom-loader">
                     <v-icon light>cached</v-icon>
                   </span>
                 </v-btn>
+              </v-flex>
+              <v-flex xs12>
+                <v-btn  small flat @click="forgotPassForm=true">Forgot password?</v-btn>
               </v-flex>
             </v-layout>
           </v-container>
@@ -123,6 +136,8 @@ export default {
       firstName: '',
       lastName: '',
       signInForm: false,
+      resetsent: false,
+      forgotPassForm: false,
       signUpForm: false,
       error: false
     }
@@ -170,6 +185,19 @@ export default {
     }
   },
   methods: {
+    requestPasswordReset () {
+      window.firebase.auth()
+      .sendPasswordResetEmail(this.email)
+      .then(() => {
+        this.resetsent = true
+        setTimeout(() => {
+          this.resetsent = false
+          this.signInForm = false
+          this.forgotPassForm = false
+        }, 2000)
+      })
+      .catch(console.error)
+    },
     signInWithGoogle () {
       this.$log('signInWithGoogle')
       this.$store.dispatch('signInWithGoogle')

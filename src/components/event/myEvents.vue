@@ -19,7 +19,7 @@
                   <p class="bold  mt-2" @click="eventDetails(item.id)">{{ item.title }}</p>
                   <p class="location" v-if="item.location">{{ item.location.locality }} - {{ item.location.country }}</p>
                   <p class="date">{{ item.date | date}}</p>
-                  <v-btn  flat small class="greyColors align-self-end mr-0 pr-0" @click="alertB4remove(index)" end>Remove</v-btn>
+                  <v-btn  flat small v-if="item.id!='defaultevent'" class="greyColors align-self-end mr-0 pr-0" @click="alertB4remove(index)" end>Remove</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>

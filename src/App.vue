@@ -54,9 +54,9 @@
       </v-btn>
       <v-btn flat :key="'My friends'" :to="'/friends'">
         <span>My friends</span>
-        <!-- <v-badge color="red" id="redBadge" v-if="user.pendingFriends.length>0">
-          <span slot="badge"></span>
-        </v-badge> -->
+        <v-badge color="red" id="redBadge" v-if="user.pendingFriends && user.pendingFriends.length>0">
+          <span slot="badge">{{user.pendingFriends.length}}</span>
+        </v-badge>
         <v-icon>supervisor_account</v-icon>
       </v-btn>
     </v-bottom-nav>

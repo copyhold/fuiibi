@@ -160,7 +160,9 @@ export default {
       state.user.pendingFriends[newFriend.id] = newFriend
     },
     removePendingFriendFromUser(state, friendId) {
-      Reflect.deleteProperty(state.user.pendingFriends, friendId) // why Reflect? I dont' know
+      const pf = { ...state.user.pendingFriends }
+      delete(pf[friendId])
+      state.user.pendingFriends = pf
     },
     cancelInvitation(state, fid) {
       const pendingInvitations = {
@@ -548,6 +550,7 @@ export default {
           firebase.database().ref(`/users/${user.id}/friends/${fid}`).set(fid),
           firebase.database().ref(`/users/${fid}/friends/${user.id}`).set(user.id)
         ])
+        dispatch('loadPersons', [ fid ])
         commit('removePendingFriendFromUser', fid)
         return Promise.resolve()
       } catch (e) {
