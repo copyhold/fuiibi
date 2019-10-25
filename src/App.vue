@@ -54,10 +54,12 @@
       </v-btn>
       <v-btn flat :key="'My friends'" :to="'/friends'">
         <span>My friends</span>
-        <v-badge color="red" id="redBadge" v-if="user.pendingFriends && user.pendingFriends.length>0">
-          <span slot="badge">{{user.pendingFriends.length}}</span>
-        </v-badge>
         <v-icon>supervisor_account</v-icon>
+        <v-badge color="red" v-if="user.pendingFriends && Object.keys(user.pendingFriends).length>0">
+          <template v-slot:badge>
+            <span slot="badge">{{Object.keys(user.pendingFriends).length}}</span>
+          </template>
+        </v-badge>
       </v-btn>
     </v-bottom-nav>
 
@@ -187,7 +189,8 @@
   }
   .marginTop {
     margin-top: 60px;
-    background: white url('/src/images/icons/imageForBackground.png') repeat;
+    min-height: 100%;
+    background: white url('/static/icons/imageForBackground.png') repeat;
   }
   .toolbar .toolbar__content > *:not(.btn):not(.menu):first-child, .toolbar .toolbar__extension > *:not(.btn):not(.menu):first-child {
     margin-left: 5%;

@@ -1,6 +1,6 @@
 <template>
-  <v-container style="background: white url('/src/images/icons/imageForBackground.png') repeat"  fill-height>
-    <v-list subheader>
+  <v-container>
+    <v-list xs12 subheader>
       <v-subheader>
         <v-text-field hide-details placeholder="Search for Fuiibi users" single-line v-model="search" full-width />
         <v-btn @click="searchUsers" flat :disabled="loading">

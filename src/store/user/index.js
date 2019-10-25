@@ -541,7 +541,7 @@ export default {
         .catch(Vue.console.error)
     },
 
-    async acceptFriendRequest({ commit, getters }, fid) {
+    async acceptFriendRequest({ commit, getters, dispatch }, fid) {
       const user = getters.user
       try {
         await Promise.all([
