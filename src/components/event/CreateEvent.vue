@@ -118,7 +118,7 @@
             <v-flex xs12 sm6 offset-sm3>
               <v-dialog persistent v-model="modal" lazy full-width width="290px">
                 <v-text-field slot="activator" label="When?" v-model="date" prepend-icon="event" readonly></v-text-field>
-                <v-date-picker v-model="selectingDate" scrollable actions>
+                <v-date-picker v-model="selectingDate" scrollable actions :max="getEndDate">
                   <template slot-scope="{ save, cancel }">
                     <v-card-actions>
                       <v-spacer></v-spacer>
@@ -211,6 +211,7 @@
   export default {
     data () {
       return {
+        maxDate: new Date(),
         gettingLocation: false,
         filename: null,
         usedDeviceLocation: false,
@@ -267,6 +268,10 @@
     },
 
     computed: {
+      getEndDate () {
+        var endDate = new Date(this.maxDate.getFullYear(), this.maxDate.getMonth(), this.maxDate.getUTCDate() + 1)
+        return endDate.toISOString().slice(0, 10)
+      },
       formIsValid () {
         const location_valid = this.lat && this.lng && this.where
         return location_valid && this.title !== '' && this.imageUrl !== '' && this.durationInput  !== ''
