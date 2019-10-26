@@ -2,14 +2,14 @@
   <v-container class="container">
     <v-tabs fixed grow>
       <v-tab href="#friends">Friends</v-tab>
-      <v-tab href="#contacts">Contacts</v-tab>
+      <!-- <v-tab href="#contacts">Contacts</v-tab> -->
       <v-tab href="#swarm">Search</v-tab>
       <v-tab-item :value="'friends'">
         <friends-only></friends-only>
       </v-tab-item>
-      <v-tab-item :value="'contacts'">
+      <!-- <v-tab-item :value="'contacts'">
         <my-contacts></my-contacts>
-      </v-tab-item>
+      </v-tab-item> -->
       <v-tab-item :value="'swarm'">
         <all-users></all-users>
       </v-tab-item>
