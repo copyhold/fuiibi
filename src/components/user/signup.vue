@@ -70,7 +70,7 @@
       </v-layout>
     </v-container>
     <v-layout justify-center>
-      <h2 class="white--text mt-4" justify-center>Keep your events alive.</h2>
+      <h2 class="white--text mt-4" justify-center>One event, endless perspectives</h2>
     </v-layout>
   </v-container>
 </template>

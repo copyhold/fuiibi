@@ -57,7 +57,7 @@
             <v-img width="160px" src="/static/welcome/camera.png" class="mb-2" v-if="showUploadImage" @click="onPickFile"/>
             <p v-if="showUploadImage" class="text-center blink_me">Click the camera</p>
             <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" >
-            <v-card-text v-if="showUploadImage" class="text-center headline">Add your profile picture</v-card-text>
+            <v-card-text v-if="showUploadImage" class="text-center headline">To add your profile picture, just click the camera</v-card-text>
             <!-- <v-layout row class="mb-2">
               <v-flex xs12 sm6 class="uploadPicture" v-if="showUploadImage">
                 <v-btn block flat class="secondary--text" @click="onPickFile"><v-icon class="mr-2">file_upload</v-icon>Choose a picture </v-btn> -->
@@ -201,6 +201,8 @@
 <style scoped>
 .blink_me {
   animation: blinker 1s linear infinite;
+  font-size: 20px;
+  color: red;
 }
   .rotateLeftIcon {
     margin-top: 0 !important;

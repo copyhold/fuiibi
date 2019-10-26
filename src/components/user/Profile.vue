@@ -72,16 +72,14 @@
                   </v-layout>
                   <v-layout row>
                     <v-flex xs12>
-                      <v-dialog persistent v-model="modal" lazy full-width width="290px">
-                        <v-text-field slot="activator" label="Date of birth" v-model="date" prepend-icon="event" readonly></v-text-field>
-                        <v-date-picker v-model="date" scrollable actions>
-                          <template slot-scope="{ save, cancel }">
-                            <v-card-actions>
-                              <v-spacer></v-spacer>
-                              <v-btn flat color="primary" @click="modal = false">Cancel</v-btn>
-                              <v-btn flat color="primary" @click="save">OK</v-btn>
-                            </v-card-actions>
-                          </template>
+                       <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent width="290px">
+                        <template v-slot:activator="{ on }">
+                          <v-text-field v-model="date" label="Date of birth" prepend-icon="event" readonly v-on="on"></v-text-field>
+                        </template>
+                        <v-date-picker v-model="date" scrollable :max="getEndDate">
+                          <v-spacer></v-spacer>
+                          <v-btn text color="primary" flat @click="modal = false">Cancel</v-btn>
+                          <v-btn text color="primary" @click="$refs.dialog.save(date)">OK</v-btn>
                         </v-date-picker>
                       </v-dialog>
                     </v-flex>
@@ -155,6 +153,7 @@
   export default {
     data () {
       return {
+        maxDate: new Date(),
         image: null,
         imageUrl: '',
         showCanvas: false,
@@ -162,7 +161,8 @@
         // where: this.livingInExist,
         where: '',
         address: '',
-        date: this.$store.getters.user.dateOfBirth,
+        // date: this.$store.getters.user.dateOfBirth,
+        date: new Date().toISOString().substr(0, 10),
         modal: false,
         key: '',
         editMode: false,
@@ -180,6 +180,10 @@
       }
     },
     computed: {
+      getEndDate () {
+        var endDate = new Date(this.maxDate.getFullYear(), this.maxDate.getMonth(), this.maxDate.getUTCDate() + 1)
+        return endDate.toISOString().slice(0, 10)
+      },
       loading () {
         return this.$store.getters.loading
       },
@@ -282,7 +286,7 @@
       // },
       saveUserDetails () {
         this.editMode = false
-        console.log('[saveUserDetails] this.submittableDate, this.livingIn.country', this.submittableDate, this.livingIn.country)
+        console.log('[saveUserDetails] this.submittableDate, this.livingIn.country', this.submittableDate, this.livingIn.country, this.date)
         // if (!this.formIsValid) {
         //   return
         // }
