@@ -247,9 +247,9 @@
         imageUrl: '',
         /* eslint-disable */
         selectingDate: new Date().toISOString().substring(0, 10),
-        selectingTime: new Date().toLocaleTimeString('en-US').substring(0,5),
+        selectingTime: this.format_time(new Date()),
         date: new Date().toISOString().substring(0, 10),
-        time: new Date().toLocaleTimeString('en-US').substring(0,5),
+        time: this.format_time(new Date()),
         image: null,
         address: {
           country: '',
