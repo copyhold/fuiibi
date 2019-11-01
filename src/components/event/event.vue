@@ -103,9 +103,10 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab icon color="#424242"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
-        <v-carousel hide-delimiters dark :cycle="false" height="100vh" v-if="carousel">
+        <v-zoomer-gallery style="width: 100vw; height: 100vh;" :list="carouselPictures.map(pp => pp.imageUrl)" v-model="carouselCurrent" v-if="carousel"></v-zoomer-gallery>
+        <!--v-carousel hide-delimiters dark :cycle="false" height="100vh" v-if="carousel">
           <v-carousel-item class="picInCaroussel" v-for="(picture, key, index) in carouselPictures" v-bind:src="picture.imageUrl" :key="index" :contain="true"></v-carousel-item>
-        </v-carousel>
+          </v-carousel-->
       </v-card>
     </v-dialog>
 
@@ -158,6 +159,7 @@ export default {
       image: this.$refs.imageToCanvas,
       dialog: false,
       carousel: false,
+      carouselCurrent: 0,
       cycle: false,
       picToOpen: '',
       direction: 'bottom',

@@ -5,6 +5,7 @@ import Vue from 'vue'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.css'
 import vuelogger from 'vue-logger'
+import VueZoomer from 'vue-zoomer'
 
 import App from './App'
 import router from './router'
@@ -68,7 +69,7 @@ Vue.use(Vuetify, {
     lightGrey: '#C8C8C8'
   }
 })
-
+Vue.use(VueZoomer)
 Vue.filter('date', DateFilter)
 Vue.component('app-alert', AlertCmp)
 Vue.component('vue-google-autocomplete', VueGoogleAutocomplete)

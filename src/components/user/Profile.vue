@@ -73,9 +73,7 @@
                   <v-layout row>
                     <v-flex xs12>
                        <v-dialog ref="dialog" v-model="modal" :return-value.sync="date" persistent width="290px">
-                        <template v-slot:activator="{ on }">
-                          <v-text-field v-model="date" label="Date of birth" prepend-icon="event" readonly v-on="on"></v-text-field>
-                        </template>
+                        <v-text-field v-model="date" label="Date of birth" prepend-icon="event" readonly></v-text-field>
                         <v-date-picker v-model="date" scrollable :max="getEndDate">
                           <v-spacer></v-spacer>
                           <v-btn text color="primary" flat @click="modal = false">Cancel</v-btn>
@@ -295,13 +293,15 @@
           firstName: this.firstName,
           lastName: this.lastName,
           dateOfBirth: this.submittableDate,
-          livingIn: {
-            country: this.livingIn.country,
-            locality: this.livingIn.locality
-          },
           email: this.email,
           gender: this.gender,
           image: this.image
+        }
+        if (this.livingIn) {
+          updatedUser.livingIn = {
+            country: this.livingIn.country,
+            locality: this.livingIn.locality
+          }
         }
         this.$store.dispatch('updateProfile', updatedUser)
       },

@@ -73,12 +73,14 @@ export default {
       Vue.console.log('[updateNotification] notification', notification);
     },
     updateProfile(state, payload) {
-      const user = state.users.find(user => {
-        return user.id === payload.payload.id
-      })
       if (payload.imageUrl) {
-        user.imageUrl = payload.imageUrl
-        state.user.imageUrl = user.imageUrl
+        state.user.imageUrl = payload.imageUrl
+      }
+      if (payload.payload.firstName) {
+        state.user.firstName = payload.payload.firstName
+      }
+      if (payload.payload.lastName) {
+        state.user.lastName = payload.payload.lastName
       }
       if (payload.payload.gender) {
         state.user.gender = payload.payload.gender
@@ -344,21 +346,16 @@ export default {
         // const ext = filename.slice(filename.lastIndexOf('.'))
         const ext = 'png'
         return firebase.storage().ref('users/' + user.id + '.' + ext).put(payload.image)
-        .then(fileData => {
-          imageUrl = fileData.metadata.downloadURLs[0]
-          // to reach the specific item under the user id in the users array:
-          // I can change any value with the update as below
-          return firebase.database().ref('users').child(user.id).update({
-            imageUrl: imageUrl
-          })
-        })
-        .then(() => {
-          // here we commit that to my local store
-          Vue.console.log('setUser dans addProfilePicture');
+        .then(fileData => fileData.ref.getDownloadURL())
+        .then(imageUrl => {
+          Vue.console.log('setUser dans addProfilePicture', imageUrl);
           commit('setLoading', false)
           commit('addProfilePicture', {
             imageUrl: imageUrl,
             user: user
+          })
+          return firebase.database().ref('users').child(user.id).update({
+            imageUrl: imageUrl
           })
         })
         .catch(
@@ -473,7 +470,7 @@ export default {
     async updateProfile({ commit, getters }, payload) {
       let imageUrl
       if (payload.image) {
-        const fileData = await firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
+        const fileData = await firebase.storage().ref('users').child(payload.id + '-' + Date.now()).put(payload.image)
         this.imageUrl = await fileData.ref.getDownloadURL()
         Vue.console.log('imageUrl', this.imageUrl);
         commit('updateProfile', {
@@ -485,14 +482,17 @@ export default {
         })
       }
       commit('updateProfile', { payload: payload })
-      return await firebase.database().ref('users/' + payload.id).update({
+      const userupdate = {
         dateOfBirth: payload.dateOfBirth,
-        livingIn: payload.livingIn,
-        gender: payload.gender,
-        email: payload.email,
-        firstName: payload.firstName,
-        lastName: payload.lastName
-      })
+        gender:      payload.gender,
+        email:       payload.email,
+        firstName:   payload.firstName,
+        lastName:    payload.lastName
+      }
+      if (payload.livingIn) {
+        userupdate.livingIn = payload.livingIn
+      }
+      return await firebase.database().ref('users/' + payload.id).update(userupdate)
     },
 
     // ************** FRIENDSACTIONS****************

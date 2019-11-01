@@ -146,11 +146,11 @@ export default {
         const ext = 'png'
         return firebase.storage().ref('events/' + key + '.' + ext).put(payload.image)
       })
-      .then(fileData => {
-        imageUrl = fileData.metadata.downloadURLs[0]
+      .then(fileData => fileData.ref.getDownloadURL())
+      .then(uploadedUrl => {
         // to reach the specific item witht the key in the events array:
-        Vue.console.log('[addPicture] imageUrl', imageUrl);
-        return firebase.database().ref('events/' + id + '/pictures/' + key).update({imageUrl: imageUrl})
+        Vue.console.log('[addPicture] imageUrl', uploadedUrl);
+        return firebase.database().ref('events/' + id + '/pictures/' + key).update({imageUrl: uploadedUrl})
       }).then(() => {
         // here we commit that to my local store
         firebase.database().ref('events/' + id).once('value').then( data => {
