@@ -103,7 +103,14 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab icon color="#424242"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
-        <v-zoomer-gallery style="width: 100vw; height: 100vh;" :list="carouselPictures.map(pp => pp.imageUrl)" v-model="carouselCurrent" v-if="carousel"></v-zoomer-gallery>
+        <v-zoomer-gallery style="width: 100vw; height: 90vh;" :list="carouselPictures.map(pp => pp.imageUrl)" v-model="carouselCurrent" v-if="carousel"></v-zoomer-gallery>
+        <v-pagination
+          circle
+          dark
+          v-model="carouselCurrent"
+          :length="carouselPictures.length - 1"
+          :total-visible="5"
+          ></v-pagination>
         <!--v-carousel hide-delimiters dark :cycle="false" height="100vh" v-if="carousel">
           <v-carousel-item class="picInCaroussel" v-for="(picture, key, index) in carouselPictures" v-bind:src="picture.imageUrl" :key="index" :contain="true"></v-carousel-item>
           </v-carousel-->
@@ -204,10 +211,11 @@ export default {
       return this.$store.getters.getCurrentEvent
     },
     carouselPictures () {
-      const images = Object.values(this.event.pictures)
-      if (!this.picToOpen) return images
-      const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-      return [...images.slice(index), ...images.slice(0, index)]
+      return Object.values(this.event.pictures)
+   // const images = Object.values(this.event.pictures)
+   // if (!this.picToOpen) return images
+   // const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
+   // return [...images.slice(index), ...images.slice(0, index)]
     },
     activeFab () {
       switch (this.tabs) {
@@ -280,6 +288,7 @@ export default {
     },
     checkPicSrc (imgUrl) {
       this.picToOpen = imgUrl
+      this.carouselCurrent = Object.values(this.event.pictures).findIndex(pic => pic.imageUrl === imgUrl)
       this.carousel = true
     },
     removeFriend (user) {
