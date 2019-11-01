@@ -76,9 +76,6 @@ export default {
       const user = state.users.find(user => {
         return user.id === payload.payload.id
       })
-      const indexOfItem = state.users.findIndex(user => {
-        return user.id === payload.payload.id
-      })
       if (payload.imageUrl) {
         user.imageUrl = payload.imageUrl
         state.user.imageUrl = user.imageUrl
@@ -473,43 +470,29 @@ export default {
       })
     },
 
-    updateProfile({ commit, getters }, payload) {
+    async updateProfile({ commit, getters }, payload) {
       let imageUrl
       if (payload.image) {
-        return firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
-        .then(fileData => {
-          this.imageUrl = fileData.metadata.downloadURLs[0]
-          Vue.console.log('imageUrl', this.imageUrl);
-          commit('updateProfile', {
-            payload: payload,
-            imageUrl: this.imageUrl
-          })
-          return firebase.database().ref('users/' + payload.id).update({
-            imageUrl: this.imageUrl
-          })
+        const fileData = await firebase.storage().ref('users/' + payload.id + '.' + 'png').put(payload.image)
+        this.imageUrl = await fileData.ref.getDownloadURL()
+        Vue.console.log('imageUrl', this.imageUrl);
+        commit('updateProfile', {
+          payload: payload,
+          imageUrl: this.imageUrl
         })
-        .then(_ => {
-          return firebase.database().ref('users/' + payload.id).update({
-              dateOfBirth: payload.dateOfBirth,
-              livingIn: payload.livingIn,
-              gender: payload.gender,
-              email: payload.email,
-              firstName: payload.firstName,
-              lastName: payload.lastName
-            })
-        })
-        .catch(console.error)
-      } else {
-        commit('updateProfile', { payload: payload })
-        return firebase.database().ref('users/' + payload.id).update({
-          dateOfBirth: payload.dateOfBirth,
-          livingIn: payload.livingIn,
-          gender: payload.gender,
-          email: payload.email,
-          firstName: payload.firstName,
-          lastName: payload.lastName
+        await firebase.database().ref('users/' + payload.id).update({
+          imageUrl: this.imageUrl
         })
       }
+      commit('updateProfile', { payload: payload })
+      return await firebase.database().ref('users/' + payload.id).update({
+        dateOfBirth: payload.dateOfBirth,
+        livingIn: payload.livingIn,
+        gender: payload.gender,
+        email: payload.email,
+        firstName: payload.firstName,
+        lastName: payload.lastName
+      })
     },
 
     // ************** FRIENDSACTIONS****************
