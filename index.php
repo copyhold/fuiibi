@@ -10,9 +10,8 @@
  */
 $domain = 'https://www.fuiibi.com';
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$template = file_get_contents(__DIR__ . '/index.html');
 if (!preg_match('~^/events/(.+)$~', $url, $m)) {
-  echo $template;
+  echo file_get_contents(__DIR__ . '/index.html');
   die;
 }
 ini_set('display_errors', true);
@@ -26,6 +25,9 @@ if (is_null($event)) {
   header('HTTP/1.0 404 Not Found');
   die;
 }
+require 'event.php';
+die;
+$template = file_get_contents(__DIR__ . '/event.html');
 $images = '';
 foreach($event->pictures as $picture) {
   $images .= '<img src="' . $picture->imageUrl .'" />';
