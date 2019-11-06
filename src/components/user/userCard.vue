@@ -7,15 +7,11 @@
       <v-list-tile-title v-html="user.firstName + ' ' + user.lastName" ></v-list-tile-title>
     </v-list-tile-content>
       <v-list-tile-action v-if="hasPendingInvitation(user) || isPendingFriend(user)">
-        <v-btn small class="greyColors" flat left>Pending...</v-btn>
+        <v-btn class="greyColors" flat left>Pending...</v-btn>
       </v-list-tile-action>
       <v-list-tile-action v-else>
-        <v-list-tile-action v-if="!isFriend(user)">
-          <v-btn @click="sendFriendRequest()" flat small class="primary--text pl-1 pr-1"><v-icon class="pl-4">person_add</v-icon></v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action v-else>
-          <v-btn @click="removeFriend(user)" flat small class="greyColors" left>Remove</v-btn>
-        </v-list-tile-action>
+        <v-btn @click="sendFriendRequest()" v-if="!isFriend(user)" flat icon><v-icon>person_add</v-icon></v-btn>
+        <v-btn v-else @click="removeFriend(user)" flat class="greyColors">Remove</v-btn>
       </v-list-tile-action>
   </v-list-tile>
 </template>

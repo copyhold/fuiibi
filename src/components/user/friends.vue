@@ -1,54 +1,153 @@
 <template >
-  <v-container class="container">
-    <v-tabs fixed grow>
-      <v-tab href="#friends">Friends</v-tab>
-      <!-- <v-tab href="#contacts">Contacts</v-tab> -->
-      <v-tab href="#swarm">Search</v-tab>
-      <v-tab-item :value="'friends'">
-        <friends-only></friends-only>
-      </v-tab-item>
-      <!-- <v-tab-item :value="'contacts'">
-        <my-contacts></my-contacts>
-      </v-tab-item> -->
-      <v-tab-item :value="'swarm'">
-        <all-users></all-users>
-      </v-tab-item>
-    </v-tabs>
+  <v-container>
+    <v-list subheader  xs12>
+      <v-subheader>
+        <v-text-field hide-details placeholder="Search for Fuiibi users" single-line v-model="search" full-width />
+        <v-btn icon flat @click="searchUsers" flat :disabled="loading">
+          <v-progress-circular indeterminate color="darkgray" :width="1" :size="20" v-if="loading"></v-progress-circular>
+          <v-icon v-if="!loading">search</v-icon>
+        </v-btn>
+      </v-subheader>
+      <user-card v-for="user in users" :user="user" :key="user.id" />
+      <v-divider></v-divider>
+
+      <v-subheader v-if="pendingFriends.lenght>0">Invitations I received</v-subheader>
+      <template v-for="(user,i) in pendingFriends" v-if="filterUser (user)">
+        <v-divider></v-divider>
+        <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn icon flat @click="$store.dispatch('acceptFriendRequest', user.id)">
+              <v-icon color="primary">mdi-account-plus</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+          <v-list-tile-action>
+            <v-btn icon flat @click="$store.dispatch('refuseFriend', user.id)">
+              <v-icon color="red">mdi-delete</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+      </template>
+
+      <v-subheader v-if="pendingInvitations.length>0">Invitations I sent</v-subheader>
+      <template v-for="user in pendingInvitations" v-if="filterUser (user)">
+        <v-divider></v-divider>
+        <v-list-tile :key="user.id" v-if="user.id != loggedInUserId" class="mt-2 mb-2">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn icon flat @click="$store.dispatch('cancelInvitation', user.id)">
+              <v-icon color="red">mdi-delete</v-icon>
+            </v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+        <v-divider></v-divider>
+      </template>
+      <v-subheader v-if="friends">My friends</v-subheader>
+      <template v-for="user,i in friends" v-if="filterUser (user)">
+        <v-list-tile avatar v-bind:key="i" @click="" v-if="user.id != loggedInUserId">
+          <v-list-tile-avatar>
+            <img :src="user.imageUrl"/>
+          </v-list-tile-avatar>
+          <v-list-tile-content @click="getUserPage(user)">
+            <v-list-tile-title v-html="user.firstName + ' ' + user.lastName"></v-list-tile-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-btn icon flat @click="removeFriend(user)"><v-icon color="lightGrey darken-2">mdi-account-remove</v-icon></v-btn>
+          </v-list-tile-action>
+        </v-list-tile>
+        <v-divider></v-divider>
+      </template>
+    </v-list>
   </v-container>
 </template>
 
 <script>
+  const firebase = global.firebase
   export default {
+    props: [],
     data () {
       return {
+        loading: false,
+        users: [],
+        search: '',
         key: ''
       }
     },
     computed: {
-      friends () {
-        if (this.$store.getters.user) {
-          if (this.$store.getters.user.friends.length > 0) {
-            return this.$store.getters.user.friends
-          }
-        }
+      filteredFriends () {
+        return this.friends.filter(friend => {
+          if (!friend) return false
+          if (this.search.length < 3) return true
+          return `${friend.firstName}${friend.lastName}`.match(new RegExp(this.search, 'i'))
+        })
       },
-      loading () {
-        return this.$store.getters.loading
+      pendingInvitations () {
+        const user = this.$store.getters.user
+        if (!user || !user.pendingInvitations) return []
+        const friends = Object.keys(user.pendingInvitations).map(this.$store.getters.person).filter(fr => typeof fr !== 'undefined')
+        return friends
+      },
+      pendingFriends () {
+        const user = this.$store.getters.user
+        if (!user || !user.pendingFriends) return []
+        const friends = Object.keys(user.pendingFriends).map(this.$store.getters.person).filter(fr => typeof fr !== 'undefined')
+        return friends
+      },
+      friends () {
+        if (!this.$store.getters.user || !this.$store.getters.user.friends) {
+          return []
+        }
+        const friends = Object.keys(this.$store.getters.user.friends)
+        .map(k => {
+          return this.$store.getters.person(k)
+        })
+        return friends
       },
       loggedInUserId () {
-        return this.$store.getters.user.id
-      },
-      isFriend (friendId) {
-        // The findIndex return us the place of the element in the array. So if we just want to check it exist, it should be bigger or equal to 0
-        return this.$store.getters.user.friends.findIndex(userId => {
-          return userId === friendId
-        }) >= 0
+        const {user} = this.$store.getters
+        if (!user) return false
+        return user.id
       }
     },
     methods: {
+      searchUsers () {
+        this.loading = true
+        this.users = []
+        firebase.functions().httpsCallable('findUsersBy')({
+          s: this.search
+        })
+        .then(res => {
+          if (res.data) {
+            this.users = Object.values(res.data)
+            this.$store.dispatch('loadPersons', Object.keys(res.data))
+          }
+        })
+        .catch(this.$error)
+        .finally(() => {
+          this.loading = false
+        })
+      },
+      filterUser (friend) {
+        if (this.search.length < 3) return true
+        return `${friend.firstName}${friend.lastName}`.match(new RegExp(this.search, 'i'))
+      },
       getUserPage (key) {
         this.$store.dispatch('getUserData', {userId: key.id})
         this.$router.push('/users/' + key.id)
+      },
+      removeFriend (user) {
+        if (!confirm('Please, don`t remove me , I want be your friend. Sure?')) return
+        this.$store.dispatch('removeFriend', user)
       },
       messageFriend (userId) {
         console.log('userID from sendMessaget ', userId)
@@ -57,49 +156,3 @@
     }
   }
 </script>
-
-<style scoped>
-.short{
-  height: 40px;
-}
-.btn--bottom:not(.btn--absolute) {
-    bottom: 72px;
-}
-  .container{
-    margin-top: 0px;
-    padding: 0px;
-    margin-bottom: 56px;
-    margin: 0px auto 56px auto;
-  }
-  .greyColors{
-    background-color: #f6f7f9;
-    border-color: #ced0d4;
-    color: #4b4f56;
-  }
-  .card_actions{
-    padding: 0px;
-  }
-  .btn_content{
-    padding: 0px;
-  }
-  .btn__content {
-    padding: 0px !important;
-  }
-  .card__actions {
-    padding: 0px;
-  }
-  .card__title--primary {
-    padding: 0px 0px;
-  }
-  .card__actions > *, .card__actions .btn {
-    margin: 0 -8px;
-  }
-  p {
-    margin-bottom: 4px;
-  }
-</style>
-<style>
-#app.size-xs .gotosearch {
-  bottom: 80px;
-}
-</style>
