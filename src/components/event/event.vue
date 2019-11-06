@@ -84,9 +84,19 @@
           </v-flex>
         </v-layout>
         <v-layout row wrap class="gallery" v-else>
-          <v-flex xs4 sm3 md2 v-for="pic,j in event.pictures" :key="pic.id">
+          <v-flex xs4 sm3 md2 v-for="pic,j in pictures" :key="j">
             <v-card flat tile>
              <v-img :src="pic.imageUrl" aspect-ratio="1" @contextmenu.prevent="photoRightClick(j)" @click="checkPicSrc(pic.imageUrl)" :class="(selectedpictures[j] ? 'selected' : '') + ' clickable'"/>
+            </v-card>
+          </v-flex>
+          <v-flex xs4 sm3 md2 v-if="!loggedInUserId" >
+            <v-card flat tile>
+              <v-card-text>
+                <p class="text--primary">There is a lot more to see here</p>
+
+        
+                <p class="text--primary"><span @click="iwtClicked()" style="text-decoration: underline;">Register</span> to see all event pictures</p>
+              </v-card-text>
             </v-card>
           </v-flex>
         </v-layout>
@@ -103,12 +113,12 @@
           <v-icon class="mr-1 clickable" dark large @click="fullscreen_carousel=!fullscreen_carousel">zoom_out_map</v-icon>
         </v-toolbar>
         <v-btn v-else absolute small fab icon color="#424242"><v-icon class="mr-1 clickable" dark @click="closeDialog">arrow_back</v-icon></v-btn>
-        <v-zoomer-gallery style="width: 100vw; height: 90vh;" :list="carouselPictures.map(pp => pp.imageUrl)" v-model="carouselCurrent" v-if="carousel"></v-zoomer-gallery>
+        <v-zoomer-gallery style="width: 100vw; height: 90vh;" :list="pictures.map(pp => pp.imageUrl)" v-model="carouselCurrent" v-if="carousel"></v-zoomer-gallery>
         <v-pagination
           circle
           dark
           v-model="carouselCurrent"
-          :length="carouselPictures.length - 1"
+          :length="pictures.length - 1"
           :total-visible="5"
           ></v-pagination>
         <!--v-carousel hide-delimiters dark :cycle="false" height="100vh" v-if="carousel">
@@ -210,12 +220,12 @@ export default {
     event () {
       return this.$store.getters.getCurrentEvent
     },
-    carouselPictures () {
-      return Object.values(this.event.pictures)
-   // const images = Object.values(this.event.pictures)
-   // if (!this.picToOpen) return images
-   // const index = images.findIndex(pic => pic.imageUrl === this.picToOpen)
-   // return [...images.slice(index), ...images.slice(0, index)]
+    pictures () {
+      if (!this.event) return []
+      let pictures = Object.values(this.event.pictures)
+      if (this.loggedInUserId) return pictures
+      if (pictures.length < 8) return pictures
+      return pictures.slice(0, 5)
     },
     activeFab () {
       switch (this.tabs) {
