@@ -375,6 +375,7 @@ export default {
       firebase.auth()
       .signOut()
       .then(() => {
+        document.cookie = 'authuser=false'
         commit('setUser', null)
         location.href = '/'
       })

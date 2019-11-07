@@ -119,6 +119,7 @@ new Vue({
     this.$debug('we are here in vue')
     window.firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        document.cookie = 'authuser=true'
         if (document.getElementById('homepage')) document.getElementById('homepage').remove()
         this.$store.commit('setUser', {
           id: user.uid,

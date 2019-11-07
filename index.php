@@ -11,7 +11,7 @@
 $domain = 'https://www.fuiibi.com';
 $url = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $template = file_get_contents(__DIR__ . '/index.html');
-if (!preg_match('~^/events/(.+)$~', $url, $m)) {
+if ($_COOKIE['authuser'] && $_COOKIE['authuser']=='true') {
   echo $template;
   die;
 }
