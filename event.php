@@ -34,30 +34,30 @@
             <img style="object-fit: cover; height: 100%; width:100%;" alt="" src="<?php echo $event->imageUrl ?>">
         </figure>
         <div class="col-md-12">
-          <h3><?php echo $event->title ?></h3>
+          <h3 class="text-center"><?php echo $event->title ?></h3>
           <div class="list-group">
             <div class="list-group-item">
-              <h4 class="list-group-item-heading">
+              <h5 class="list-group-item-heading">
 <i class="material-icons">place</i>
 <?php echo $event->location->locality ?>
-              </h4>
+              </h5>
             </div>
             <div class="list-group-item">
-              <h4 class="list-group-item-heading glyphicon glyphicon-time">
+              <h5 class="list-group-item-heading glyphicon glyphicon-time">
 <i class="material-icons">access_time</i>
 <?php echo $event->date ?>
-              </h4>
+              </h5>
             </div>
             <div class="list-group-item">
-              <h4 class="list-group-item-heading glyphicon glyphicon-user">
+              <h5 class="list-group-item-heading glyphicon glyphicon-user">
 <i class="material-icons">supervisor_account</i>
 <?php printf("%d fuiibers were there", count((array)$event->users)) ?>
-              </h4>
+              </h5>
             </div>
-            <div class="list-group-item">
-              <h4 class="list-group-item-heading glyphicon glyphicon-user">
+            <div class="text-center list-group-item">
+              <h5 class="list-group-item-heading glyphicon glyphicon-user">
 Register to see the whole event and share own experience
-              </h4>
+              </h5>
               <p><a class="btn btn-primary" href="https://www.fuiibi.com" role="button">I WAS THERE</a></p>
             </div>
           </div>
