@@ -25,6 +25,7 @@ if (is_null($event)) {
   header('HTTP/1.0 404 Not Found');
   die;
 }
+$event->id = preg_replace('~.*events/(.*)$~', '$1', $url);
 require 'event.php';
 die;
 $template = file_get_contents(__DIR__ . '/event.html');
