@@ -243,6 +243,7 @@ export default {
       const user = await firebase.database().ref('users/' + payload.uid).once('value')
       dispatch('installApp')
       let userData = user.val()
+      const {return_to_event} = localStorage
       if (userData === null) { // I just signed up using password of oauth
         const provider = payload.providerData[0].providerId
         let newUser = {
@@ -274,7 +275,6 @@ export default {
         commit('setLoading', false)
         dispatch('iwtClicked', 'defaultevent')
         gtag('event', 'signup', { event_category: 'user actions', event_label: provider })
-        const {return_to_event} = localStorage
         if (return_to_event) {
           localStorage.removeItem('return_to_event')
           await dispatch('iwtClicked',return_to_event)
@@ -299,8 +299,12 @@ export default {
         await dispatch('listenToMyFeed')
         await dispatch('listenToProfileUpdate')
         await dispatch('listenToEvents')
-        if (location.pathname==='/') {
-          router.push('/notifications')
+        if (return_to_event) {
+          localStorage.removeItem('return_to_event')
+          await dispatch('iwtClicked',return_to_event)
+          router.push( `/events/${return_to_event}` )
+        } else {
+          router.push( '/notifications' )
         }
       }
       return Promise.resolve()
