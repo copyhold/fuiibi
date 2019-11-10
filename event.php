@@ -39,9 +39,12 @@ flex-wrap: nowrap;
 }
 #eventimages {
 flex: 1 auto;
+max-height: calc(100vh - 400px);
+overflow: hidden;
 }
+#eventimages .carousel-inner,
 #eventimages .carousel-item {
-max-height: 600px;
+height: 100%;
 }
 #eventimages .carousel-item img {
 width: 100%;
@@ -61,7 +64,7 @@ flex: 0 1 auto;
         <div style="flex:0 0 55px; height: 56px; font-family: 'Marck Script'; font-size:33px;padding-top: 5px" class="col-md-12 text-center">
           Fuiibi
         </div> 
-        <div id="eventimages" class="carousel slide col-md-12" data-ride="carousel">
+        <div id="eventimages" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
 <?php 
 $images = array_values((array)$event->pictures);
@@ -78,7 +81,7 @@ foreach(array_slice($images,1,5) as $i=>$image) {
               <div class="carousel-caption">
                 <div class="alert alert-primary">
                   <h5 class=alert-heading><?php printf("%d more images in this event", count($images)) ?></h5>
-                  <p>Register to <a onclick="return_to_here()" href="/">see them all</a></p>
+                  <p>Register to <a class="was" href="https://www.fuiibi.com/">see them all</a></p>
                 </div>
               </div>
             </div>
@@ -93,7 +96,7 @@ foreach(array_slice($images,1,5) as $i=>$image) {
           </a>
         </div>
         <div class="event-descr col-md-12" style="font-family: 'Roboto';">
-          <h3 class="text-center" style="font-size: 22.5px; color: rgba(0,0,0,0.54); font-weight: 700"><?php echo $event->title ?></h3>
+          <h3 class="text-center" style="font-size: 22.5px; color: rgba(0,0,0,0.54); font-weight: 700; margin: .5em 0;"><?php echo $event->title ?></h3>
           <div class="list-group list-group-flush">
             <div class="list-group-item">
               <h6 class="list-group-item-heading">
@@ -114,14 +117,14 @@ foreach(array_slice($images,1,5) as $i=>$image) {
             <div class="list-group-item">
               <h6 class="list-group-item-heading glyphicon glyphicon-user">
                 <i class="material-icons">supervisor_account</i>
-                <span style="position: relative; bottom: 5px;"><?php printf("%d fuiibers were there", count((array)$event->users)) ?></span>
+                <span style="position: relative; bottom: 5px;"><?php printf("%d Fuiibers were there", count((array)$event->users)) ?></span>
               </h6>
             </div>
             <div class="text-center list-group-item">
               <h6 class="list-group-item-heading glyphicon glyphicon-user">
                 Register to see the whole event and share own experience
               </h6>
-              <p><a class="btn btn-primary" onclick="return_to_here()" href="https://www.fuiibi.com" role="button">I WAS THERE</a></p>
+              <p><a class="btn btn-primary was" href="https://www.fuiibi.com" role="button">I WAS THERE</a></p>
             </div>
           </div>
         </div>
@@ -131,9 +134,17 @@ foreach(array_slice($images,1,5) as $i=>$image) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script>
-  function return_to_here() {
-    localStorage.return_to_event = "<?php echo $event->id ?>"
-  }
+  window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('a.was').forEach(function(elm) {
+      elm.addEventListener('click', function(e) {
+        e.preventDefault()
+          localStorage.return_to_event = "<?php echo $event->id ?>"
+          setTimeout(function() { location.href = '/' },100 )
+          return false
+        })
+      })
+    })
+
 </script>
   </body>
 </html>
