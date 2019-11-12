@@ -70,7 +70,7 @@ flex: 0 1 auto;
 $images = array_values((array)$event->pictures);
 $lastimage = end($images);
 reset($images);
-foreach(array_slice($images,1,5) as $i=>$image) { 
+foreach(array_slice($images,0,5) as $i=>$image) { 
 ?>
             <div class="carousel-item <?php echo ($i==0 ? 'active' : '') ?>">
               <img src="<?php echo $image->imageUrl ?>" class="d-block w-100" alt="...">

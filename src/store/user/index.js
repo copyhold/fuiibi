@@ -299,6 +299,10 @@ export default {
         await dispatch('listenToMyFeed')
         await dispatch('listenToProfileUpdate')
         await dispatch('listenToEvents')
+
+        if (router.currentRoute.path.match(/events/)) {
+          return Promise.resolve()
+        }
         if (return_to_event) {
           localStorage.removeItem('return_to_event')
           await dispatch('iwtClicked',return_to_event)
