@@ -111,6 +111,7 @@ export default {
       .catch(Vue.console.log);
     },
     removeEventFromUser ({commit, getters}, payload) {
+      Vue.console.log('[removeEventFromUser] remove event => payload', payload)
       return firebase.functions().httpsCallable('removeEventFromUser')({ evid: payload.id, uid: getters.user.id })
     },
     uploadPicture: async function (store, {file,evid}) {

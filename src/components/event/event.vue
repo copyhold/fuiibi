@@ -60,7 +60,7 @@
               <v-flex xs2 sm2 md2>
 
                 <v-btn fab large class="iwt" center v-if="!userWasThere" @click="iwtClicked"></v-btn>
-                <v-btn flat large class="iwt checked" v-else center></v-btn>
+                <v-btn flat large class="iwt checked" v-else center @click="alertB4remove"></v-btn>
 
               </v-flex>
             </v-layout>
@@ -265,6 +265,10 @@ export default {
     }
   },
   methods: {
+    alertB4remove () {
+      if (!confirm('Hey there, are you sure you want to permanently remove this event from your Event List?')) return
+      this.$store.dispatch('removeEventFromUser', this.event)
+    },
     photoRightClick (i) {
       if (this.selectedpictures[i]) {
         this.$set(this.selectedpictures, i, null)
