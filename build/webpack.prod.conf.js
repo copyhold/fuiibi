@@ -66,6 +66,13 @@ const webpackConfig = merge(baseWebpackConfig, {
       minify: false,
       chunksSortMode: 'dependency'
     }),
+    new HtmlWebpackPlugin({
+      filename: 'assets-map.html',
+      template: '!!ejs-webpack-loader!assets-map.ejs',
+      inject: false,
+      minify: false,
+      chunksSortMode: 'dependency'
+    }),
     // keep module.id stable when vender modules does not change
  // new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting

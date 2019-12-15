@@ -3,3 +3,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} !=/favicon.ico
 RewriteRule ^ index.php [L]
 
+<filesMatch "\\.(css)$">
+Header set Cache-Control "max-age=604800, public"
+</filesMatch>
+<filesMatch "\\.(js)$">
+Header set Cache-Control "max-age=216000, public"
+</filesMatch>
+

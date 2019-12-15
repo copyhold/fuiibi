@@ -1,0 +1,7 @@
+<% htmlWebpackPlugin.files.js.forEach(function(url) { %>
+<link rel="preload" as=script href="<%= url %>">
+<% }) %>
+<% htmlWebpackPlugin.files.css.forEach(function(url) { %>
+<link rel=preload as=style href="<%= url %>" rel=stylesheet>
+<% }) %>
+
