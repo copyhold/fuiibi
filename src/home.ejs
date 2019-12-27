@@ -53,6 +53,12 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://apis.google.com/js/client.js"></script>
     <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-storage.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-functions.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/6.3.4/firebase-database.js"></script>
 
     <script>
     var installPromptEvent;
@@ -60,34 +66,7 @@
       event.preventDefault();
       installPromptEvent = event;
     });
-    function googleMapLibLoaded() {
-      // yes it is
-    }
-    Promise.all([
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js",
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-messaging.js",
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-storage.js",
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js",
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-functions.js",
-      "https://www.gstatic.com/firebasejs/6.3.4/firebase-database.js"].map(url => {
-        const scr = document.createElement('script')
-        scr.src = url
-        scr.defer = 'defer'
-        scr.type = 'application/javascript'
-        document.head.appendChild(scr)
-        return new Promise((resolve, reject) => {
-          scr.onload = resolve
-        })
-    }))
-    .then(res => {
-      let app
-      <% htmlWebpackPlugin.files.js.forEach(function(url) { %>
-      app = document.createElement('script')
-      app.src = "<%= url %>"
-      document.head.appendChild(app)
-      <% }) %>
-    })
-    .catch(console.error)
+    function googleMapLibLoaded() { }
     </script>
   </head>
   <body class=not-signed>

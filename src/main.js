@@ -98,16 +98,7 @@ new Vue({
   // eslint-disable-next-line
   created() {
     document.body.classList.add('appinitialized')
-    window.firebase.initializeApp({
-      apiKey: 'AIzaSyATluUdkwWsyz3IJqfu74rAmo5yDnb94-M',
-      authDomain: 'iwtapplication.firebaseapp.com',
-      // databaseURL: 'https://fuiibi.firebaseio.com',
-      databaseURL: 'https://fuiibidevelopment.firebaseio.com',
-      // databaseURL: 'ws://localhost:5000',
-      projectId: 'iwtapplication',
-      messagingSenderId: '208715939086',
-      storageBucket: 'gs://iwtapplication.appspot.com'
-    })
+    window.firebase.initializeApp(process.env.FIREBASE)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
       .then(registration => {

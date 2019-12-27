@@ -1,0 +1,18 @@
+#!/bin/sh
+
+USERNAME=ruttarchvp
+HOST=ftp.cluster023.hosting.ovh.net
+PASS=Fuiibi321
+
+
+echo "Starting to sftp..."
+
+cp event.php index.php src/manifest.json sw.js privacy-policy.html terms-of-use.html dist/
+
+lftp -u ${USERNAME},${PASS} ftp://${HOST}:21 <<EOF
+mirror -vnp -P 6 -R -x .*\.webm -x .*.\mp4 -x materialdesignicons.*\.svg -x media -x \.map$ -x .htaccess dist app.fuiibi.com
+bye
+EOF
+
+echo "done"
+
