@@ -9,6 +9,7 @@
           <v-progress-circular indeterminate color="darkgray" :width="1" :size="90" v-if="notifications.length<1"></v-progress-circular>
         </v-flex>
       </v-layout>
+      
       <v-container grid-list-sm fluid v-else style="background: white url('/src/images/icons/imageForBackground.png') repeat" >
         <v-layout row wrap >
             <v-flex xs12 sm6 md4 wrap v-for="notification in notifications" :key="notification.d" class="mb-1">
